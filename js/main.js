@@ -2,7 +2,7 @@
 //  EDITA TUS CANCIONES AQUÍ ↓ URL de YouTube o mp3
 // ════════════════════════════════════════════════
 const CANCIONES = [
-  { titulo: "Lo-fi para concentrarse", url: "https://www.youtube.com/watch?v=aQZHAl_eV1c" },
+  { titulo: "Para concentrarse", url: "https://www.youtube.com/watch?v=aQZHAl_eV1c" },
   { titulo: "Noches tranquilas", url: "https://www.youtube.com/live/an60NyBayzE" },
 ];
 
@@ -70,6 +70,145 @@ document.querySelectorAll(".tema").forEach((btn) => {
   });
 });
 
+/* ── Personalización: modo noche/día + fondo propio ── */
+function aplicarFondo(url) {
+  let capa = document.getElementById("fondo-personalizado");
+  if (!url) {
+    if (capa) capa.remove();
+    return;
+  }
+  if (!capa) {
+    capa = document.createElement("div");
+    capa.id = "fondo-personalizado";
+    document.body.appendChild(capa);
+  }
+  capa.style.backgroundImage =
+    'linear-gradient(rgba(8,6,16,.72), rgba(8,6,16,.86)), url("' + url.replace(/"/g, "%22") + '")';
+}
+
+let modoGuardado = "";
+let fondoGuardado = "";
+try {
+  modoGuardado = localStorage.getItem("modo") || "";
+  fondoGuardado = localStorage.getItem("fondo-url") || "";
+} catch {}
+if (modoGuardado === "claro") document.documentElement.dataset.modo = "claro";
+if (fondoGuardado && /^(https?:|data:image)/i.test(fondoGuardado)) aplicarFondo(fondoGuardado);
+
+(function initPersonalizacion() {
+  const nav = document.querySelector(".nav");
+  if (!nav || document.getElementById("btn-settings")) return;
+
+  const btnSettings = document.createElement("button");
+  btnSettings.id = "btn-settings";
+  btnSettings.type = "button";
+  btnSettings.className = "btn-settings";
+  btnSettings.title = "Personalizar";
+  btnSettings.textContent = "⚙";
+  nav.appendChild(btnSettings);
+
+  const panel = document.createElement("div");
+  panel.id = "panel-settings";
+  panel.hidden = true;
+  panel.innerHTML =
+    "<header><b>✦ Personalizar</b>" +
+    '<button id="cerrar-settings" type="button" title="Cerrar">×</button></header>' +
+    '<span class="ps-etiqueta">Ambiente</span>' +
+    '<div class="ps-fila">' +
+    '<button type="button" class="ps-op modo-op" data-modo="">🌙 Noche</button>' +
+    '<button type="button" class="ps-op modo-op" data-modo="claro">☀️ Día</button>' +
+    "</div>" +
+    '<span class="ps-etiqueta">Fondo propio (URL de imagen)</span>' +
+    '<input id="input-fondo-url" type="url" placeholder="pega el URL de una imagen…" spellcheck="false">' +
+    '<div class="ps-fila" style="margin-top:.5rem">' +
+    '<button type="button" id="btn-aplicar-fondo" class="ps-op">Aplicar</button>' +
+    '<button type="button" id="btn-quitar-fondo" class="ps-op">Quitar</button>' +
+    "</div>" +
+    '<div class="ps-fila" style="margin-top:.9rem">' +
+    '<button type="button" id="btn-restablecer" class="ps-op peligro">Restablecer todo</button>' +
+    "</div>" +
+    '<p class="ps-nota">Tu estilo se guarda solo en este navegador.</p>';
+  document.body.appendChild(panel);
+
+  function marcarModo() {
+    const actual = document.documentElement.dataset.modo || "";
+    panel.querySelectorAll(".modo-op").forEach((b) => {
+      b.classList.toggle("activo", (b.dataset.modo || "") === actual);
+    });
+  }
+
+  function abrir() {
+    panel.hidden = !panel.hidden;
+    if (!panel.hidden) {
+      marcarModo();
+      input.value = fondoGuardado;
+    }
+  }
+
+  const input = panel.querySelector("#input-fondo-url");
+
+  btnSettings.addEventListener("click", abrir);
+  panel.querySelector("#cerrar-settings").addEventListener("click", () => {
+    panel.hidden = true;
+  });
+
+  panel.querySelectorAll(".modo-op").forEach((b) => {
+    b.addEventListener("click", () => {
+      if (b.dataset.modo) document.documentElement.dataset.modo = b.dataset.modo;
+      else delete document.documentElement.dataset.modo;
+      try {
+        localStorage.setItem("modo", b.dataset.modo);
+      } catch {}
+      modoGuardado = b.dataset.modo;
+      marcarModo();
+      toast(b.dataset.modo ? "☀️ Modo día activado" : "🌙 Modo noche activado");
+    });
+  });
+
+  panel.querySelector("#btn-aplicar-fondo").addEventListener("click", () => {
+    const url = input.value.trim();
+    if (!/^https?:\/\/|^data:image/i.test(url)) {
+      toast("pon un URL de imagen válido ✦");
+      return;
+    }
+    aplicarFondo(url);
+    fondoGuardado = url;
+    try {
+      localStorage.setItem("fondo-url", url);
+    } catch {}
+    toast("✦ Fondo aplicado");
+  });
+
+  panel.querySelector("#btn-quitar-fondo").addEventListener("click", () => {
+    aplicarFondo(null);
+    fondoGuardado = "";
+    input.value = "";
+    try {
+      localStorage.removeItem("fondo-url");
+    } catch {}
+    toast("✦ Fondo quitado");
+  });
+
+  panel.querySelector("#btn-restablecer").addEventListener("click", () => {
+    try {
+      localStorage.removeItem("modo");
+      localStorage.removeItem("fondo-url");
+      localStorage.removeItem("tema");
+    } catch {}
+    location.reload();
+  });
+})();
+
+/* ── Nota del DM en el pie de página ── */
+const footerSitio = document.querySelector(".site-footer");
+if (footerSitio && !footerSitio.querySelector(".dm-nota")) {
+  const notaDm = document.createElement("p");
+  notaDm.className = "dm-nota";
+  notaDm.innerHTML =
+    "✦ ¿tienes ideas de qué agregarle a esta página? escríbelas al <b>DM @ineedherbb</b> — sí, en serio, las leo todas";
+  footerSitio.appendChild(notaDm);
+}
+
 const cielo = document.getElementById("cielo");
 
 if (cielo && !sinAnimacion) {
@@ -112,50 +251,31 @@ castillo.innerHTML =
   '<svg viewBox="0 0 1440 240" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">' +
   "<defs>" +
   '<linearGradient id="ciudad-grad" x1="0" y1="0" x2="0" y2="1">' +
-  '<stop offset="0" stop-color="#181430"/>' +
-  '<stop offset="1" stop-color="#080614"/>' +
-  "</linearGradient>" +
-  '<linearGradient id="ciudad-lejos" x1="0" y1="0" x2="0" y2="1">' +
-  '<stop offset="0" stop-color="#100d20"/>' +
-  '<stop offset="1" stop-color="#0b0918"/>' +
+  '<stop offset="0" stop-color="var(--ciudad-alta)"/>' +
+  '<stop offset="1" stop-color="var(--ciudad-baja)"/>' +
   "</linearGradient>" +
   "</defs>" +
 
-  // fila lejana de la ciudad (profundidad)
-  '<g fill="url(#ciudad-lejos)" opacity="0.85">' +
-  '<polygon points="180,206 260,206 220,168"/>' +
-  '<rect x="330" y="150" width="70" height="58"/>' +
-  '<polygon points="320,150 410,150 365,116"/>' +
+  // fila lejana de la ciudad (profundidad, mínima)
+  '<g fill="var(--ciudad-baja)" opacity="0.75">' +
   '<rect x="600" y="142" width="54" height="66"/>' +
-  '<rect x="900" y="146" width="66" height="62"/>' +
   '<polygon points="892,146 974,146 933,112"/>' +
-  '<rect x="1090" y="150" width="60" height="58"/>' +
-  '<polygon points="1250,204 1330,204 1290,164"/>' +
   "</g>" +
 
   // colina base
-  '<path d="M0 240 L0 210 Q280 196 640 205 Q1020 215 1440 200 L1440 240 Z" fill="#0b0918"/>' +
+  '<path d="M0 240 L0 210 Q280 196 640 205 Q1020 215 1440 200 L1440 240 Z" fill="var(--colina)"/>' +
 
-  // ciudad principal
+  // ciudad principal (pocos edificios, mucho aire)
   '<g fill="url(#ciudad-grad)">' +
-  // casa 1
-  '<rect x="30" y="152" width="80" height="60"/>' +
-  '<polygon points="22,152 118,152 70,126"/>' +
-  // torre A
+  // torre A solitaria
   '<rect x="132" y="112" width="46" height="100"/>' +
   '<polygon points="126,112 184,112 155,80"/>' +
-  // casa 2
-  '<rect x="198" y="160" width="70" height="52"/>' +
-  '<polygon points="191,160 275,160 233,134"/>' +
-  // edificio almenado
+  // edificio almenado lejano
   '<rect x="290" y="104" width="100" height="108"/>' +
   '<line x1="287" y1="101" x2="393" y2="101" stroke="url(#ciudad-grad)" stroke-width="12" stroke-dasharray="15 11"/>' +
   // torre B delgada
   '<rect x="402" y="92" width="36" height="120"/>' +
   '<polygon points="396,92 444,92 420,56"/>' +
-  // casa 3
-  '<rect x="452" y="164" width="66" height="48"/>' +
-  '<polygon points="445,164 525,164 485,138"/>' +
   // muralla izquierda
   '<rect x="532" y="174" width="106" height="38"/>' +
   '<line x1="529" y1="172" x2="641" y2="172" stroke="url(#ciudad-grad)" stroke-width="11" stroke-dasharray="14 10"/>' +
@@ -176,10 +296,7 @@ castillo.innerHTML =
   // torre C
   '<rect x="968" y="122" width="48" height="90"/>' +
   '<polygon points="961,122 1023,122 992,86"/>' +
-  // casa 4
-  '<rect x="1034" y="156" width="72" height="56"/>' +
-  '<polygon points="1027,156 1113,156 1070,128"/>' +
-  // casa 5 alta
+  // casita única a lo lejos
   '<rect x="1132" y="128" width="58" height="84"/>' +
   '<polygon points="1125,128 1197,128 1161,98"/>' +
   // palacio almenado derecha
@@ -188,9 +305,6 @@ castillo.innerHTML =
   // torre D lejana derecha
   '<rect x="1318" y="98" width="50" height="114"/>' +
   '<polygon points="1311,98 1375,98 1343,62"/>' +
-  // casa final
-  '<rect x="1382" y="162" width="56" height="50"/>' +
-  '<polygon points="1376,162 1440,162 1410,138"/>' +
   "</g>" +
 
   // asta y bandera en la aguja central
@@ -202,16 +316,12 @@ castillo.innerHTML =
 
   // ventanas encendidas de la ciudad
   "<g>" +
-  '<rect class="ventana" x="55" y="166" width="7" height="11" rx="3.5"/>' +
-  '<rect class="ventana" x="82" y="166" width="7" height="11" rx="3.5"/>' +
   '<rect class="ventana" x="148" y="128" width="8" height="12" rx="4"/>' +
   '<rect class="ventana" x="148" y="156" width="8" height="12" rx="4"/>' +
-  '<rect class="ventana" x="222" y="174" width="7" height="11" rx="3.5"/>' +
   '<rect class="ventana" x="310" y="120" width="8" height="12" rx="4"/>' +
   '<rect class="ventana" x="340" y="140" width="8" height="12" rx="4"/>' +
   '<rect class="ventana" x="370" y="120" width="8" height="12" rx="4"/>' +
   '<rect class="ventana" x="413" y="110" width="7" height="11" rx="3.5"/>' +
-  '<rect class="ventana" x="472" y="178" width="7" height="11" rx="3.5"/>' +
   '<rect class="ventana" x="657" y="130" width="7" height="11" rx="3.5"/>' +
   '<rect class="ventana" x="657" y="158" width="7" height="11" rx="3.5"/>' +
   '<rect class="ventana" x="836" y="130" width="7" height="11" rx="3.5"/>' +
@@ -220,12 +330,10 @@ castillo.innerHTML =
   '<rect class="ventana" x="763" y="104" width="8" height="12" rx="4"/>' +
   '<rect class="ventana" x="772" y="140" width="8" height="12" rx="4"/>' +
   '<rect class="ventana" x="985" y="140" width="8" height="12" rx="4"/>' +
-  '<rect class="ventana" x="1055" y="170" width="7" height="11" rx="3.5"/>' +
   '<rect class="ventana" x="1152" y="144" width="7" height="11" rx="3.5"/>' +
   '<rect class="ventana" x="1240" y="126" width="8" height="12" rx="4"/>' +
   '<rect class="ventana" x="1272" y="150" width="8" height="12" rx="4"/>' +
   '<rect class="ventana" x="1336" y="116" width="8" height="12" rx="4"/>' +
-  '<rect class="ventana" x="1398" y="176" width="7" height="11" rx="3.5"/>' +
   "</g>" +
   "</svg>";
 document.body.appendChild(castillo);
@@ -335,10 +443,10 @@ if (!sinAnimacion) {
 }
 
 const frases = [
-  "gracias por tomarte el tiempo de visitar mi rincón",
-  "aquí siempre hay algo sonando de fondo",
-  "explora con calma, quédate lo que quieras",
-  "RAAAAAHHH",
+  "hay canciones que te regresan a lugares que ya no existen",
+  "aquí el internet todavía es pequeño y tranquilo",
+  "los buenos recuerdos también necesitan un lugar donde vivir",
+  "quédate un rato, no hay prisa",
 ];
 const typingEl = document.getElementById("typing");
 
