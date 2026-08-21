@@ -196,57 +196,6 @@ if (btnCorazon && numCorazones) {
   });
 }
 
-const formFirmas = document.getElementById("form-firmas");
-const listaFirmas = document.getElementById("lista-firmas");
-
-if (formFirmas && listaFirmas) {
-  function leerFirmas() {
-    try {
-      return JSON.parse(localStorage.getItem("firmas") || "[]");
-    } catch {
-      return [];
-    }
-  }
-
-  function pintarFirmas() {
-    listaFirmas.innerHTML = "";
-    const firmas = leerFirmas();
-
-    if (!firmas.length) {
-      listaFirmas.innerHTML = '<li style="border-left-color:var(--borde-suave)">Aún no hay mensajes… ¿quieres ser quien estrene este espacio?</li>';
-      return;
-    }
-
-    firmas.slice(-8).reverse().forEach((firma) => {
-      const li = document.createElement("li");
-      li.innerHTML = `<b></b><small></small><br>`;
-      li.querySelector("b").textContent = firma.nombre;
-      li.querySelector("small").textContent = firma.fecha;
-      li.append(firma.mensaje);
-      listaFirmas.appendChild(li);
-    });
-  }
-
-  formFirmas.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const nombre = formFirmas["firma-nombre"].value.trim();
-    const mensaje = formFirmas["firma-mensaje"].value.trim();
-    if (!nombre || !mensaje) return;
-
-    const firmas = leerFirmas();
-    firmas.push({ nombre, mensaje, fecha: new Date().toLocaleDateString("es") });
-
-    try {
-      localStorage.setItem("firmas", JSON.stringify(firmas));
-    } catch {}
-    formFirmas.reset();
-    pintarFirmas();
-    toast("Gracias por tu mensaje 💜");
-  });
-
-  pintarFirmas();
-}
-
 const btnCompartir = document.getElementById("btn-compartir");
 
 if (btnCompartir) {
@@ -334,33 +283,6 @@ addEventListener("keydown", (e) => {
     toast("✧ Secuencia secreta encontrada");
   }
 });
-
-const btnDiscord = document.getElementById("btn-discord");
-
-if (btnDiscord) {
-  btnDiscord.addEventListener("click", async (e) => {
-    e.preventDefault();
-    const texto = document.getElementById("discord-user").textContent.trim();
-    try {
-      await navigator.clipboard.writeText(texto);
-      toast(`Usuario ${texto} copiado`);
-    } catch {}
-  });
-}
-
-const btnCopiarCard = document.getElementById("btn-copiar-discord");
-
-if (btnCopiarCard) {
-  btnCopiarCard.addEventListener("click", async () => {
-    const texto = document.getElementById("discord-user-card").textContent.trim();
-    try {
-      await navigator.clipboard.writeText(texto);
-      toast(`Usuario ${texto} copiado`);
-      btnCopiarCard.textContent = "¡copiado!";
-      setTimeout(() => (btnCopiarCard.textContent = "copiar usuario"), 1400);
-    } catch {}
-  });
-}
 
 const objetivosAnimados = document.querySelectorAll(".reveal");
 
