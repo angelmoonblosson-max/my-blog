@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi lado gamer ✦ RAAAAAHHH Fan #1</title>
+  <meta name="description" content="Lo que los videojuegos me han enseñado fuera de la pantalla." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <div id="barra-scroll" aria-hidden="true"></div>
+  <div id="aurora" aria-hidden="true"></div>
+  <div id="cielo" aria-hidden="true"></div>
+  <div id="orbes" aria-hidden="true"></div>
+  <div id="luna" aria-hidden="true"></div>
+  <div id="niebla" aria-hidden="true"></div>
+  <div id="vineta" aria-hidden="true"></div>
+  <div id="grano" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Principal">
+      <a class="logo" href="../index.html">✦ attie</a>
+      <div class="nav-enlaces">
+        <a href="../index.html">inicio</a>
+        <a href="../blog/" class="activo">blog</a>
+      </div>
+      <button class="btn-compartir" id="btn-compartir" type="button">Compartir</button>
+    </nav>
+  </header>
+
+  <main>
+    <article class="articulo">
+      <p class="articulo-meta"><span>7 · agosto · 2026</span><i></i><span>2 min de lectura</span></p>
+      <h1>Mi lado gamer</h1>
+
+      <p>
+        Si conoces mi usuario de Discord, ya te imaginas cómo empezó todo:
+        un juego, un servidor de voz y gente que al principio eran
+        desconocidos y hoy son de las personas con las que más hablo. Los
+        videojuegos hicieron eso.
+      </p>
+      <p>
+        Hay quien ve jugar y piensa que es perder el tiempo. Yo lo veo
+        distinto: cada partida es una historia que nadie más va a vivir
+        igual. El mapa que exploraste a medias, la vez que ganaste con una
+        vida, la derrota tonta que ahora es anécdota — nada de eso se repite,
+        aunque vuelvas a entrar mil veces.
+      </p>
+      <h2>Lo que aprendí sin darme cuenta</h2>
+      <ul>
+        <li><strong>Volver a intentarlo.</strong> En los juegos fallar cuesta una vida virtual; en la vida real casi nunca cuesta tanto como creemos.</li>
+        <li><strong>Leer a la gente.</strong> Después de miles de partidas en equipo sabes quién coopera, quién se estresa y quién hace reír hasta en la derrota.</li>
+        <li><strong>Paciencia.</strong> Hay misiones que no se completan el primer día. Igual que casi todo lo que vale la pena.</li>
+      </ul>
+      <blockquote>
+        Los juegos no te enseñan a ganar. Te enseñan que perder una vez no
+        significa nada si vas a volver a intentarlo.
+      </blockquote>
+      <p>
+        Si me ves en Roblox (el botón de mi perfil está en la página
+        principal), salúdame. Y si juegas algo en lo que yo ande metido,
+        mejor todavía: siempre hay espacio para uno más en el equipo.
+      </p>
+      <p>
+        Esta entrada se queda corta a propósito. La próxima vez que escriba
+        de juegos va a ser sobre algo específico que me tenga obsesionado —
+        y por lo que veo, no va a tardar mucho.
+      </p>
+
+      <p class="firma-post">— attie ✦</p>
+
+      <div class="volver">
+        <a class="btn-volver" href="../blog/">← volver al blog</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span data-year></span> RAAAAAHHH Fan #1 · visita nº <b id="num-visitas">?</b></p>
+    <p class="secreto-hint">esta página guarda un pequeño secreto… 👀</p>
+  </footer>
+
+  <audio id="audio" preload="none"></audio>
+
+  <button id="fab-musica" aria-label="Reproductor de música" title="Música (tecla M)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  </button>
+
+  <div id="panel-musica" class="panel-musica" hidden>
+    <header class="pm-cabecera">
+      <span class="pm-titulo">♪ Mi playlist</span>
+      <button id="cerrar-panel" aria-label="Cerrar">&times;</button>
+    </header>
+
+    <div class="pm-reproduciendo">
+      <div class="eq" id="eq"><i></i><i></i><i></i><i></i></div>
+      <div class="pm-info">
+        <b id="cancion-nombre">Nada sonando…</b>
+        <small id="cancion-estado">Elige una canción de la lista</small>
+      </div>
+    </div>
+
+    <div class="pm-controles">
+      <button id="anterior" aria-label="Anterior">⏮</button>
+      <button id="play-pausa" class="principal" aria-label="Reproducir o pausar">▶</button>
+      <button id="siguiente" aria-label="Siguiente">⏭</button>
+      <input type="range" id="volumen" min="0" max="100" value="60" aria-label="Volumen" />
+    </div>
+
+    <ul id="lista-canciones" class="pm-lista"></ul>
+    <p class="pm-ayuda">Agrega canciones editando el array <code>CANCIONES</code> en <code>js/main.js</code>.</p>
+  </div>
+
+  <div id="marco" aria-hidden="true"><span></span></div>
+
+  <div id="toasts"></div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

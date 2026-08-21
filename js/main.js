@@ -73,17 +73,69 @@ document.querySelectorAll(".tema").forEach((btn) => {
 const cielo = document.getElementById("cielo");
 
 if (cielo && !sinAnimacion) {
-  for (let i = 0; i < 80; i++) {
+  for (let i = 0; i < 95; i++) {
     const estrella = document.createElement("span");
     estrella.className = "estrella";
-    const tamano = Math.random() * 2 + 1;
+    const tamano = Math.random() * 1.8 + 0.8;
     estrella.style.width = estrella.style.height = `${tamano}px`;
     estrella.style.left = `${Math.random() * 100}%`;
     estrella.style.top = `${Math.random() * 100}%`;
     estrella.style.setProperty("--d", `${Math.random() * 3 + 2}s`);
     estrella.style.animationDelay = `${Math.random() * 3}s`;
+    estrella.style.opacity = String(Math.random() * 0.55 + 0.25);
     cielo.appendChild(estrella);
   }
+
+  for (let i = 0; i < 12; i++) {
+    const estrella = document.createElement("span");
+    estrella.className = "estrella-grande";
+    estrella.style.left = `${Math.random() * 100}%`;
+    estrella.style.top = `${Math.random() * 70}%`;
+    estrella.style.setProperty("--d", `${Math.random() * 4 + 3}s`);
+    estrella.style.animationDelay = `${Math.random() * 4}s`;
+    if (i % 3 === 0) estrella.classList.add("tibia");
+    else if (i % 3 === 1) estrella.classList.add("fria");
+    cielo.appendChild(estrella);
+  }
+}
+
+const CAPAS_PARALLAX = [
+  { el: document.getElementById("cielo"), fx: -0.05, fy: -0.05 },
+  { el: document.getElementById("orbes"), fx: -0.11, fy: -0.11 },
+  { el: document.getElementById("luna"), fx: 0.03, fy: 0.02 },
+];
+
+let ratonPx = 0;
+let ratonPy = 0;
+let rafParallax = null;
+
+function aplicarParallax() {
+  if (sinAnimacion) return;
+  const y = scrollY;
+
+  CAPAS_PARALLAX.forEach(({ el, fx, fy }) => {
+    if (!el) return;
+    const dx = esTactil ? 0 : ratonPx * fx * 40;
+    const dy = esTactil ? 0 : ratonPy * fy * 40;
+    el.style.transform = `translate(${dx}px, ${y * fy}px)`;
+  });
+
+  rafParallax = null;
+}
+
+function pedirParallax() {
+  if (!rafParallax) rafParallax = requestAnimationFrame(aplicarParallax);
+}
+
+addEventListener("scroll", pedirParallax, { passive: true });
+aplicarParallax();
+
+if (!esTactil && !sinAnimacion) {
+  addEventListener("mousemove", (e) => {
+    ratonPx = e.clientX / innerWidth - 0.5;
+    ratonPy = e.clientY / innerHeight - 0.5;
+    pedirParallax();
+  });
 }
 
 const contenedorOrbes = document.getElementById("orbes");
@@ -337,73 +389,6 @@ function fuegosArtificiales() {
   }, 190);
 }
 
-const FORTUNAS = [
-  "hoy es buen día para una partida larga 🎮",
-  "tu próxima canción favorita está a un clic 🎧",
-  "alguien te aprecia más de lo que crees 💜",
-  "el lo-fi responde casi todas las preguntas",
-  "confía: el buen loot aparecerá pronto ✨",
-  "date un break, agua y estirarte, ¿va? ☕",
-  "las estrellas dicen: duerme bien hoy 🌙",
-  "tu paciencia será recompensada, palabra",
-  "si lo estás pensando… mándale el mensaje",
-  "hoy el universo juega en tu equipo ✦",
-];
-
-const btnFortuna = document.getElementById("btn-fortuna");
-const fortunaTexto = document.getElementById("fortuna-texto");
-
-if (btnFortuna && fortunaTexto) {
-  let ultimaFortuna = -1;
-
-  btnFortuna.addEventListener("click", () => {
-    let idx;
-    do {
-      idx = Math.floor(Math.random() * FORTUNAS.length);
-    } while (idx === ultimaFortuna && FORTUNAS.length > 1);
-    ultimaFortuna = idx;
-
-    fortunaTexto.classList.add("revelando");
-    setTimeout(() => {
-      fortunaTexto.textContent = FORTUNAS[idx];
-      fortunaTexto.classList.remove("revelando");
-    }, 220);
-
-    crearChispas(
-      btnFortuna.getBoundingClientRect().left + btnFortuna.offsetWidth / 2,
-      btnFortuna.getBoundingClientRect().top,
-      6
-    );
-  });
-}
-
-const btnSorpresa = document.getElementById("btn-sorpresa");
-
-if (btnSorpresa) {
-  let faseSorpresa = 0;
-  const EFECTOS = [
-    () => {
-      lluviaDeEstrellas(20);
-      toast("🎁 era una lluvia de estrellas");
-    },
-    () => {
-      lluviaDeCorazones(16);
-      toast("💜 lluvia de corazones");
-    },
-    () => {
-      fuegosArtificiales();
-      toast("✧ ¡fuegos artificiales!");
-    },
-  ];
-
-  btnSorpresa.addEventListener("click", () => {
-    btnSorpresa.classList.add("pum");
-    setTimeout(() => btnSorpresa.classList.remove("pum"), 200);
-    EFECTOS[faseSorpresa]();
-    faseSorpresa = (faseSorpresa + 1) % EFECTOS.length;
-  });
-}
-
 const SECUENCIA_KONAMI = [
   "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
   "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a",
@@ -467,17 +452,19 @@ const nombreCancion = document.getElementById("cancion-nombre");
 const estadoCancion = document.getElementById("cancion-estado");
 const listaUI = document.getElementById("lista-canciones");
 const eq = document.getElementById("eq");
-const btnPlay = document.getElementById("play-pausa");
-const btnAnterior = document.getElementById("anterior");
-const btnSiguiente = document.getElementById("siguiente");
-const volumen = document.getElementById("volumen");
-const nowPlaying = document.getElementById("now-playing");
-const nowNombre = document.getElementById("now-nombre");
 
-let indiceActual = -1;
-let iframeYT = null;
+if (fabMusica && panel && audio && listaUI) {
+  const btnPlay = document.getElementById("play-pausa");
+  const btnAnterior = document.getElementById("anterior");
+  const btnSiguiente = document.getElementById("siguiente");
+  const volumen = document.getElementById("volumen");
+  const nowPlaying = document.getElementById("now-playing");
+  const nowNombre = document.getElementById("now-nombre");
 
-audio.volume = parseInt(volumen.value, 10) / 100;
+  let indiceActual = -1;
+  let iframeYT = null;
+
+  audio.volume = parseInt(volumen.value, 10) / 100;
 
 function esYouTube(url) {
   return /youtu\.?be/.test(url);
@@ -593,11 +580,12 @@ document.getElementById("cerrar-panel").addEventListener("click", () => {
 });
 
 addEventListener("keydown", (e) => {
-  const escribiendo = /input|textarea/i.test(e.target.tagName);
-  if (!escribiendo && e.key.toLowerCase() === "m") {
-    panel.hidden = !panel.hidden;
-  }
-});
+    const escribiendo = /input|textarea/i.test(e.target.tagName);
+    if (!escribiendo && e.key.toLowerCase() === "m") {
+      panel.hidden = !panel.hidden;
+    }
+  });
+}
 
 if (!esTactil) {
   const nucleo = document.createElement("div");
@@ -678,20 +666,30 @@ if (!esTactil) {
   })();
 }
 
-const intro = document.createElement("div");
-intro.className = "intro-overlay";
-intro.innerHTML = '<p class="intro-hint">— haz clic para entrar —</p>';
-document.body.appendChild(intro);
+let introVisto = false;
+try {
+  introVisto = Boolean(sessionStorage.getItem("intro-vista"));
+} catch {}
 
-function salirDeIntro() {
-  intro.classList.add("hidden");
-  setTimeout(() => intro.remove(), 950);
-  removeEventListener("keydown", tecladoIntro);
+if (document.body.dataset.intro === "si" && !introVisto) {
+  const intro = document.createElement("div");
+  intro.className = "intro-overlay";
+  intro.innerHTML = '<p class="intro-hint">— haz clic para entrar —</p>';
+  document.body.appendChild(intro);
+
+  function salirDeIntro() {
+    intro.classList.add("hidden");
+    setTimeout(() => intro.remove(), 950);
+    removeEventListener("keydown", tecladoIntro);
+    try {
+      sessionStorage.setItem("intro-vista", "1");
+    } catch {}
+  }
+
+  function tecladoIntro(e) {
+    if (e.key === "Enter" || e.key === " ") salirDeIntro();
+  }
+
+  intro.addEventListener("click", salirDeIntro);
+  addEventListener("keydown", tecladoIntro);
 }
-
-function tecladoIntro(e) {
-  if (e.key === "Enter" || e.key === " ") salirDeIntro();
-}
-
-intro.addEventListener("click", salirDeIntro);
-addEventListener("keydown", tecladoIntro);
