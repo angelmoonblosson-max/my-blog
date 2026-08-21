@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6c8cff"/>
+      <stop offset="50%" stop-color="#a86cff"/>
+      <stop offset="100%" stop-color="#ff6cb5"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="100" fill="url(#fondo)"/>
+  <circle cx="70" cy="82" r="9" fill="#fff"/>
+  <circle cx="130" cy="82" r="9" fill="#fff"/>
+  <path d="M65 125 Q100 155 135 125" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <text x="100" y="52" font-size="30" text-anchor="middle" fill="#fff" font-family="sans-serif">🌸</text>
+</svg>
