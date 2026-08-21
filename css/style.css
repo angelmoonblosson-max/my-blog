@@ -149,6 +149,30 @@ a { color: inherit; text-decoration: none; }
     0 0 70px rgba(238, 222, 180, 0.22),
     0 0 190px rgba(233, 196, 106, 0.12);
   opacity: 0.92;
+  animation: viajarLuna 90s ease-in-out infinite;
+}
+
+@keyframes viajarLuna {
+  0% {
+    top: 7%;
+    right: 7%;
+  }
+  22% {
+    top: 15%;
+    right: 34%;
+  }
+  48% {
+    top: 6%;
+    right: 60%;
+  }
+  72% {
+    top: 20%;
+    right: 26%;
+  }
+  100% {
+    top: 7%;
+    right: 7%;
+  }
 }
 
 /* ---------- Niebla ---------- */
@@ -1454,6 +1478,8 @@ a { color: inherit; text-decoration: none; }
 
   #niebla::before,
   #niebla::after { animation: none; }
+
+  #luna { animation: none; }
 
   .avatar-wrap,
   .avatar-anillo,
