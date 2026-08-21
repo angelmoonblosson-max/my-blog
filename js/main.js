@@ -63,6 +63,27 @@ if (contenedorOrbes && !sinAnimacion) {
   }
 }
 
+const COLORES_LUZ = ["#e9c46a", "#b78cff", "#f5a8cb"];
+
+function lanzarLuciernaga() {
+  if (sinAnimacion) return;
+  if (document.querySelectorAll(".luciernaga").length > 14) return;
+
+  const luz = document.createElement("span");
+  luz.className = "luciernaga";
+  const color = COLORES_LUZ[Math.floor(Math.random() * 3)];
+  luz.style.left = `${Math.random() * 100}%`;
+  luz.style.background = color;
+  luz.style.boxShadow = `0 0 8px ${color}, 0 0 18px ${color}`;
+  luz.style.setProperty("--deriva", `${Math.random() * 90 - 45}px`);
+  luz.style.setProperty("--op", String(Math.random() * 0.5 + 0.35));
+  luz.style.animationDuration = `${Math.random() * 10 + 12}s`;
+  document.body.appendChild(luz);
+  setTimeout(() => luz.remove(), 23000);
+}
+
+if (!sinAnimacion) setInterval(lanzarLuciernaga, 1400);
+
 function lanzarEstrellaFugaz() {
   if (!cielo || sinAnimacion) return;
   const fugaz = document.createElement("span");
@@ -122,32 +143,6 @@ if (typingEl) {
 
     setTimeout(teclear, espera);
   })();
-}
-
-const relojLocal = document.getElementById("reloj-local");
-const fechaHoy = document.getElementById("fecha-hoy");
-
-if (relojLocal) {
-  const fmtHora = new Intl.DateTimeFormat("es", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
-  const fmtFecha = new Intl.DateTimeFormat("es", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
-
-  function actualizarReloj() {
-    const ahora = new Date();
-    relojLocal.textContent = fmtHora.format(ahora);
-    if (fechaHoy) fechaHoy.textContent = fmtFecha.format(ahora);
-  }
-
-  actualizarReloj();
-  setInterval(actualizarReloj, 1000);
 }
 
 const actividadEl = document.getElementById("actividad");
@@ -349,6 +344,20 @@ if (btnDiscord) {
     try {
       await navigator.clipboard.writeText(texto);
       toast(`Usuario ${texto} copiado`);
+    } catch {}
+  });
+}
+
+const btnCopiarCard = document.getElementById("btn-copiar-discord");
+
+if (btnCopiarCard) {
+  btnCopiarCard.addEventListener("click", async () => {
+    const texto = document.getElementById("discord-user-card").textContent.trim();
+    try {
+      await navigator.clipboard.writeText(texto);
+      toast(`Usuario ${texto} copiado`);
+      btnCopiarCard.textContent = "¡copiado!";
+      setTimeout(() => (btnCopiarCard.textContent = "copiar usuario"), 1400);
     } catch {}
   });
 }
@@ -572,19 +581,23 @@ if (!esTactil) {
     anillo.classList.toggle("activo", Boolean(interactivo));
   });
 
-  addEventListener("pointerdown", () => {
+  addEventListener("pointerdown", (e) => {
+    anilloX = objetivoX = e.clientX;
+    anilloY = objetivoY = e.clientY;
+    nucleoX = e.clientX;
+    nucleoY = e.clientY;
     anillo.classList.add("pulso");
-    setTimeout(() => anillo.classList.remove("pulso"), 480);
+    setTimeout(() => anillo.classList.remove("pulso"), 520);
   });
 
   (function seguirCursor() {
     nucleoX += (objetivoX - nucleoX) * 0.4;
     nucleoY += (objetivoY - nucleoY) * 0.4;
-    anilloX += (objetivoX - anilloX) * 0.16;
-    anilloY += (objetivoY - anilloY) * 0.16;
+    anilloX += (objetivoX - anilloX) * 0.28;
+    anilloY += (objetivoY - anilloY) * 0.28;
 
     nucleo.style.transform = `translate(${nucleoX}px, ${nucleoY}px)`;
-    anillo.style.transform = `translate(${anilloX}px, ${anilloY}px)${anillo.classList.contains("activo") ? " scale(1.45)" : ""}`;
+    anillo.style.transform = `translate(${anilloX}px, ${anilloY}px)`;
 
     requestAnimationFrame(seguirCursor);
   })();

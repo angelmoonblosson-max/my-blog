@@ -44,6 +44,55 @@ a { color: inherit; text-decoration: none; }
   border-radius: 999px;
 }
 
+/* ---------- Aurora y viñeta ---------- */
+#aurora {
+  position: fixed;
+  inset: -20%;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 30% at 25% 28%, rgba(183, 140, 255, 0.16), transparent 70%),
+    radial-gradient(32% 26% at 78% 18%, rgba(233, 196, 106, 0.1), transparent 70%),
+    radial-gradient(36% 30% at 62% 80%, rgba(245, 168, 203, 0.11), transparent 70%),
+    radial-gradient(30% 24% at 15% 75%, rgba(120, 200, 255, 0.08), transparent 70%);
+  filter: blur(46px);
+  animation: moverAurora 26s ease-in-out infinite alternate;
+}
+
+@keyframes moverAurora {
+  from { transform: translate(-2.5%, -2%) rotate(-1.5deg) scale(1); }
+  to { transform: translate(2.5%, 2.5%) rotate(1.5deg) scale(1.08); }
+}
+
+#vineta {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(4, 3, 10, 0.55) 100%);
+}
+
+.luciernaga {
+  position: fixed;
+  bottom: -12px;
+  z-index: 1;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent), 0 0 16px var(--glow);
+  pointer-events: none;
+  animation: flotarLuciernaga linear forwards;
+}
+
+@keyframes flotarLuciernaga {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  12% { opacity: var(--op, 0.7); }
+  50% { transform: translateY(-45vh) translateX(var(--deriva, 40px)); }
+  85% { opacity: var(--op, 0.7); }
+  100% { transform: translateY(-92vh) translateX(calc(var(--deriva, 40px) * -0.6)); opacity: 0; }
+}
+
 /* ---------- Cielo: estrellas, orbes y fugaces ---------- */
 #cielo,
 #orbes {
@@ -326,8 +375,7 @@ a { color: inherit; text-decoration: none; }
 
 .social.discord:hover { color: #aab7ff; }
 .social.github:hover { color: #f0ede6; }
-.social.spotify:hover { color: #6ee7a0; }
-.social.x:hover { color: #fff; }
+.social.roblox:hover { color: #ff6d6d; }
 
 .chip-now {
   display: inline-flex;
@@ -387,6 +435,39 @@ a { color: inherit; text-decoration: none; }
   transition: border-color 0.25s, box-shadow 0.25s;
 }
 
+.glass::before,
+.glass::after {
+  content: "";
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+  opacity: 0.75;
+  transition: opacity 0.25s;
+}
+
+.glass::before {
+  top: 9px;
+  left: 9px;
+  border-top: 1px solid var(--borde);
+  border-left: 1px solid var(--borde);
+  border-top-left-radius: 8px;
+}
+
+.glass::after {
+  bottom: 9px;
+  right: 9px;
+  border-bottom: 1px solid var(--borde);
+  border-right: 1px solid var(--borde);
+  border-bottom-right-radius: 8px;
+}
+
+.glass:hover::before,
+.glass:hover::after {
+  opacity: 1;
+  box-shadow: 0 0 12px var(--glow);
+}
+
 .glass:hover {
   border-color: var(--borde);
   box-shadow: 0 24px 65px rgba(0, 0, 0, 0.45), 0 0 30px rgba(233, 196, 106, 0.06);
@@ -431,6 +512,36 @@ a { color: inherit; text-decoration: none; }
 }
 
 .actividad.cambiando { opacity: 0; }
+
+.widget-discord .discord-user-grande {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: clamp(1.15rem, 4vw, 1.45rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  text-shadow: 0 0 16px rgba(170, 183, 255, 0.4);
+}
+
+.btn-copiar-mini {
+  margin-top: 0.55rem;
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--borde-suave);
+  border-radius: 999px;
+  padding: 0.3rem 0.95rem;
+  cursor: none;
+  transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.btn-copiar-mini:hover {
+  color: #aab7ff;
+  border-color: #aab7ff;
+  box-shadow: 0 0 14px rgba(170, 183, 255, 0.25);
+}
 
 .widget-corazon p {
   font-size: 0.88rem;
@@ -835,16 +946,25 @@ a { color: inherit; text-decoration: none; }
 .cursor-anillo.activo {
   border-color: var(--accent-2);
   box-shadow: 0 0 20px rgba(183, 140, 255, 0.35);
-  transform-origin: center;
 }
 
 .cursor-anillo.pulso {
-  animation: pulsoAnillo 0.45s ease-out;
+  animation: pulsoAnillo 0.5s ease-out;
 }
 
 @keyframes pulsoAnillo {
-  0% { scale: 1; opacity: 0.9; }
-  100% { scale: 1.7; opacity: 0.25; }
+  0% {
+    box-shadow:
+      0 0 16px rgba(233, 196, 106, 0.2),
+      inset 0 0 10px rgba(233, 196, 106, 0.08),
+      0 0 0 0 rgba(233, 196, 106, 0.55);
+  }
+  100% {
+    box-shadow:
+      0 0 16px rgba(233, 196, 106, 0.2),
+      inset 0 0 10px rgba(233, 196, 106, 0.08),
+      0 0 0 22px rgba(233, 196, 106, 0);
+  }
 }
 
 .visible-cursor {
@@ -976,7 +1096,10 @@ a { color: inherit; text-decoration: none; }
   .destello,
   .chispa,
   .corazon-volador,
+  .luciernaga,
   .toast { display: none; }
+
+  #aurora { animation: none; }
 
   .avatar-wrap,
   .nombre span,
