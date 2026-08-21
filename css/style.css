@@ -373,6 +373,7 @@ a { color: inherit; text-decoration: none; }
 
 .social svg { flex-shrink: 0; }
 
+.social.discord:hover { color: #aab7ff; }
 .social.github:hover { color: #f0ede6; }
 .social.roblox:hover { color: #ff6d6d; }
 

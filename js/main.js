@@ -284,6 +284,19 @@ addEventListener("keydown", (e) => {
   }
 });
 
+const btnDiscord = document.getElementById("btn-discord");
+
+if (btnDiscord) {
+  btnDiscord.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const texto = document.getElementById("discord-user").textContent.trim();
+    try {
+      await navigator.clipboard.writeText(texto.replace("@", ""));
+      toast(`Usuario ${texto} copiado`);
+    } catch {}
+  });
+}
+
 const objetivosAnimados = document.querySelectorAll(".reveal");
 
 objetivosAnimados.forEach((el, i) => {
