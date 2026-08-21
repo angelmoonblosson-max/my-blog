@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+  <div id="barra-scroll" aria-hidden="true"></div>
   <div id="aurora" aria-hidden="true"></div>
   <div id="cielo" aria-hidden="true"></div>
   <div id="orbes" aria-hidden="true"></div>
@@ -20,6 +21,12 @@
   <header class="site-header">
     <nav class="nav" aria-label="Principal">
       <a class="logo" href="index.html">✦ attie</a>
+      <div class="temas" role="group" aria-label="Color de acento">
+        <button class="tema activo" data-tema="" style="--c:#e9c46a" title="Oro" type="button"></button>
+        <button class="tema" data-tema="lila" style="--c:#b78cff" title="Lila" type="button"></button>
+        <button class="tema" data-tema="rosa" style="--c:#f5a8cb" title="Rosa" type="button"></button>
+        <button class="tema" data-tema="hielo" style="--c:#8ecdf7" title="Hielo" type="button"></button>
+      </div>
       <button class="btn-compartir" id="btn-compartir" type="button">Compartir</button>
     </nav>
   </header>
@@ -28,8 +35,17 @@
     <section class="perfil container">
       <p class="saludo reveal">— bienvenido a mi rincón —</p>
 
-      <div class="avatar-wrap reveal" id="avatar-tilt">
-        <img src="assets/avatar.svg" alt="Mi avatar" class="avatar" />
+      <div class="avatar-zona reveal">
+        <svg class="avatar-anillo" viewBox="0 0 100 100" aria-hidden="true">
+          <defs>
+            <path id="ruta-anillo" d="M50 50 m -46 0 a 46 46 0 1 1 92 0 a 46 46 0 1 1 -92 0" />
+          </defs>
+          <text><textPath href="#ruta-anillo">✦ RAAAAAHHH FAN #1 ✦ ATTIE ✦ MODO NOCHE ✦</textPath></text>
+        </svg>
+
+        <div class="avatar-wrap" id="avatar-tilt">
+          <img src="assets/avatar.svg" alt="Mi avatar" class="avatar" />
+        </div>
       </div>
 
       <h1 class="nombre reveal">RAAAAAHHH <span>Fan&nbsp;#1</span></h1>
@@ -42,6 +58,7 @@
         <span class="badge">🎮 gamer</span>
         <span class="badge">🎧 música</span>
         <span class="badge">🌙 nocturno</span>
+        <span class="badge">✨ caos controlado</span>
       </div>
 
       <div class="sociales reveal">
@@ -64,6 +81,13 @@
       <div class="chip-now reveal" id="now-playing" hidden>♪ sonando: <b id="now-nombre"></b></div>
     </section>
 
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-pista">
+        <span>✦ bienvenido a mi rincón ✦ gracias por tu visita ✦ deja un corazón 💜 ✦ dale play a la música ✦ attie te observa con cariño ✦ RAAAAAHHH ✦&nbsp;</span>
+        <span>✦ bienvenido a mi rincón ✦ gracias por tu visita ✦ deja un corazón 💜 ✦ dale play a la música ✦ attie te observa con cariño ✦ RAAAAAHHH ✦&nbsp;</span>
+      </div>
+    </div>
+
     <div class="ornamento container" aria-hidden="true"><span>✦</span></div>
 
     <section class="container">
@@ -77,6 +101,12 @@
           <small class="widget-titulo">Un poco de amor</small>
           <button id="btn-corazon" type="button" aria-label="Dar amor">💜</button>
           <p><b id="num-corazones">0</b> corazones</p>
+        </article>
+
+        <article class="glass widget widget-fortuna reveal">
+          <small class="widget-titulo">Oráculo</small>
+          <p class="fortuna-texto" id="fortuna-texto">pregúntame lo que sea…</p>
+          <button id="btn-fortuna" type="button">✦ consultar</button>
         </article>
       </div>
 
@@ -98,6 +128,8 @@
   </footer>
 
   <audio id="audio" preload="none"></audio>
+
+  <button id="btn-sorpresa" title="no lo aprietes… o sí" aria-label="Sorpresa" type="button">🎁</button>
 
   <button id="fab-musica" aria-label="Reproductor de música" title="Música (tecla M)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -127,6 +159,8 @@
     <ul id="lista-canciones" class="pm-lista"></ul>
     <p class="pm-ayuda">Agrega canciones editando el array <code>CANCIONES</code> en <code>js/main.js</code>.</p>
   </div>
+
+  <div id="marco" aria-hidden="true"><span></span></div>
 
   <div id="toasts"></div>
 

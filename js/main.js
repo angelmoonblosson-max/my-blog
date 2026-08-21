@@ -2,8 +2,8 @@
 //  EDITA TUS CANCIONES AQUÍ ↓ URL de YouTube o mp3
 // ════════════════════════════════════════════════
 const CANCIONES = [
-  { titulo: "Lo-fi para concentrarse", url: "https://www.youtube.com/watch?v=jfKfPfyJRdk" },
-  { titulo: "Noches tranquilas", url: "https://www.youtube.com/watch?v=5qap5aO4i9A" },
+  { titulo: "Lo-fi para concentrarse", url: "https://www.youtube.com/watch?v=aQZHAl_eV1c" },
+  { titulo: "Noches tranquilas", url: "https://www.youtube.com/live/an60NyBayzE" },
 ];
 
 const esTactil = window.matchMedia("(pointer: coarse)").matches;
@@ -30,6 +30,45 @@ try {
 } catch {}
 const numVisitas = document.getElementById("num-visitas");
 if (numVisitas) numVisitas.textContent = visitas.toLocaleString("es");
+
+const barraScroll = document.getElementById("barra-scroll");
+
+if (barraScroll) {
+  addEventListener(
+    "scroll",
+    () => {
+      const h = document.documentElement;
+      const total = h.scrollHeight - h.clientHeight;
+      barraScroll.style.width = (total > 0 ? (h.scrollTop / total) * 100 : 0) + "%";
+    },
+    { passive: true }
+  );
+}
+
+let temaGuardado = "";
+try {
+  temaGuardado = localStorage.getItem("tema") || "";
+} catch {}
+if (temaGuardado) document.documentElement.dataset.tema = temaGuardado;
+
+document.querySelectorAll(".tema").forEach((btn) => {
+  if ((document.documentElement.dataset.tema || "") === btn.dataset.tema) {
+    document.querySelectorAll(".tema").forEach((b) => b.classList.toggle("activo", b === btn));
+  }
+
+  btn.addEventListener("click", () => {
+    const t = btn.dataset.tema;
+    if (t) document.documentElement.dataset.tema = t;
+    else delete document.documentElement.dataset.tema;
+
+    try {
+      localStorage.setItem("tema", t);
+    } catch {}
+
+    document.querySelectorAll(".tema").forEach((b) => b.classList.toggle("activo", b === btn));
+    toast(t ? `✦ Tema ${t} activado` : "✦ Tema oro activado");
+  });
+});
 
 const cielo = document.getElementById("cielo");
 
@@ -117,6 +156,7 @@ const frases = [
   "gracias por tomarte el tiempo de visitar mi rincón",
   "aquí siempre hay algo sonando de fondo",
   "explora con calma, quédate lo que quieras",
+  "RAAAAAHHH",
 ];
 const typingEl = document.getElementById("typing");
 
@@ -240,19 +280,19 @@ avatarTilt?.addEventListener("click", () => {
   }
 });
 
-addEventListener("pointerdown", (e) => {
-  if (sinAnimacion || e.button !== 0) return;
+function crearChispas(x, y, n) {
+  if (sinAnimacion) return;
 
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < n; i++) {
     const chispa = document.createElement("span");
     chispa.className = "chispa";
-    chispa.style.left = e.clientX + "px";
-    chispa.style.top = e.clientY + "px";
+    chispa.style.left = x + "px";
+    chispa.style.top = y + "px";
     chispa.style.background = ["#e9c46a", "#b78cff", "#f5a8cb"][i % 3];
     chispa.style.boxShadow = `0 0 10px ${chispa.style.background}`;
     document.body.appendChild(chispa);
 
-    const angulo = (Math.PI * 2 * i) / 8 + Math.random();
+    const angulo = (Math.PI * 2 * i) / n + Math.random();
     const distancia = 30 + Math.random() * 40;
 
     requestAnimationFrame(() => {
@@ -262,7 +302,107 @@ addEventListener("pointerdown", (e) => {
 
     setTimeout(() => chispa.remove(), 650);
   }
+}
+
+addEventListener("pointerdown", (e) => {
+  if (sinAnimacion || e.button !== 0) return;
+  crearChispas(e.clientX, e.clientY, 8);
 });
+
+function lluviaDeCorazones(cantidad) {
+  if (sinAnimacion) return;
+  let n = 0;
+  const intervalo = setInterval(() => {
+    const corazon = document.createElement("span");
+    corazon.className = "corazon-volador";
+    corazon.textContent = ["💜", "🤍", "💗"][Math.floor(Math.random() * 3)];
+    corazon.style.left = Math.random() * innerWidth + "px";
+    corazon.style.top = innerHeight * (0.6 + Math.random() * 0.3) + "px";
+    document.body.appendChild(corazon);
+    setTimeout(() => corazon.remove(), 1000);
+    if (++n >= cantidad) clearInterval(intervalo);
+  }, 90);
+}
+
+function fuegosArtificiales() {
+  if (sinAnimacion) return;
+  let n = 0;
+  const intervalo = setInterval(() => {
+    crearChispas(
+      innerWidth * (0.15 + Math.random() * 0.7),
+      innerHeight * (0.1 + Math.random() * 0.45),
+      12
+    );
+    if (++n >= 6) clearInterval(intervalo);
+  }, 190);
+}
+
+const FORTUNAS = [
+  "hoy es buen día para una partida larga 🎮",
+  "tu próxima canción favorita está a un clic 🎧",
+  "alguien te aprecia más de lo que crees 💜",
+  "el lo-fi responde casi todas las preguntas",
+  "confía: el buen loot aparecerá pronto ✨",
+  "date un break, agua y estirarte, ¿va? ☕",
+  "las estrellas dicen: duerme bien hoy 🌙",
+  "tu paciencia será recompensada, palabra",
+  "si lo estás pensando… mándale el mensaje",
+  "hoy el universo juega en tu equipo ✦",
+];
+
+const btnFortuna = document.getElementById("btn-fortuna");
+const fortunaTexto = document.getElementById("fortuna-texto");
+
+if (btnFortuna && fortunaTexto) {
+  let ultimaFortuna = -1;
+
+  btnFortuna.addEventListener("click", () => {
+    let idx;
+    do {
+      idx = Math.floor(Math.random() * FORTUNAS.length);
+    } while (idx === ultimaFortuna && FORTUNAS.length > 1);
+    ultimaFortuna = idx;
+
+    fortunaTexto.classList.add("revelando");
+    setTimeout(() => {
+      fortunaTexto.textContent = FORTUNAS[idx];
+      fortunaTexto.classList.remove("revelando");
+    }, 220);
+
+    crearChispas(
+      btnFortuna.getBoundingClientRect().left + btnFortuna.offsetWidth / 2,
+      btnFortuna.getBoundingClientRect().top,
+      6
+    );
+  });
+}
+
+const btnSorpresa = document.getElementById("btn-sorpresa");
+
+if (btnSorpresa) {
+  let faseSorpresa = 0;
+  const EFECTOS = [
+    () => {
+      lluviaDeEstrellas(20);
+      toast("🎁 era una lluvia de estrellas");
+    },
+    () => {
+      lluviaDeCorazones(16);
+      toast("💜 lluvia de corazones");
+    },
+    () => {
+      fuegosArtificiales();
+      toast("✧ ¡fuegos artificiales!");
+    },
+  ];
+
+  btnSorpresa.addEventListener("click", () => {
+    btnSorpresa.classList.add("pum");
+    setTimeout(() => btnSorpresa.classList.remove("pum"), 200);
+    EFECTOS[faseSorpresa]();
+    faseSorpresa = (faseSorpresa + 1) % EFECTOS.length;
+  });
+}
 
 const SECUENCIA_KONAMI = [
   "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
@@ -344,7 +484,7 @@ function esYouTube(url) {
 }
 
 function idDeYouTube(url) {
-  const m = url.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/);
+  const m = url.match(/(?:youtu\.be\/|v=|shorts\/|live\/|embed\/)([\w-]{11})/);
   return m ? m[1] : null;
 }
 
