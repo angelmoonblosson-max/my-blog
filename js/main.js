@@ -111,41 +111,121 @@ castillo.setAttribute("aria-hidden", "true");
 castillo.innerHTML =
   '<svg viewBox="0 0 1440 240" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">' +
   "<defs>" +
-  '<linearGradient id="castillo-grad" x1="0" y1="0" x2="0" y2="1">' +
-  '<stop offset="0" stop-color="#151227"/>' +
+  '<linearGradient id="ciudad-grad" x1="0" y1="0" x2="0" y2="1">' +
+  '<stop offset="0" stop-color="#181430"/>' +
   '<stop offset="1" stop-color="#080614"/>' +
   "</linearGradient>" +
+  '<linearGradient id="ciudad-lejos" x1="0" y1="0" x2="0" y2="1">' +
+  '<stop offset="0" stop-color="#100d20"/>' +
+  '<stop offset="1" stop-color="#0b0918"/>' +
+  "</linearGradient>" +
   "</defs>" +
-  '<path d="M0 240 L0 206 Q300 190 640 201 Q1000 212 1440 196 L1440 240 Z" fill="#0b0918"/>' +
-  '<g fill="url(#castillo-grad)">' +
-  '<rect x="430" y="150" width="36" height="64"/>' +
-  '<line x1="428" y1="147" x2="468" y2="147" stroke="url(#castillo-grad)" stroke-width="10" stroke-dasharray="12 9"/>' +
-  '<rect x="584" y="168" width="118" height="46"/>' +
-  '<line x1="582" y1="166" x2="704" y2="166" stroke="url(#castillo-grad)" stroke-width="11" stroke-dasharray="15 11"/>' +
-  '<rect x="518" y="122" width="66" height="92"/>' +
-  '<polygon points="508,122 594,122 551,60"/>' +
-  '<rect x="850" y="172" width="104" height="42"/>' +
-  '<line x1="848" y1="170" x2="956" y2="170" stroke="url(#castillo-grad)" stroke-width="11" stroke-dasharray="15 11"/>' +
-  '<rect x="952" y="134" width="58" height="80"/>' +
-  '<polygon points="943,134 1019,134 981,76"/>' +
-  '<rect x="700" y="96" width="152" height="118"/>' +
-  '<line x1="697" y1="93" x2="855" y2="93" stroke="url(#castillo-grad)" stroke-width="12" stroke-dasharray="16 12"/>' +
-  '<rect x="757" y="48" width="38" height="52"/>' +
-  '<polygon points="749,48 803,48 776,14"/>' +
+
+  // fila lejana de la ciudad (profundidad)
+  '<g fill="url(#ciudad-lejos)" opacity="0.85">' +
+  '<polygon points="180,206 260,206 220,168"/>' +
+  '<rect x="330" y="150" width="70" height="58"/>' +
+  '<polygon points="320,150 410,150 365,116"/>' +
+  '<rect x="600" y="142" width="54" height="66"/>' +
+  '<rect x="900" y="146" width="66" height="62"/>' +
+  '<polygon points="892,146 974,146 933,112"/>' +
+  '<rect x="1090" y="150" width="60" height="58"/>' +
+  '<polygon points="1250,204 1330,204 1290,164"/>' +
   "</g>" +
-  '<line x1="776" y1="14" x2="776" y2="3" stroke="#3a3352" stroke-width="2"/>' +
-  '<path class="banderin" d="M777 2 L818 9 L777 17 Z" fill="#b78cff" opacity="0.85"/>' +
-  '<path d="M759 214 v-24 a17 17 0 0 1 34 0 v24 Z" fill="#05030c"/>' +
+
+  // colina base
+  '<path d="M0 240 L0 210 Q280 196 640 205 Q1020 215 1440 200 L1440 240 Z" fill="#0b0918"/>' +
+
+  // ciudad principal
+  '<g fill="url(#ciudad-grad)">' +
+  // casa 1
+  '<rect x="30" y="152" width="80" height="60"/>' +
+  '<polygon points="22,152 118,152 70,126"/>' +
+  // torre A
+  '<rect x="132" y="112" width="46" height="100"/>' +
+  '<polygon points="126,112 184,112 155,80"/>' +
+  // casa 2
+  '<rect x="198" y="160" width="70" height="52"/>' +
+  '<polygon points="191,160 275,160 233,134"/>' +
+  // edificio almenado
+  '<rect x="290" y="104" width="100" height="108"/>' +
+  '<line x1="287" y1="101" x2="393" y2="101" stroke="url(#ciudad-grad)" stroke-width="12" stroke-dasharray="15 11"/>' +
+  // torre B delgada
+  '<rect x="402" y="92" width="36" height="120"/>' +
+  '<polygon points="396,92 444,92 420,56"/>' +
+  // casa 3
+  '<rect x="452" y="164" width="66" height="48"/>' +
+  '<polygon points="445,164 525,164 485,138"/>' +
+  // muralla izquierda
+  '<rect x="532" y="174" width="106" height="38"/>' +
+  '<line x1="529" y1="172" x2="641" y2="172" stroke="url(#ciudad-grad)" stroke-width="11" stroke-dasharray="14 10"/>' +
+  // torretas del gran castillo
+  '<rect x="642" y="112" width="44" height="100"/>' +
+  '<polygon points="635,112 693,112 664,78"/>' +
+  '<rect x="814" y="112" width="44" height="100"/>' +
+  '<polygon points="807,112 865,112 836,78"/>' +
+  // torreón central grande
+  '<rect x="700" y="88" width="100" height="124"/>' +
+  '<line x1="697" y1="85" x2="803" y2="85" stroke="url(#ciudad-grad)" stroke-width="13" stroke-dasharray="16 12"/>' +
+  // aguja central con bandera
+  '<rect x="733" y="40" width="34" height="50"/>' +
+  '<polygon points="726,40 774,40 750,10"/>' +
+  // muralla derecha
+  '<rect x="860" y="176" width="94" height="36"/>' +
+  '<line x1="857" y1="174" x2="957" y2="174" stroke="url(#ciudad-grad)" stroke-width="11" stroke-dasharray="14 10"/>' +
+  // torre C
+  '<rect x="968" y="122" width="48" height="90"/>' +
+  '<polygon points="961,122 1023,122 992,86"/>' +
+  // casa 4
+  '<rect x="1034" y="156" width="72" height="56"/>' +
+  '<polygon points="1027,156 1113,156 1070,128"/>' +
+  // casa 5 alta
+  '<rect x="1132" y="128" width="58" height="84"/>' +
+  '<polygon points="1125,128 1197,128 1161,98"/>' +
+  // palacio almenado derecha
+  '<rect x="1216" y="110" width="88" height="102"/>' +
+  '<line x1="1213" y1="107" x2="1307" y2="107" stroke="url(#ciudad-grad)" stroke-width="12" stroke-dasharray="15 11"/>' +
+  // torre D lejana derecha
+  '<rect x="1318" y="98" width="50" height="114"/>' +
+  '<polygon points="1311,98 1375,98 1343,62"/>' +
+  // casa final
+  '<rect x="1382" y="162" width="56" height="50"/>' +
+  '<polygon points="1376,162 1440,162 1410,138"/>' +
+  "</g>" +
+
+  // asta y bandera en la aguja central
+  '<line x1="750" y1="10" x2="750" y2="0" stroke="#3a3352" stroke-width="2"/>' +
+  '<path class="banderin" d="M751 0 L792 7 L751 15 Z" fill="#b78cff" opacity="0.85"/>' +
+
+  // puerta del gran castillo
+  '<path d="M731 214 v-24 a19 19 0 0 1 38 0 v24 Z" fill="#05030c"/>' +
+
+  // ventanas encendidas de la ciudad
   "<g>" +
-  '<rect class="ventana" x="545" y="146" width="8" height="13" rx="4"/>' +
-  '<rect class="ventana" x="545" y="174" width="8" height="13" rx="4"/>' +
-  '<rect class="ventana" x="723" y="126" width="8" height="13" rx="4"/>' +
-  '<rect class="ventana" x="762" y="120" width="8" height="13" rx="4"/>' +
-  '<rect class="ventana" x="800" y="128" width="8" height="13" rx="4"/>' +
-  '<rect class="ventana" x="741" y="160" width="8" height="13" rx="4"/>' +
-  '<rect class="ventana" x="786" y="158" width="8" height="13" rx="4"/>' +
-  '<rect class="ventana" x="974" y="156" width="8" height="13" rx="4"/>' +
-  '<rect class="ventana" x="974" y="182" width="8" height="13" rx="4"/>' +
+  '<rect class="ventana" x="55" y="166" width="7" height="11" rx="3.5"/>' +
+  '<rect class="ventana" x="82" y="166" width="7" height="11" rx="3.5"/>' +
+  '<rect class="ventana" x="148" y="128" width="8" height="12" rx="4"/>' +
+  '<rect class="ventana" x="148" y="156" width="8" height="12" rx="4"/>' +
+  '<rect class="ventana" x="222" y="174" width="7" height="11" rx="3.5"/>' +
+  '<rect class="ventana" x="310" y="120" width="8" height="12" rx="4"/>' +
+  '<rect class="ventana" x="340" y="140" width="8" height="12" rx="4"/>' +
+  '<rect class="ventana" x="370" y="120" width="8" height="12" rx="4"/>' +
+  '<rect class="ventana" x="413" y="110" width="7" height="11" rx="3.5"/>' +
+  '<rect class="ventana" x="472" y="178" width="7" height="11" rx="3.5"/>' +
+  '<rect class="ventana" x="657" y="130" width="7" height="11" rx="3.5"/>' +
+  '<rect class="ventana" x="657" y="158" width="7" height="11" rx="3.5"/>' +
+  '<rect class="ventana" x="836" y="130" width="7" height="11" rx="3.5"/>' +
+  '<rect class="ventana" x="836" y="158" width="7" height="11" rx="3.5"/>' +
+  '<rect class="ventana" x="720" y="108" width="8" height="12" rx="4"/>' +
+  '<rect class="ventana" x="763" y="104" width="8" height="12" rx="4"/>' +
+  '<rect class="ventana" x="772" y="140" width="8" height="12" rx="4"/>' +
+  '<rect class="ventana" x="985" y="140" width="8" height="12" rx="4"/>' +
+  '<rect class="ventana" x="1055" y="170" width="7" height="11" rx="3.5"/>' +
+  '<rect class="ventana" x="1152" y="144" width="7" height="11" rx="3.5"/>' +
+  '<rect class="ventana" x="1240" y="126" width="8" height="12" rx="4"/>' +
+  '<rect class="ventana" x="1272" y="150" width="8" height="12" rx="4"/>' +
+  '<rect class="ventana" x="1336" y="116" width="8" height="12" rx="4"/>' +
+  '<rect class="ventana" x="1398" y="176" width="7" height="11" rx="3.5"/>' +
   "</g>" +
   "</svg>";
 document.body.appendChild(castillo);
