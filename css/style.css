@@ -131,10 +131,11 @@ a { color: inherit; text-decoration: none; }
 /* ---------- Luna ---------- */
 #luna {
   position: fixed;
-  top: 7%;
-  right: 7%;
+  left: 87%;
+  top: 11%;
   width: 180px;
   height: 180px;
+  margin: -90px 0 0 -90px;
   border-radius: 50%;
   z-index: -2;
   pointer-events: none;
@@ -153,26 +154,99 @@ a { color: inherit; text-decoration: none; }
 }
 
 @keyframes viajarLuna {
-  0% {
-    top: 7%;
-    right: 7%;
+  0%, 100% {
+    left: 87%;
+    top: 11%;
   }
-  22% {
-    top: 15%;
-    right: 34%;
+  50% {
+    left: 50%;
+    top: 13%;
   }
-  48% {
-    top: 6%;
-    right: 60%;
+}
+
+/* ---------- Sol ---------- */
+#sol {
+  position: fixed;
+  left: 9%;
+  top: 19%;
+  width: 164px;
+  height: 164px;
+  margin: -82px 0 0 -82px;
+  border-radius: 50%;
+  z-index: -3;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 40% 38%,
+    #fff8de 0%,
+    #ffe3a6 40%,
+    #f8c76d 68%,
+    #eda94f 100%
+  );
+  box-shadow:
+    inset -14px -12px 34px rgba(196, 130, 40, 0.35),
+    0 0 80px rgba(255, 214, 130, 0.4),
+    0 0 220px rgba(247, 198, 107, 0.25);
+  opacity: 0.95;
+  animation: viajarSol 90s ease-in-out infinite;
+}
+
+@keyframes viajarSol {
+  0%, 100% {
+    left: 9%;
+    top: 19%;
   }
-  72% {
-    top: 20%;
-    right: 26%;
+  50% {
+    left: 50%;
+    top: 13%;
   }
-  100% {
-    top: 7%;
-    right: 7%;
-  }
+}
+
+/* ---------- Eclipse ---------- */
+#corona {
+  position: fixed;
+  left: 50%;
+  top: 13%;
+  width: 360px;
+  height: 360px;
+  margin: -180px 0 0 -180px;
+  border-radius: 50%;
+  z-index: -2;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    transparent 25%,
+    rgba(255, 243, 205, 0.32) 29.5%,
+    rgba(255, 222, 140, 0.16) 34%,
+    rgba(255, 236, 190, 0.08) 39%,
+    transparent 47%
+  );
+  filter: blur(5px);
+  opacity: 0;
+  animation: eclipseCorona 90s ease-in-out infinite;
+}
+
+@keyframes eclipseCorona {
+  0%, 43% { opacity: 0; }
+  50% { opacity: 1; }
+  57%, 100% { opacity: 0; }
+}
+
+#eclipse-noche {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 13%, rgba(4, 3, 12, 0.25) 0%, rgba(4, 3, 12, 0.82) 55%),
+    rgba(3, 2, 10, 0.5);
+  opacity: 0;
+  animation: nocheEclipse 90s ease-in-out infinite;
+}
+
+@keyframes nocheEclipse {
+  0%, 42% { opacity: 0; }
+  50% { opacity: 0.55; }
+  58%, 100% { opacity: 0; }
 }
 
 /* ---------- Niebla ---------- */
@@ -226,6 +300,49 @@ a { color: inherit; text-decoration: none; }
   opacity: 0.05;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- Castillo en silueta ---------- */
+#castillo {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  pointer-events: none;
+  line-height: 0;
+}
+
+#castillo svg {
+  display: block;
+  width: 100%;
+  height: min(30vh, 250px);
+}
+
+.ventana {
+  fill: var(--accent);
+  opacity: 0.8;
+  animation: parpadeoVentana 5s infinite;
+}
+
+.ventana:nth-of-type(2n) { animation-delay: -1.4s; }
+.ventana:nth-of-type(3n) { animation-delay: -2.7s; }
+.ventana:nth-of-type(5n) { animation-delay: -3.6s; }
+
+@keyframes parpadeoVentana {
+  0%, 86%, 92%, 100% { opacity: 0.8; }
+  89% { opacity: 0.12; }
+}
+
+.banderin {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: ondearBanderin 2.6s ease-in-out infinite alternate;
+}
+
+@keyframes ondearBanderin {
+  from { transform: skewY(5deg) scaleX(0.94); }
+  to { transform: skewY(-5deg) scaleX(1); }
 }
 
 .luciernaga {
@@ -1479,7 +1596,16 @@ a { color: inherit; text-decoration: none; }
   #niebla::before,
   #niebla::after { animation: none; }
 
-  #luna { animation: none; }
+  #luna,
+  #sol,
+  #corona,
+  #eclipse-noche { animation: none; }
+
+  #corona,
+  #eclipse-noche { display: none; }
+
+  .ventana,
+  .banderin { animation: none; }
 
   .avatar-wrap,
   .avatar-anillo,
@@ -1495,9 +1621,20 @@ a { color: inherit; text-decoration: none; }
   #luna {
     width: 104px;
     height: 104px;
-    top: 5%;
-    right: 6%;
-    opacity: 0.75;
+    margin: -52px 0 0 -52px;
+    opacity: 0.8;
+  }
+
+  #sol {
+    width: 96px;
+    height: 96px;
+    margin: -48px 0 0 -48px;
+  }
+
+  #corona {
+    width: 230px;
+    height: 230px;
+    margin: -115px 0 0 -115px;
   }
 
   .temas { gap: 0.38rem; }

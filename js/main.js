@@ -99,10 +99,62 @@ if (cielo && !sinAnimacion) {
   }
 }
 
+["sol", "corona", "eclipse-noche"].forEach((id) => {
+  const capa = document.createElement("div");
+  capa.id = id;
+  document.body.appendChild(capa);
+});
+
+const castillo = document.createElement("div");
+castillo.id = "castillo";
+castillo.setAttribute("aria-hidden", "true");
+castillo.innerHTML =
+  '<svg viewBox="0 0 1440 240" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">' +
+  "<defs>" +
+  '<linearGradient id="castillo-grad" x1="0" y1="0" x2="0" y2="1">' +
+  '<stop offset="0" stop-color="#151227"/>' +
+  '<stop offset="1" stop-color="#080614"/>' +
+  "</linearGradient>" +
+  "</defs>" +
+  '<path d="M0 240 L0 206 Q300 190 640 201 Q1000 212 1440 196 L1440 240 Z" fill="#0b0918"/>' +
+  '<g fill="url(#castillo-grad)">' +
+  '<rect x="430" y="150" width="36" height="64"/>' +
+  '<line x1="428" y1="147" x2="468" y2="147" stroke="url(#castillo-grad)" stroke-width="10" stroke-dasharray="12 9"/>' +
+  '<rect x="584" y="168" width="118" height="46"/>' +
+  '<line x1="582" y1="166" x2="704" y2="166" stroke="url(#castillo-grad)" stroke-width="11" stroke-dasharray="15 11"/>' +
+  '<rect x="518" y="122" width="66" height="92"/>' +
+  '<polygon points="508,122 594,122 551,60"/>' +
+  '<rect x="850" y="172" width="104" height="42"/>' +
+  '<line x1="848" y1="170" x2="956" y2="170" stroke="url(#castillo-grad)" stroke-width="11" stroke-dasharray="15 11"/>' +
+  '<rect x="952" y="134" width="58" height="80"/>' +
+  '<polygon points="943,134 1019,134 981,76"/>' +
+  '<rect x="700" y="96" width="152" height="118"/>' +
+  '<line x1="697" y1="93" x2="855" y2="93" stroke="url(#castillo-grad)" stroke-width="12" stroke-dasharray="16 12"/>' +
+  '<rect x="757" y="48" width="38" height="52"/>' +
+  '<polygon points="749,48 803,48 776,14"/>' +
+  "</g>" +
+  '<line x1="776" y1="14" x2="776" y2="3" stroke="#3a3352" stroke-width="2"/>' +
+  '<path class="banderin" d="M777 2 L818 9 L777 17 Z" fill="#b78cff" opacity="0.85"/>' +
+  '<path d="M759 214 v-24 a17 17 0 0 1 34 0 v24 Z" fill="#05030c"/>' +
+  "<g>" +
+  '<rect class="ventana" x="545" y="146" width="8" height="13" rx="4"/>' +
+  '<rect class="ventana" x="545" y="174" width="8" height="13" rx="4"/>' +
+  '<rect class="ventana" x="723" y="126" width="8" height="13" rx="4"/>' +
+  '<rect class="ventana" x="762" y="120" width="8" height="13" rx="4"/>' +
+  '<rect class="ventana" x="800" y="128" width="8" height="13" rx="4"/>' +
+  '<rect class="ventana" x="741" y="160" width="8" height="13" rx="4"/>' +
+  '<rect class="ventana" x="786" y="158" width="8" height="13" rx="4"/>' +
+  '<rect class="ventana" x="974" y="156" width="8" height="13" rx="4"/>' +
+  '<rect class="ventana" x="974" y="182" width="8" height="13" rx="4"/>' +
+  "</g>" +
+  "</svg>";
+document.body.appendChild(castillo);
+
 const CAPAS_PARALLAX = [
   { el: document.getElementById("cielo"), fx: -0.05, fy: -0.05 },
   { el: document.getElementById("orbes"), fx: -0.11, fy: -0.11 },
   { el: document.getElementById("luna"), fx: 0.03, fy: 0.02 },
+  { el: document.getElementById("sol"), fx: 0.03, fy: 0.02 },
 ];
 
 let ratonPx = 0;
