@@ -132,10 +132,10 @@ a { color: inherit; text-decoration: none; }
 #luna {
   position: fixed;
   left: 87%;
-  top: 11%;
-  width: 180px;
-  height: 180px;
-  margin: -90px 0 0 -90px;
+  top: 14%;
+  width: 300px;
+  height: 300px;
+  margin: -150px 0 0 -150px;
   border-radius: 50%;
   z-index: -2;
   pointer-events: none;
@@ -146,21 +146,21 @@ a { color: inherit; text-decoration: none; }
     radial-gradient(circle at 28% 38%, rgba(122, 103, 72, 0.15) 0 3%, transparent 4%),
     radial-gradient(circle at 34% 30%, #fdf7e6 0%, #f4ebd1 38%, #ddceab 64%, #bcab84 100%);
   box-shadow:
-    inset -20px -16px 44px rgba(88, 74, 50, 0.42),
-    0 0 70px rgba(238, 222, 180, 0.22),
-    0 0 190px rgba(233, 196, 106, 0.12);
+    inset -32px -26px 70px rgba(88, 74, 50, 0.42),
+    0 0 110px rgba(238, 222, 180, 0.24),
+    0 0 300px rgba(233, 196, 106, 0.13);
   opacity: 0.92;
-  animation: viajarLuna 90s ease-in-out infinite;
+  animation: viajarLuna 28s ease-in-out infinite;
 }
 
 @keyframes viajarLuna {
   0%, 100% {
-    left: 87%;
-    top: 11%;
+    left: 88%;
+    top: 16%;
   }
   50% {
     left: 50%;
-    top: 13%;
+    top: 22%;
   }
 }
 
@@ -168,10 +168,10 @@ a { color: inherit; text-decoration: none; }
 #sol {
   position: fixed;
   left: 9%;
-  top: 19%;
-  width: 164px;
-  height: 164px;
-  margin: -82px 0 0 -82px;
+  top: 26%;
+  width: 290px;
+  height: 290px;
+  margin: -145px 0 0 -145px;
   border-radius: 50%;
   z-index: -3;
   pointer-events: none;
@@ -183,21 +183,21 @@ a { color: inherit; text-decoration: none; }
     #eda94f 100%
   );
   box-shadow:
-    inset -14px -12px 34px rgba(196, 130, 40, 0.35),
-    0 0 80px rgba(255, 214, 130, 0.4),
-    0 0 220px rgba(247, 198, 107, 0.25);
+    inset -24px -20px 56px rgba(196, 130, 40, 0.35),
+    0 0 130px rgba(255, 214, 130, 0.42),
+    0 0 360px rgba(247, 198, 107, 0.27);
   opacity: 0.95;
-  animation: viajarSol 90s ease-in-out infinite;
+  animation: viajarSol 28s ease-in-out infinite;
 }
 
 @keyframes viajarSol {
   0%, 100% {
-    left: 9%;
-    top: 19%;
+    left: 10%;
+    top: 30%;
   }
   50% {
     left: 50%;
-    top: 13%;
+    top: 22%;
   }
 }
 
@@ -205,24 +205,24 @@ a { color: inherit; text-decoration: none; }
 #corona {
   position: fixed;
   left: 50%;
-  top: 13%;
-  width: 360px;
-  height: 360px;
-  margin: -180px 0 0 -180px;
+  top: 22%;
+  width: 580px;
+  height: 580px;
+  margin: -290px 0 0 -290px;
   border-radius: 50%;
   z-index: -2;
   pointer-events: none;
   background: radial-gradient(
     circle,
     transparent 25%,
-    rgba(255, 243, 205, 0.32) 29.5%,
-    rgba(255, 222, 140, 0.16) 34%,
-    rgba(255, 236, 190, 0.08) 39%,
+    rgba(255, 243, 205, 0.34) 29.5%,
+    rgba(255, 222, 140, 0.17) 34%,
+    rgba(255, 236, 190, 0.09) 39%,
     transparent 47%
   );
-  filter: blur(5px);
+  filter: blur(6px);
   opacity: 0;
-  animation: eclipseCorona 90s ease-in-out infinite;
+  animation: eclipseCorona 28s ease-in-out infinite;
 }
 
 @keyframes eclipseCorona {
@@ -237,10 +237,10 @@ a { color: inherit; text-decoration: none; }
   z-index: 3;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 50% 13%, rgba(4, 3, 12, 0.25) 0%, rgba(4, 3, 12, 0.82) 55%),
+    radial-gradient(ellipse at 50% 20%, rgba(4, 3, 12, 0.25) 0%, rgba(4, 3, 12, 0.82) 55%),
     rgba(3, 2, 10, 0.5);
   opacity: 0;
-  animation: nocheEclipse 90s ease-in-out infinite;
+  animation: nocheEclipse 28s ease-in-out infinite;
 }
 
 @keyframes nocheEclipse {
@@ -316,7 +316,7 @@ a { color: inherit; text-decoration: none; }
 #castillo svg {
   display: block;
   width: 100%;
-  height: min(30vh, 250px);
+  height: min(42vh, 400px);
 }
 
 .ventana {
@@ -1619,22 +1619,22 @@ a { color: inherit; text-decoration: none; }
   #marco { display: none; }
 
   #luna {
-    width: 104px;
-    height: 104px;
-    margin: -52px 0 0 -52px;
-    opacity: 0.8;
+    width: 180px;
+    height: 180px;
+    margin: -90px 0 0 -90px;
+    opacity: 0.85;
   }
 
   #sol {
-    width: 96px;
-    height: 96px;
-    margin: -48px 0 0 -48px;
+    width: 160px;
+    height: 160px;
+    margin: -80px 0 0 -80px;
   }
 
   #corona {
-    width: 230px;
-    height: 230px;
-    margin: -115px 0 0 -115px;
+    width: 360px;
+    height: 360px;
+    margin: -180px 0 0 -180px;
   }
 
   .temas { gap: 0.38rem; }
