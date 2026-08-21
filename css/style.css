@@ -131,8 +131,8 @@ a { color: inherit; text-decoration: none; }
 /* ---------- Luna ---------- */
 #luna {
   position: fixed;
-  left: 87%;
-  top: 14%;
+  left: 0;
+  top: 0;
   width: 300px;
   height: 300px;
   margin: -150px 0 0 -150px;
@@ -153,22 +153,17 @@ a { color: inherit; text-decoration: none; }
   animation: viajarLuna 28s ease-in-out infinite;
 }
 
+/* ancla = centro del disco; se mueve con transform (infalible) */
 @keyframes viajarLuna {
-  0%, 100% {
-    left: 88%;
-    top: 16%;
-  }
-  50% {
-    left: 50%;
-    top: 22%;
-  }
+  0%, 100% { transform: translate(88vw, 16vh); }
+  50% { transform: translate(50vw, 22vh); }
 }
 
 /* ---------- Sol ---------- */
 #sol {
   position: fixed;
-  left: 9%;
-  top: 26%;
+  left: 0;
+  top: 0;
   width: 290px;
   height: 290px;
   margin: -145px 0 0 -145px;
@@ -191,14 +186,8 @@ a { color: inherit; text-decoration: none; }
 }
 
 @keyframes viajarSol {
-  0%, 100% {
-    left: 10%;
-    top: 30%;
-  }
-  50% {
-    left: 50%;
-    top: 22%;
-  }
+  0%, 100% { transform: translate(10vw, 30vh); }
+  50% { transform: translate(50vw, 22vh); }
 }
 
 /* ---------- Eclipse ---------- */

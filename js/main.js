@@ -233,8 +233,6 @@ document.body.appendChild(castillo);
 const CAPAS_PARALLAX = [
   { el: document.getElementById("cielo"), fx: -0.05, fy: -0.05 },
   { el: document.getElementById("orbes"), fx: -0.11, fy: -0.11 },
-  { el: document.getElementById("luna"), fx: 0.03, fy: 0.02 },
-  { el: document.getElementById("sol"), fx: 0.03, fy: 0.02 },
 ];
 
 let ratonPx = 0;
