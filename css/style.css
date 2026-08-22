@@ -4424,3 +4424,55 @@ html[data-modo="claro"] #cielo::after { opacity: 0.25; }
 @media (max-width: 700px) {
   #reloj-nav { display: none; }
 }
+
+/* ═══════════ SIMETRÍA — todo el texto centrado ═══════════ */
+.sobre-mi h2,
+.sobre-mi p,
+.seccion-nota,
+.post-card,
+.post-card h3,
+.destacada,
+.destacada h3,
+.destacada p,
+.widget,
+.muro-form,
+.timeline li b,
+.timeline li p,
+.articulo-meta { text-align: center; }
+
+.timeline li {
+  padding: 0 1.1rem 1.9rem;
+}
+
+/* ═══════════ DESTELLOS ✦ en el cielo ═══════════ */
+.estrella-spark {
+  position: absolute;
+  color: #fff6df;
+  line-height: 1;
+  text-shadow:
+    0 0 8px rgba(255, 240, 200, 0.95),
+    0 0 20px rgba(255, 220, 160, 0.55);
+  animation: titilar var(--d, 4s) ease-in-out infinite alternate;
+}
+
+html[data-modo="claro"] .estrella-spark { opacity: 0.15; }
+
+/* ═══════════ LUNA AÚN MÁS BRILLANTE ═══════════ */
+#luna {
+  box-shadow:
+    inset -36px -30px 78px rgba(88, 74, 50, 0.42),
+    0 0 22px rgba(255, 248, 225, 1),
+    0 0 85px rgba(255, 238, 195, 0.62),
+    0 0 190px rgba(245, 225, 175, 0.4),
+    0 0 400px rgba(235, 215, 170, 0.24);
+}
+
+#luna::after {
+  inset: -130px;
+  background: radial-gradient(circle, rgba(255, 240, 200, 0.2), transparent 64%);
+}
+
+@keyframes lunaRespira {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.16); }
+}

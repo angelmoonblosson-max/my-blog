@@ -551,7 +551,7 @@ if (cielo && !sinAnimacion()) {
     Math.max(1, (window.innerWidth * window.innerHeight) / (1440 * 800))
   );
 
-  for (let i = 0; i < Math.round(130 * factorPantalla); i++) {
+  for (let i = 0; i < Math.round(190 * factorPantalla); i++) {
     const estrella = document.createElement("span");
     estrella.className = "estrella";
     const azarColor = Math.random();
@@ -568,7 +568,7 @@ if (cielo && !sinAnimacion()) {
     cielo.appendChild(estrella);
   }
 
-  for (let i = 0; i < Math.round(16 * factorPantalla); i++) {
+  for (let i = 0; i < Math.round(22 * factorPantalla); i++) {
     const estrella = document.createElement("span");
     estrella.className = "estrella-grande";
     estrella.style.left = `${Math.random() * 100}%`;
@@ -578,6 +578,18 @@ if (cielo && !sinAnimacion()) {
     if (i % 3 === 0) estrella.classList.add("tibia");
     else if (i % 3 === 1) estrella.classList.add("fria");
     cielo.appendChild(estrella);
+  }
+
+  for (let i = 0; i < Math.round(14 * factorPantalla); i++) {
+    const spark = document.createElement("span");
+    spark.className = "estrella-spark";
+    spark.textContent = "✦";
+    spark.style.left = `${Math.random() * 100}%`;
+    spark.style.top = `${Math.random() * 80}%`;
+    spark.style.fontSize = `${8 + Math.random() * 8}px`;
+    spark.style.setProperty("--d", `${Math.random() * 3 + 2.5}s`);
+    spark.style.animationDelay = `${Math.random() * 4}s`;
+    cielo.appendChild(spark);
   }
 }
 
@@ -680,6 +692,38 @@ castillo.innerHTML =
   "</g>" +
   "</svg>";
 document.body.appendChild(castillo);
+
+/* aldea extra: más casitas y dos castillos pequeños en el horizonte */
+(function aldeaExtra() {
+  const svg = document.querySelector("#castillo svg");
+  if (!svg || svg.dataset.extra) return;
+  svg.dataset.extra = "1";
+  const g =
+    '<g fill="var(--ciudad-baja)" opacity="0.72">' +
+    '<rect x="36" y="150" width="34" height="62"/><polygon points="30,150 76,150 53,122"/>' +
+    '<rect x="84" y="164" width="26" height="48"/>' +
+    '<line x1="30" y1="148" x2="114" y2="148" stroke="var(--ciudad-baja)" stroke-width="9" stroke-dasharray="10 8"/>' +
+    "</g>" +
+    '<g fill="url(#ciudad-grad)">' +
+    '<rect x="1040" y="158" width="40" height="54"/><polygon points="1035,158 1085,158 1060,136"/>' +
+    '<rect x="1092" y="166" width="34" height="46"/><polygon points="1087,166 1131,166 1109,146"/>' +
+    '<rect x="1180" y="162" width="38" height="50"/><polygon points="1175,162 1223,162 1199,140"/>' +
+    '<rect x="1240" y="170" width="30" height="42"/><polygon points="1236,170 1274,170 1255,152"/>' +
+    '<rect x="1290" y="140" width="30" height="72"/><polygon points="1285,140 1325,140 1305,116"/>' +
+    '<rect x="1332" y="152" width="56" height="60"/><line x1="1329" y1="150" x2="1391" y2="150" stroke="url(#ciudad-grad)" stroke-width="8" stroke-dasharray="9 7"/>' +
+    '<rect x="1398" y="134" width="32" height="78"/><polygon points="1393,134 1435,134 1414,110"/>' +
+    "</g>" +
+    "<g>" +
+    '<rect class="ventana" x="52" y="164" width="7" height="10" rx="3.5"/>' +
+    '<rect class="ventana" x="1052" y="172" width="7" height="10" rx="3.5"/>' +
+    '<rect class="ventana" x="1102" y="178" width="6" height="9" rx="3"/>' +
+    '<rect class="ventana" x="1192" y="174" width="7" height="10" rx="3.5"/>' +
+    '<rect class="ventana" x="1298" y="154" width="6" height="9" rx="3"/>' +
+    '<rect class="ventana" x="1352" y="166" width="7" height="10" rx="3.5"/>' +
+    '<rect class="ventana" x="1406" y="150" width="6" height="9" rx="3"/>' +
+    "</g>";
+  svg.insertAdjacentHTML("beforeend", g);
+})();
 
 const CAPAS_PARALLAX = [
   { el: document.getElementById("cielo"), fx: -0.05, fy: -0.05 },
