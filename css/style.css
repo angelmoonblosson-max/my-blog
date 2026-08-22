@@ -4476,3 +4476,12 @@ html[data-modo="claro"] .estrella-spark { opacity: 0.15; }
   0%, 100% { filter: brightness(1); }
   50% { filter: brightness(1.16); }
 }
+
+/* ═══════════ MOLINO: aspas girando despacio ═══════════ */
+.molino-aspas {
+  animation: girarAdorno 16s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .molino-aspas { animation: none; }
+}

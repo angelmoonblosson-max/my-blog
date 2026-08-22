@@ -699,11 +699,53 @@ document.body.appendChild(castillo);
   if (!svg || svg.dataset.extra) return;
   svg.dataset.extra = "1";
   const g =
+    /* capa lejanísima: pueblito minúsculo sobre el horizonte */
+    '<g fill="var(--ciudad-baja)" opacity="0.55">' +
+    '<rect x="150" y="184" width="16" height="20"/><polygon points="147,184 169,184 158,174"/>' +
+    '<rect x="205" y="188" width="14" height="18"/><polygon points="202,188 222,188 212,179"/>' +
+    '<rect x="262" y="185" width="17" height="21"/><polygon points="258,185 283,185 270,175"/>' +
+    '<rect x="322" y="189" width="13" height="17"/><polygon points="319,189 338,189 328,181"/>' +
+    '<rect x="468" y="186" width="15" height="19"/><polygon points="465,186 486,186 475,177"/>' +
+    '<rect x="560" y="188" width="14" height="17"/><polygon points="556,188 578,188 567,180"/>' +
+    '<rect x="978" y="187" width="14" height="18"/><polygon points="974,187 996,187 985,178"/>' +
+    '<rect x="1016" y="183" width="16" height="21"/><polygon points="1012,183 1032,183 1022,174"/>' +
+    "</g>" +
+
+    /* castillito lejano izquierda */
     '<g fill="var(--ciudad-baja)" opacity="0.72">' +
     '<rect x="36" y="150" width="34" height="62"/><polygon points="30,150 76,150 53,122"/>' +
     '<rect x="84" y="164" width="26" height="48"/>' +
     '<line x1="30" y1="148" x2="114" y2="148" stroke="var(--ciudad-baja)" stroke-width="9" stroke-dasharray="10 8"/>' +
     "</g>" +
+
+    /* valle izquierdo: casas, capilla con cruz, torre redonda */
+    '<g fill="url(#ciudad-grad)">' +
+    '<rect x="196" y="168" width="34" height="44"/><polygon points="191,168 235,168 213,148"/>' +
+    '<rect x="242" y="176" width="28" height="36"/><polygon points="238,176 274,176 256,160"/>' +
+    '<rect x="300" y="162" width="30" height="50"/><polygon points="296,162 334,162 315,144"/>' +
+    '<rect x="311" y="126" width="8" height="20"/>' +
+    '<line x1="307" y1="131" x2="323" y2="131" stroke="url(#ciudad-grad)" stroke-width="3"/>' +
+    '<rect x="352" y="150" width="22" height="62"/><polygon points="348,150 378,150 363,124"/>' +
+    '<rect x="452" y="172" width="30" height="40"/><polygon points="448,172 486,172 467,154"/>' +
+    '<rect x="496" y="180" width="26" height="32"/><polygon points="492,180 526,180 509,166"/>' +
+    '<rect x="962" y="170" width="30" height="42"/><polygon points="957,170 997,170 977,151"/>' +
+    '<rect x="1002" y="178" width="24" height="34"/><polygon points="998,178 1030,178 1014,163"/>' +
+    "</g>" +
+
+    /* arboles y pinos de silueta */
+    '<g fill="var(--ciudad-baja)">' +
+    '<circle cx="285" cy="182" r="12"/><rect x="283" y="186" width="4" height="18"/>' +
+    '<circle cx="430" cy="188" r="10"/><rect x="428" y="192" width="4" height="14"/>' +
+    '<circle cx="1152" cy="184" r="11"/><rect x="1150" y="188" width="4" height="16"/>' +
+    '<polygon points="942,204 958,204 950,186"/>' +
+    '<polygon points="944,192 956,192 950,176"/>' +
+    '<rect x="947" y="204" width="5" height="12"/>' +
+    '<polygon points="240,206 256,206 248,188"/>' +
+    '<polygon points="242,194 254,194 248,180"/>' +
+    '<rect x="245" y="206" width="5" height="10"/>' +
+    "</g>" +
+
+    /* aldea derecha + castillo pequeño */
     '<g fill="url(#ciudad-grad)">' +
     '<rect x="1040" y="158" width="40" height="54"/><polygon points="1035,158 1085,158 1060,136"/>' +
     '<rect x="1092" y="166" width="34" height="46"/><polygon points="1087,166 1131,166 1109,146"/>' +
@@ -713,14 +755,51 @@ document.body.appendChild(castillo);
     '<rect x="1332" y="152" width="56" height="60"/><line x1="1329" y1="150" x2="1391" y2="150" stroke="url(#ciudad-grad)" stroke-width="8" stroke-dasharray="9 7"/>' +
     '<rect x="1398" y="134" width="32" height="78"/><polygon points="1393,134 1435,134 1414,110"/>' +
     "</g>" +
+
+    /* molino de viento con aspas giratorias */
+    "<g>" +
+    '<path d="M404 214 L408 146 L414 146 L418 214 Z" fill="url(#ciudad-grad)"/>' +
+    '<g class="molino-aspas" style="transform-box:fill-box;transform-origin:center">' +
+    '<line x1="411" y1="142" x2="411" y2="104" stroke="#8d84ad" stroke-width="3"/>' +
+    '<line x1="411" y1="142" x2="444" y2="159" stroke="#8d84ad" stroke-width="3"/>' +
+    '<line x1="411" y1="142" x2="411" y2="180" stroke="#8d84ad" stroke-width="3"/>' +
+    '<line x1="411" y1="142" x2="378" y2="125" stroke="#8d84ad" stroke-width="3"/>' +
+    '<polygon points="405,106 417,106 411,130" fill="#8d84ad"/>' +
+    '<polygon points="440,155 448,163 424,149" fill="#8d84ad"/>' +
+    '<polygon points="405,178 417,178 411,154" fill="#8d84ad"/>' +
+    '<polygon points="382,129 374,121 398,135" fill="#8d84ad"/>' +
+    "</g>" +
+    '<circle cx="411" cy="142" r="4" fill="#cfc6e8"/>' +
+    "</g>" +
+
+    /* primer plano: casotas oscuras al borde de la colina */
+    '<g fill="#0a0817">' +
+    '<rect x="88" y="200" width="52" height="52"/><polygon points="82,200 146,200 114,172"/>' +
+    '<rect x="560" y="206" width="46" height="46"/><polygon points="555,206 611,206 583,182"/>' +
+    '<rect x="902" y="204" width="50" height="48"/><polygon points="896,204 958,204 927,178"/>' +
+    '<rect x="1350" y="208" width="44" height="44"/><polygon points="1345,208 1399,208 1372,186"/>' +
+    "</g>" +
+
+    /* ventanas nuevas encendidas */
     "<g>" +
     '<rect class="ventana" x="52" y="164" width="7" height="10" rx="3.5"/>' +
+    '<rect class="ventana" x="206" y="178" width="7" height="10" rx="3.5"/>' +
+    '<rect class="ventana" x="250" y="184" width="6" height="9" rx="3"/>' +
+    '<rect class="ventana" x="310" y="174" width="7" height="10" rx="3.5"/>' +
+    '<rect class="ventana" x="360" y="162" width="6" height="9" rx="3"/>' +
+    '<rect class="ventana" x="460" y="180" width="7" height="10" rx="3.5"/>' +
+    '<rect class="ventana" x="502" y="186" width="6" height="9" rx="3"/>' +
+    '<rect class="ventana" x="100" y="212" width="7" height="10" rx="3.5"/>' +
+    '<rect class="ventana" x="572" y="216" width="6" height="9" rx="3"/>' +
+    '<rect class="ventana" x="916" y="214" width="7" height="10" rx="3.5"/>' +
+    '<rect class="ventana" x="968" y="180" width="6" height="9" rx="3"/>' +
+    '<rect class="ventana" x="1008" y="184" width="7" height="10" rx="3.5"/>' +
     '<rect class="ventana" x="1052" y="172" width="7" height="10" rx="3.5"/>' +
     '<rect class="ventana" x="1102" y="178" width="6" height="9" rx="3"/>' +
     '<rect class="ventana" x="1192" y="174" width="7" height="10" rx="3.5"/>' +
-    '<rect class="ventana" x="1298" y="154" width="6" height="9" rx="3"/>' +
-    '<rect class="ventana" x="1352" y="166" width="7" height="10" rx="3.5"/>' +
-    '<rect class="ventana" x="1406" y="150" width="6" height="9" rx="3"/>' +
+    '<rect class="ventana" x="1246" y="178" width="6" height="9" rx="3"/>' +
+    '<rect class="ventana" x="1360" y="166" width="6" height="9" rx="3"/>' +
+    '<rect class="ventana" x="1362" y="218" width="6" height="9" rx="3"/>' +
     "</g>";
   svg.insertAdjacentHTML("beforeend", g);
 })();
