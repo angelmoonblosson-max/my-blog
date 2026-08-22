@@ -3059,3 +3059,14 @@ if (!esTactil) {
     pulso.style.filter = "";
   });
 })();
+
+/* APP INSTALABLE: registro del service worker */
+(function registrarSW() {
+  if (!("serviceWorker" in navigator) || location.protocol !== "https:") return;
+  const miScript = document.querySelector('script[src$="main.js"]');
+  if (!miScript) return;
+  window.addEventListener("load", () => {
+    const raiz = new URL("../", miScript.src);
+    navigator.serviceWorker.register(new URL("sw.js", raiz)).catch(() => {});
+  });
+})();
