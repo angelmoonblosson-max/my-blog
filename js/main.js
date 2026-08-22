@@ -243,7 +243,7 @@ if (cielo && !sinAnimacion) {
   }
 }
 
-["sol", "corona", "eclipse-noche", "horizonte-fuego", "destello"].forEach((id) => {
+["sol", "corona", "eclipse-noche"].forEach((id) => {
   const capa = document.createElement("div");
   capa.id = id;
   document.body.appendChild(capa);
