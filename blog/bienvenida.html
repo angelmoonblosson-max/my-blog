@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/style.css?v=16" />
+  <link rel="stylesheet" href="../css/style.css?v=24" />
 </head>
 <body>
   <div id="barra-scroll" aria-hidden="true"></div>
@@ -28,7 +28,12 @@
         <a href="../index.html">inicio</a>
         <a href="../blog/" class="activo">blog</a>
       </div>
-      <button class="btn-compartir" id="btn-compartir" type="button">Compartir</button>
+      <div class="temas" role="group" aria-label="Color de acento">
+        <button class="tema activo" data-tema="" style="--c:#e9c46a" title="Oro" type="button"></button>
+        <button class="tema" data-tema="lila" style="--c:#b78cff" title="Lila" type="button"></button>
+        <button class="tema" data-tema="rosa" style="--c:#f5a8cb" title="Rosa" type="button"></button>
+        <button class="tema" data-tema="hielo" style="--c:#8ecdf7" title="Hielo" type="button"></button>
+      </div>      <button class="btn-compartir" id="btn-compartir" type="button">Compartir</button>
     </nav>
   </header>
 
@@ -95,11 +100,20 @@
       <div class="volver">
         <a class="btn-volver" href="../blog/">← volver al blog</a>
       </div>
+
+      <div id="nav-entradas" class="nav-entradas" aria-label="Más entradas"></div>
     </article>
   </main>
 
   <footer class="site-footer">
-    <p>&copy; <span data-year></span> RAAAAAHHH Fan #1 · visita nº <b id="num-visitas">?</b></p>
+    <div class="footer-fases" aria-hidden="true">☾ · ◐ · ◓ · ● · ◑ · ◒ · ☽</div>
+    <nav class="footer-nav" aria-label="Pie de página">
+      <a href="../index.html">inicio</a>
+      <a href="../blog/">blog</a>
+      <a href="#arriba" id="link-arriba">volver arriba ↑</a>
+    </nav>
+    <p>&copy; <span data-year></span> RAAAAAHHH Fan #1 · <span class="contador-retro">visitas: <b id="num-visitas">·····</b></span></p>
+    <p class="hecho-a-mano">hecho a mano, sin plantillas, con mucho café y más sueño ☕</p>
     <p class="secreto-hint">esta página guarda un pequeño secreto… 👀</p>
   </footer>
 
@@ -138,6 +152,6 @@
 
   <div id="toasts"></div>
 
-  <script src="../js/main.js?v=16"></script>
+  <script src="../js/main.js?v=24"></script>
 </body>
 </html>

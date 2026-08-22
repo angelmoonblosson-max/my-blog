@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>uh oh… ✦</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=24" />
+</head>
+<body>
+  <div id="barra-scroll" aria-hidden="true"></div>
+  <div id="aurora" aria-hidden="true"></div>
+  <div id="cielo" aria-hidden="true"></div>
+  <div id="orbes" aria-hidden="true"></div>
+  <div id="luna" aria-hidden="true"></div>
+  <div id="niebla" aria-hidden="true"></div>
+  <div id="vineta" aria-hidden="true"></div>
+  <div id="grano" aria-hidden="true"></div>
+
+  <main class="lost-pagina container">
+    <h1 class="lost-bienvenida visible">uh oh…</h1>
+    <p class="lost-linea visible">creo que te perdiste 💀</p>
+
+    <nav class="puerta-botones">
+      <a class="btn-accion principal" id="btn-volver-404" href="index.html">← volver</a>
+    </nav>
+
+    <button type="button" id="calavera" title="" aria-label="">💀</button>
+    <p class="secreto-hint">(el cráneo parece… clickeable?)</p>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span data-year></span> RAAAAAHHH Fan #1 · <span class="contador-retro">visitas: <b id="num-visitas">·····</b></span></p>
+    <p class="hecho-a-mano">error 404 · la página se fue a caminar entre estrellas</p>
+  </footer>
+
+  <audio id="audio" preload="none"></audio>
+  <div id="toasts"></div>
+  <script src="js/main.js?v=24"></script>
+  <script>
+    /* huevo de pascua: tres clics en el cráneo abren una puerta rara */
+    (function () {
+      var clics = 0;
+      var calavera = document.getElementById("calavera");
+      calavera.addEventListener("click", function () {
+        clics++;
+        if (clics === 1) toast && toast("💀 …");
+        if (clics === 2) toast && toast("💀 …¿qué?");
+        if (clics >= 3) {
+          toast && toast("💀 ok ok, te llevo donde NO deberías ir");
+          setTimeout(function () { location.href = "lost.html"; }, 1100);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
