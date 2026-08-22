@@ -96,7 +96,9 @@ try {
 } catch {}
 if (modoGuardado === "claro") document.documentElement.dataset.modo = "claro";
 if (fondoGuardado && /^(https?:|data:image)/i.test(fondoGuardado)) aplicarFondo(fondoGuardado);
-if (eventoGuardado) document.documentElement.dataset.evento = eventoGuardado;
+if (["eclipse", "fugaces", "aurora"].includes(eventoGuardado)) {
+  document.documentElement.dataset.evento = eventoGuardado;
+}
 
 (function initPersonalizacion() {
   const nav = document.querySelector(".nav");
@@ -127,7 +129,7 @@ if (eventoGuardado) document.documentElement.dataset.evento = eventoGuardado;
     '<button type="button" class="ps-op ev-op" data-evento="eclipse">🌑 Eclipse</button>' +
     "</div>" +
     '<div class="ps-fila" style="margin-top:.5rem">' +
-    '<button type="button" class="ps-op ev-op" data-evento="meteoros">☄️ Meteoros</button>' +
+    '<button type="button" class="ps-op ev-op" data-evento="fugaces">⭐ Estrellas fugaces</button>' +
     '<button type="button" class="ps-op ev-op" data-evento="aurora">🌌 Aurora</button>' +
     "</div>" +
     '<span class="ps-etiqueta">Fondo propio (URL de imagen)</span>' +
@@ -168,26 +170,36 @@ if (eventoGuardado) document.documentElement.dataset.evento = eventoGuardado;
   const NOMBRES_EVENTOS = {
     "": "✦ Cielo en calma",
     eclipse: "🌑 Eclipse total — mira el cielo",
-    meteoros: "☄️ Lluvia de meteoros",
+    fugaces: "⭐ Estrellas fugaces cruzando el cielo",
     aurora: "🌌 Aurora boreal encendida",
   };
+
+  let temporizadorEvento = null;
 
   panel.querySelectorAll(".ev-op").forEach((b) => {
     b.addEventListener("click", () => {
       const v = b.dataset.evento || "";
-      if (v) document.documentElement.dataset.evento = v;
-      else delete document.documentElement.dataset.evento;
+      marcarEvento(v);
       try {
         localStorage.setItem("evento", v);
       } catch {}
       eventoGuardado = v;
-      marcarEvento();
-      toast(NOMBRES_EVENTOS[v] || "✦ Evento cambiado");
+      clearTimeout(temporizadorEvento);
+      toast("✦ el cielo está cambiando…");
+      /* un pequeño retraso para que la escena entre sin cortes */
+      temporizadorEvento = setTimeout(() => {
+        if (v) document.documentElement.dataset.evento = v;
+        else delete document.documentElement.dataset.evento;
+        toast(NOMBRES_EVENTOS[v] || "✦ Evento cambiado");
+      }, 1600);
     });
   });
 
-  function marcarEvento() {
-    const actual = document.documentElement.dataset.evento || "";
+  function marcarEvento(pendiente) {
+    const actual =
+      pendiente !== undefined
+        ? pendiente
+        : document.documentElement.dataset.evento || "";
     panel.querySelectorAll(".ev-op").forEach((b) => {
       b.classList.toggle("activo", (b.dataset.evento || "") === actual);
     });
@@ -310,7 +322,7 @@ if (cielo && !sinAnimacion) {
   }
 }
 
-["sol", "corona", "eclipse-noche"].forEach((id) => {
+["sol", "eclipse-noche"].forEach((id) => {
   const capa = document.createElement("div");
   capa.id = id;
   document.body.appendChild(capa);
@@ -492,7 +504,7 @@ function lanzarEstrellaFugaz() {
   fugaz.style.top = `${Math.random() * 35}%`;
   fugaz.style.left = `${Math.random() * 45}%`;
   cielo.appendChild(fugaz);
-  setTimeout(() => fugaz.remove(), 1600);
+  setTimeout(() => fugaz.remove(), 2100);
 }
 
 function lluviaDeEstrellas(cantidad) {
@@ -505,12 +517,15 @@ function lluviaDeEstrellas(cantidad) {
   }, 120);
 }
 
-/* meteoros solo durante el evento "meteoros" */
+/* estrellas fugaces solo durante su evento, bien visibles */
 (function programarFugaces() {
   setTimeout(() => {
-    if (document.documentElement.dataset.evento === "meteoros") lanzarEstrellaFugaz();
+    if (document.documentElement.dataset.evento === "fugaces") {
+      lanzarEstrellaFugaz();
+      if (Math.random() > 0.5) lanzarEstrellaFugaz();
+    }
     programarFugaces();
-  }, Math.random() * 4500 + 2200);
+  }, Math.random() * 2800 + 1500);
 })();
 
 const frases = [

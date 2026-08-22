@@ -171,23 +171,14 @@ textarea {
     radial-gradient(36% 30% at 62% 80%, rgba(245, 168, 203, 0.11), transparent 70%),
     radial-gradient(30% 24% at 15% 75%, rgba(120, 200, 255, 0.08), transparent 70%);
   filter: blur(46px);
+  /* la cortina entra y sale despacito, sin cortes */
+  transition: filter 3s ease;
   animation: moverAurora 26s ease-in-out infinite alternate;
-}
-
-/* con el evento de eclipse, la aurora apenas se enfría en la totalidad */
-html[data-evento="eclipse"] #aurora {
-  animation: moverAurora 26s ease-in-out infinite alternate, auroraEclipse 28s linear infinite;
 }
 
 /* evento aurora boreal: la cortina se enciende de verdad */
 html[data-evento="aurora"] #aurora {
   filter: blur(38px) saturate(1.55) brightness(1.6);
-}
-
-@keyframes auroraEclipse {
-  0%, 38% { filter: blur(46px); }
-  48%, 56% { filter: blur(46px) hue-rotate(18deg) brightness(1.12); }
-  66%, 100% { filter: blur(46px); }
 }
 
 @keyframes moverAurora {
@@ -230,8 +221,8 @@ html[data-evento="aurora"] #aurora {
 }
 
 @keyframes flotarLuna {
-  from { transform: translate(80vw, 14vh); }
-  to { transform: translate(82vw, 18vh); }
+  from { transform: translate(88vw, 16vh); }
+  to { transform: translate(90vw, 20vh); }
 }
 
 /* con el evento activo, luna y sol viajan y ocurre el eclipse */
@@ -239,7 +230,7 @@ html[data-evento="eclipse"] #luna {
   animation: viajarLuna 28s ease-in-out infinite, lunaOscura 28s linear infinite;
 }
 
-/* durante la totalidad el disco lunar se ve negro contra la corona */
+/* durante la totalidad el disco lunar se ve negro contra el sol */
 @keyframes lunaOscura {
   0%, 43% { filter: brightness(1); }
   47.5%, 56% { filter: brightness(0.07) saturate(0.35); }
@@ -282,13 +273,14 @@ html[data-evento="eclipse"] #luna {
     inset -24px -20px 56px rgba(196, 130, 40, 0.35),
     0 0 130px rgba(255, 214, 130, 0.42),
     0 0 360px rgba(247, 198, 107, 0.27);
-  opacity: 0.95;
-  /* el sol solo sale durante el evento de eclipse */
-  display: none;
+  opacity: 0;
+  /* aparece y se va despacito, sin cortes */
+  transition: opacity 2.2s ease;
 }
 
 html[data-evento="eclipse"] #sol {
   display: block;
+  opacity: 0.95;
   animation: viajarSol 28s ease-in-out infinite;
 }
 
@@ -305,72 +297,9 @@ html[data-evento="eclipse"] #sol {
   #sol { width: 410px; height: 410px; margin: -205px 0 0 -205px; }
 }
 
-/* ---------- Eclipse (solo con el evento activado en ⚙) ---------- */
-#corona {
-  position: fixed;
-  left: 50%;
-  top: 22%;
-  width: 540px;
-  height: 540px;
-  margin: -270px 0 0 -270px;
-  border-radius: 50%;
-  z-index: 4;
-  pointer-events: none;
-  display: none;
-  background:
-    radial-gradient(circle, transparent 24%, rgba(255, 252, 238, 0.62) 28.5%, rgba(255, 232, 170, 0.26) 31.5%, rgba(255, 236, 190, 0.1) 36%, transparent 46%),
-    radial-gradient(circle, transparent 30%, rgba(255, 240, 200, 0.07) 38%, transparent 52%);
-  box-shadow:
-    inset 0 0 80px rgba(255, 244, 214, 0.14),
-    0 0 60px rgba(255, 240, 200, 0.18);
-  filter: blur(2px);
-  opacity: 0;
-}
-
-html[data-evento="eclipse"] #corona {
-  display: block;
-  animation: eclipseCorona 28s ease-in-out infinite;
-}
-
-/* rayos apenas insinuados, girando lentísimo */
-#corona::before {
-  content: "";
-  position: absolute;
-  top: -16%;
-  right: -16%;
-  bottom: -16%;
-  left: -16%;
-  border-radius: 50%;
-  background: repeating-conic-gradient(
-    from 0deg,
-    rgba(255, 244, 214, 0.08) 0deg 5deg,
-    rgba(255, 244, 214, 0) 5deg 13deg
-  );
-  -webkit-mask-image: radial-gradient(circle, transparent 26%, #000 35%, transparent 60%);
-  mask-image: radial-gradient(circle, transparent 26%, #000 35%, transparent 60%);
-  filter: blur(3px);
-  animation: girarRayos 30s linear infinite;
-}
-
-@keyframes girarRayos {
-  to { transform: rotate(360deg); }
-}
-
-/* la corona aparece serena durante la totalidad, sin golpes */
-@keyframes eclipseCorona {
-  0%, 44% { opacity: 0; }
-  50% { opacity: 0.85; }
-  56.5% { opacity: 0.7; }
-  64%, 100% { opacity: 0; }
-}
-
-@media (min-width: 1400px) {
-  #corona { width: 680px; height: 680px; margin: -340px 0 0 -340px; }
-}
-
-@media (min-width: 1900px) {
-  #corona { width: 820px; height: 820px; margin: -410px 0 0 -410px; }
-}
+/* ---------- Eclipse (solo con el evento activado en ⚙) ----------
+   sin adornos: sol y luna viajan, se cruzan, el fondo se oscurece
+   en ese instante — como un eclipse de verdad — y regresa la calma */
 
 #eclipse-noche {
   position: fixed;
@@ -389,13 +318,13 @@ html[data-evento="eclipse"] #eclipse-noche {
   animation: nocheEclipse 28s ease-in-out infinite;
 }
 
-/* fases reales, con calma: parcial lenta → totalidad serena → regreso */
+/* fases reales: se acercan → se cruzan y todo se apaga → vuelve la luz */
 @keyframes nocheEclipse {
   0%, 32% { opacity: 0; }
-  42% { opacity: 0.28; }
-  47% { opacity: 0.52; }
-  49.5%, 55.5% { opacity: 0.78; }
-  60% { opacity: 0.45; }
+  42% { opacity: 0.3; }
+  47% { opacity: 0.58; }
+  49.5%, 55.5% { opacity: 0.85; }
+  60% { opacity: 0.48; }
   72%, 100% { opacity: 0; }
 }
 
@@ -475,17 +404,6 @@ html[data-evento="eclipse"] #eclipse-noche {
   animation: parpadeoVentana 5s infinite;
 }
 
-html[data-evento="eclipse"] .ventana {
-  animation: parpadeoVentana 5s infinite, ventanaEclipse 28s linear infinite;
-}
-
-/* en la totalidad las ventanas respiran un poco más fuerte */
-@keyframes ventanaEclipse {
-  0%, 42% { filter: brightness(1); }
-  48%, 56% { filter: brightness(1.6); }
-  65%, 100% { filter: brightness(1); }
-}
-
 .ventana:nth-of-type(2n) { animation-delay: -1.4s; }
 .ventana:nth-of-type(3n) { animation-delay: -2.7s; }
 .ventana:nth-of-type(5n) { animation-delay: -3.6s; }
@@ -538,16 +456,6 @@ html[data-evento="eclipse"] .ventana {
 }
 
 /* las estrellas apenas se dejan notar más durante la totalidad */
-html[data-evento="eclipse"] #cielo {
-  animation: cieloEclipse 28s linear infinite;
-}
-
-@keyframes cieloEclipse {
-  0%, 40% { filter: brightness(1); }
-  47.5%, 56% { filter: brightness(1.45); }
-  66%, 100% { filter: brightness(1); }
-}
-
 .estrella {
   position: absolute;
   border-radius: 50%;
@@ -597,19 +505,21 @@ html[data-evento="eclipse"] #cielo {
 
 .estrella-fugaz {
   position: absolute;
-  width: 130px;
-  height: 1.5px;
+  width: 230px;
+  height: 3px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #fff, transparent);
+  background: linear-gradient(90deg, #fff, #ffe9b8 45%, transparent);
+  box-shadow: 0 0 18px rgba(255, 244, 214, 0.9);
   opacity: 0;
   transform: translate(0, 0) rotate(-30deg);
-  animation: fugaz 1.5s ease-out forwards;
+  animation: fugaz 1.9s ease-out forwards;
 }
 
 @keyframes fugaz {
   0% { opacity: 0; transform: translate(0, 0) rotate(-30deg); }
-  12% { opacity: 0.95; }
-  100% { opacity: 0; transform: translate(56vw, 32vh) rotate(-30deg); }
+  8% { opacity: 1; }
+  72% { opacity: 0.85; }
+  100% { opacity: 0; transform: translate(62vw, 36vh) rotate(-30deg); }
 }
 
 /* ---------- Header ---------- */
@@ -1968,10 +1878,8 @@ html[data-modo="claro"] .ps-op.activo { color: #fffdf6; }
 
   #luna,
   #sol,
-  #corona,
   #eclipse-noche { animation: none; }
 
-  #corona,
   #eclipse-noche { display: none; }
 
   .ventana,
@@ -1999,12 +1907,6 @@ html[data-modo="claro"] .ps-op.activo { color: #fffdf6; }
     width: 160px;
     height: 160px;
     margin: -80px 0 0 -80px;
-  }
-
-  #corona {
-    width: 360px;
-    height: 360px;
-    margin: -180px 0 0 -180px;
   }
 
   .temas { gap: 0.38rem; }
