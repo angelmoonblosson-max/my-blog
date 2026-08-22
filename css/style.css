@@ -1,8 +1,8 @@
 :root {
   --bg: #0a0913;
   --bg-alt: #12101e;
-  --card: rgba(255, 255, 255, 0.045);
-  --card-hover: rgba(255, 255, 255, 0.08);
+  --card: rgba(255, 255, 255, 0.075);
+  --card-hover: rgba(255, 255, 255, 0.11);
   --borde: rgba(233, 196, 106, 0.22);
   --borde-suave: rgba(255, 255, 255, 0.09);
   --text: #f4f1ea;
@@ -23,8 +23,8 @@
 html[data-modo="claro"] {
   --bg: #efe9da;
   --bg-alt: #e6dfcd;
-  --card: rgba(255, 255, 255, 0.58);
-  --card-hover: rgba(255, 255, 255, 0.82);
+  --card: rgba(255, 255, 255, 0.78);
+  --card-hover: rgba(255, 255, 255, 0.92);
   --borde: rgba(150, 110, 40, 0.38);
   --borde-suave: rgba(60, 50, 30, 0.16);
   --text: #2b2517;
@@ -138,6 +138,18 @@ body {
 
 a { color: inherit; text-decoration: none; }
 
+/* el texto se lee, no se copia */
+body {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 ::selection { background: var(--accent); color: #14101f; }
 
 ::-webkit-scrollbar { width: 10px; }
@@ -159,10 +171,19 @@ a { color: inherit; text-decoration: none; }
     radial-gradient(36% 30% at 62% 80%, rgba(245, 168, 203, 0.11), transparent 70%),
     radial-gradient(30% 24% at 15% 75%, rgba(120, 200, 255, 0.08), transparent 70%);
   filter: blur(46px);
+  animation: moverAurora 26s ease-in-out infinite alternate;
+}
+
+/* con el evento de eclipse, la aurora apenas se enfría en la totalidad */
+html[data-evento="eclipse"] #aurora {
   animation: moverAurora 26s ease-in-out infinite alternate, auroraEclipse 28s linear infinite;
 }
 
-/* la aurora apenas se enfría mientras dura la totalidad */
+/* evento aurora boreal: la cortina se enciende de verdad */
+html[data-evento="aurora"] #aurora {
+  filter: blur(38px) saturate(1.55) brightness(1.6);
+}
+
 @keyframes auroraEclipse {
   0%, 38% { filter: blur(46px); }
   48%, 56% { filter: blur(46px) hue-rotate(18deg) brightness(1.12); }
@@ -204,6 +225,17 @@ a { color: inherit; text-decoration: none; }
     0 0 110px rgba(238, 222, 180, 0.24),
     0 0 300px rgba(233, 196, 106, 0.13);
   opacity: 0.92;
+  /* calma por defecto: la luna flota quieta arriba a la derecha */
+  animation: flotarLuna 12s ease-in-out infinite alternate;
+}
+
+@keyframes flotarLuna {
+  from { transform: translate(80vw, 14vh); }
+  to { transform: translate(82vw, 18vh); }
+}
+
+/* con el evento activo, luna y sol viajan y ocurre el eclipse */
+html[data-evento="eclipse"] #luna {
   animation: viajarLuna 28s ease-in-out infinite, lunaOscura 28s linear infinite;
 }
 
@@ -251,6 +283,12 @@ a { color: inherit; text-decoration: none; }
     0 0 130px rgba(255, 214, 130, 0.42),
     0 0 360px rgba(247, 198, 107, 0.27);
   opacity: 0.95;
+  /* el sol solo sale durante el evento de eclipse */
+  display: none;
+}
+
+html[data-evento="eclipse"] #sol {
+  display: block;
   animation: viajarSol 28s ease-in-out infinite;
 }
 
@@ -267,7 +305,7 @@ a { color: inherit; text-decoration: none; }
   #sol { width: 410px; height: 410px; margin: -205px 0 0 -205px; }
 }
 
-/* ---------- Eclipse ---------- */
+/* ---------- Eclipse (solo con el evento activado en ⚙) ---------- */
 #corona {
   position: fixed;
   left: 50%;
@@ -278,6 +316,7 @@ a { color: inherit; text-decoration: none; }
   border-radius: 50%;
   z-index: 4;
   pointer-events: none;
+  display: none;
   background:
     radial-gradient(circle, transparent 24%, rgba(255, 252, 238, 0.62) 28.5%, rgba(255, 232, 170, 0.26) 31.5%, rgba(255, 236, 190, 0.1) 36%, transparent 46%),
     radial-gradient(circle, transparent 30%, rgba(255, 240, 200, 0.07) 38%, transparent 52%);
@@ -286,6 +325,10 @@ a { color: inherit; text-decoration: none; }
     0 0 60px rgba(255, 240, 200, 0.18);
   filter: blur(2px);
   opacity: 0;
+}
+
+html[data-evento="eclipse"] #corona {
+  display: block;
   animation: eclipseCorona 28s ease-in-out infinite;
 }
 
@@ -334,10 +377,15 @@ a { color: inherit; text-decoration: none; }
   top: 0; left: 0; right: 0; bottom: 0;
   z-index: 3;
   pointer-events: none;
+  display: none;
   background:
     radial-gradient(ellipse at 50% 20%, rgba(5, 4, 14, 0.22) 0%, rgba(4, 3, 13, 0.85) 55%),
     linear-gradient(rgba(8, 6, 22, 0.5), rgba(3, 2, 10, 0.62));
   opacity: 0;
+}
+
+html[data-evento="eclipse"] #eclipse-noche {
+  display: block;
   animation: nocheEclipse 28s ease-in-out infinite;
 }
 
@@ -399,8 +447,7 @@ a { color: inherit; text-decoration: none; }
   top: 0; left: 0; right: 0; bottom: 0;
   z-index: 7;
   pointer-events: none;
-  opacity: 0.05;
-  mix-blend-mode: overlay;
+  opacity: 0.04;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -425,6 +472,10 @@ a { color: inherit; text-decoration: none; }
 .ventana {
   fill: var(--accent);
   opacity: 0.8;
+  animation: parpadeoVentana 5s infinite;
+}
+
+html[data-evento="eclipse"] .ventana {
   animation: parpadeoVentana 5s infinite, ventanaEclipse 28s linear infinite;
 }
 
@@ -487,7 +538,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* las estrellas apenas se dejan notar más durante la totalidad */
-#cielo {
+html[data-evento="eclipse"] #cielo {
   animation: cieloEclipse 28s linear infinite;
 }
 
@@ -872,7 +923,6 @@ a { color: inherit; text-decoration: none; }
   background: var(--card);
   border: 1px solid var(--borde-suave);
   border-radius: var(--radius);
-  backdrop-filter: blur(16px);
   padding: 2rem;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
@@ -1977,4 +2027,11 @@ html[data-modo="claro"] .ps-op.activo { color: #fffdf6; }
 
   .container,
   .hero-inner { max-width: 1120px; }
+}
+
+/* ---------- Rendimiento en móviles ---------- */
+@media (max-width: 768px) {
+  #niebla,
+  .luciernaga,
+  .orbe:nth-child(2n) { display: none; }
 }

@@ -88,12 +88,15 @@ function aplicarFondo(url) {
 
 let modoGuardado = "";
 let fondoGuardado = "";
+let eventoGuardado = "";
 try {
   modoGuardado = localStorage.getItem("modo") || "";
   fondoGuardado = localStorage.getItem("fondo-url") || "";
+  eventoGuardado = localStorage.getItem("evento") || "";
 } catch {}
 if (modoGuardado === "claro") document.documentElement.dataset.modo = "claro";
 if (fondoGuardado && /^(https?:|data:image)/i.test(fondoGuardado)) aplicarFondo(fondoGuardado);
+if (eventoGuardado) document.documentElement.dataset.evento = eventoGuardado;
 
 (function initPersonalizacion() {
   const nav = document.querySelector(".nav");
@@ -118,6 +121,15 @@ if (fondoGuardado && /^(https?:|data:image)/i.test(fondoGuardado)) aplicarFondo(
     '<button type="button" class="ps-op modo-op" data-modo="">🌙 Noche</button>' +
     '<button type="button" class="ps-op modo-op" data-modo="claro">☀️ Día</button>' +
     "</div>" +
+    '<span class="ps-etiqueta">Evento del cielo</span>' +
+    '<div class="ps-fila">' +
+    '<button type="button" class="ps-op ev-op" data-evento="">✦ Calma</button>' +
+    '<button type="button" class="ps-op ev-op" data-evento="eclipse">🌑 Eclipse</button>' +
+    "</div>" +
+    '<div class="ps-fila" style="margin-top:.5rem">' +
+    '<button type="button" class="ps-op ev-op" data-evento="meteoros">☄️ Meteoros</button>' +
+    '<button type="button" class="ps-op ev-op" data-evento="aurora">🌌 Aurora</button>' +
+    "</div>" +
     '<span class="ps-etiqueta">Fondo propio (URL de imagen)</span>' +
     '<input id="input-fondo-url" type="url" placeholder="pega el URL de una imagen…" spellcheck="false">' +
     '<div class="ps-fila" style="margin-top:.5rem">' +
@@ -141,6 +153,7 @@ if (fondoGuardado && /^(https?:|data:image)/i.test(fondoGuardado)) aplicarFondo(
     panel.hidden = !panel.hidden;
     if (!panel.hidden) {
       marcarModo();
+      marcarEvento();
       input.value = fondoGuardado;
     }
   }
@@ -151,6 +164,34 @@ if (fondoGuardado && /^(https?:|data:image)/i.test(fondoGuardado)) aplicarFondo(
   panel.querySelector("#cerrar-settings").addEventListener("click", () => {
     panel.hidden = true;
   });
+
+  const NOMBRES_EVENTOS = {
+    "": "✦ Cielo en calma",
+    eclipse: "🌑 Eclipse total — mira el cielo",
+    meteoros: "☄️ Lluvia de meteoros",
+    aurora: "🌌 Aurora boreal encendida",
+  };
+
+  panel.querySelectorAll(".ev-op").forEach((b) => {
+    b.addEventListener("click", () => {
+      const v = b.dataset.evento || "";
+      if (v) document.documentElement.dataset.evento = v;
+      else delete document.documentElement.dataset.evento;
+      try {
+        localStorage.setItem("evento", v);
+      } catch {}
+      eventoGuardado = v;
+      marcarEvento();
+      toast(NOMBRES_EVENTOS[v] || "✦ Evento cambiado");
+    });
+  });
+
+  function marcarEvento() {
+    const actual = document.documentElement.dataset.evento || "";
+    panel.querySelectorAll(".ev-op").forEach((b) => {
+      b.classList.toggle("activo", (b.dataset.evento || "") === actual);
+    });
+  }
 
   panel.querySelectorAll(".modo-op").forEach((b) => {
     b.addEventListener("click", () => {
@@ -209,15 +250,41 @@ if (footerSitio && !footerSitio.querySelector(".dm-nota")) {
   footerSitio.appendChild(notaDm);
 }
 
+/* ── Detalles vivos: saludo, ayuda y pestaña ── */
+let visitasN = 1;
+try {
+  visitasN = parseInt(localStorage.getItem("visitas") || "1", 10) || 1;
+} catch {}
+
+setTimeout(() => {
+  try {
+    if (!sessionStorage.getItem("saludo-dado") && visitasN > 1) {
+      sessionStorage.setItem("saludo-dado", "si");
+      toast(`✦ qué bueno verte de vuelta — visita nº ${visitasN}`);
+    }
+  } catch {}
+}, 3400);
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "?") toast("⌨️ M = música · ? = ayuda · ⚙ arriba = personalizar");
+});
+
+const tituloOriginal = document.title;
+document.addEventListener("visibilitychange", () => {
+  document.title = document.hidden
+    ? "✦ vuelve, la noche te espera…"
+    : tituloOriginal;
+});
+
 const cielo = document.getElementById("cielo");
 
 if (cielo && !sinAnimacion) {
   const factorPantalla = Math.min(
-    1.9,
+    1.45,
     Math.max(1, (window.innerWidth * window.innerHeight) / (1440 * 800))
   );
 
-  for (let i = 0; i < Math.round(95 * factorPantalla); i++) {
+  for (let i = 0; i < Math.round(65 * factorPantalla); i++) {
     const estrella = document.createElement("span");
     estrella.className = "estrella";
     const tamano = Math.random() * 1.8 + 0.8;
@@ -230,7 +297,7 @@ if (cielo && !sinAnimacion) {
     cielo.appendChild(estrella);
   }
 
-  for (let i = 0; i < Math.round(12 * factorPantalla); i++) {
+  for (let i = 0; i < Math.round(9 * factorPantalla); i++) {
     const estrella = document.createElement("span");
     estrella.className = "estrella-grande";
     estrella.style.left = `${Math.random() * 100}%`;
@@ -385,10 +452,10 @@ const contenedorOrbes = document.getElementById("orbes");
 const CLASES_ORBE = ["lila", "oro", "rosa"];
 
 if (contenedorOrbes && !sinAnimacion) {
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 8; i++) {
     const orbe = document.createElement("span");
     orbe.className = `orbe ${CLASES_ORBE[i % 3]}`;
-    const tamano = Math.random() * 110 + 50;
+    const tamano = Math.random() * 80 + 40;
     orbe.style.width = orbe.style.height = `${tamano}px`;
     orbe.style.left = `${Math.random() * 100}%`;
     orbe.style.animationDuration = `${Math.random() * 26 + 22}s`;
@@ -401,7 +468,7 @@ const COLORES_LUZ = ["#e9c46a", "#b78cff", "#f5a8cb"];
 
 function lanzarLuciernaga() {
   if (sinAnimacion) return;
-  if (document.querySelectorAll(".luciernaga").length > 14) return;
+  if (document.querySelectorAll(".luciernaga").length > 8) return;
 
   const luz = document.createElement("span");
   luz.className = "luciernaga";
@@ -416,7 +483,7 @@ function lanzarLuciernaga() {
   setTimeout(() => luz.remove(), 23000);
 }
 
-if (!sinAnimacion) setInterval(lanzarLuciernaga, 1400);
+if (!sinAnimacion) setInterval(lanzarLuciernaga, 2600);
 
 function lanzarEstrellaFugaz() {
   if (!cielo || sinAnimacion) return;
@@ -438,14 +505,13 @@ function lluviaDeEstrellas(cantidad) {
   }, 120);
 }
 
-if (!sinAnimacion) {
-  (function programarFugaces() {
-    setTimeout(() => {
-      lanzarEstrellaFugaz();
-      programarFugaces();
-    }, Math.random() * 7000 + 5000);
-  })();
-}
+/* meteoros solo durante el evento "meteoros" */
+(function programarFugaces() {
+  setTimeout(() => {
+    if (document.documentElement.dataset.evento === "meteoros") lanzarEstrellaFugaz();
+    programarFugaces();
+  }, Math.random() * 4500 + 2200);
+})();
 
 const frases = [
   "hay canciones que te regresan a lugares que ya no existen",
