@@ -159,7 +159,14 @@ a { color: inherit; text-decoration: none; }
     radial-gradient(36% 30% at 62% 80%, rgba(245, 168, 203, 0.11), transparent 70%),
     radial-gradient(30% 24% at 15% 75%, rgba(120, 200, 255, 0.08), transparent 70%);
   filter: blur(46px);
-  animation: moverAurora 26s ease-in-out infinite alternate;
+  animation: moverAurora 26s ease-in-out infinite alternate, auroraEclipse 28s linear infinite;
+}
+
+/* la aurora vira a tonos fríos mientras dura la totalidad */
+@keyframes auroraEclipse {
+  0%, 38% { filter: blur(46px); }
+  48%, 56% { filter: blur(46px) hue-rotate(55deg) brightness(1.45); }
+  66%, 100% { filter: blur(46px); }
 }
 
 @keyframes moverAurora {
@@ -197,7 +204,14 @@ a { color: inherit; text-decoration: none; }
     0 0 110px rgba(238, 222, 180, 0.24),
     0 0 300px rgba(233, 196, 106, 0.13);
   opacity: 0.92;
-  animation: viajarLuna 28s ease-in-out infinite;
+  animation: viajarLuna 28s ease-in-out infinite, lunaOscura 28s linear infinite;
+}
+
+/* durante la totalidad el disco lunar se ve negro contra la corona */
+@keyframes lunaOscura {
+  0%, 43% { filter: brightness(1); }
+  47.5%, 56% { filter: brightness(0.07) saturate(0.35); }
+  62%, 100% { filter: brightness(1); }
 }
 
 /* ancla = centro del disco; se mueve con transform (infalible) */
@@ -262,25 +276,83 @@ a { color: inherit; text-decoration: none; }
   height: 540px;
   margin: -270px 0 0 -270px;
   border-radius: 50%;
-  z-index: -2;
+  z-index: 4;
   pointer-events: none;
-  background: radial-gradient(
-    circle,
-    transparent 25%,
-    rgba(255, 243, 205, 0.34) 29.5%,
-    rgba(255, 222, 140, 0.17) 34%,
-    rgba(255, 236, 190, 0.09) 39%,
-    transparent 47%
-  );
-  filter: blur(6px);
+  background:
+    radial-gradient(circle, transparent 24%, rgba(255, 252, 238, 0.9) 28.5%, rgba(255, 232, 170, 0.42) 31.5%, rgba(255, 236, 190, 0.16) 36%, transparent 46%),
+    radial-gradient(circle, transparent 30%, rgba(255, 240, 200, 0.12) 38%, transparent 52%);
+  box-shadow:
+    inset 0 0 90px rgba(255, 244, 214, 0.22),
+    0 0 70px rgba(255, 240, 200, 0.3),
+    0 0 190px rgba(255, 220, 150, 0.16);
+  filter: blur(2px);
   opacity: 0;
   animation: eclipseCorona 28s ease-in-out infinite;
 }
 
+/* rayos de la corona, girando lentísimo */
+#corona::before {
+  content: "";
+  position: absolute;
+  top: -16%;
+  right: -16%;
+  bottom: -16%;
+  left: -16%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 244, 214, 0.15) 0deg 5deg,
+    rgba(255, 244, 214, 0) 5deg 13deg
+  );
+  -webkit-mask-image: radial-gradient(circle, transparent 26%, #000 35%, transparent 60%);
+  mask-image: radial-gradient(circle, transparent 26%, #000 35%, transparent 60%);
+  filter: blur(3px);
+  animation: girarRayos 26s linear infinite;
+}
+
+@keyframes girarRayos {
+  to { transform: rotate(360deg); }
+}
+
+/* destello del anillo de diamante: antes y después de la totalidad */
+#destello {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border-radius: 50%;
+  z-index: 4;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    #ffffff 0%,
+    rgba(255, 250, 230, 0.92) 10%,
+    rgba(255, 222, 150, 0.4) 30%,
+    transparent 58%
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: destelloDiamante 28s linear infinite;
+}
+
+@keyframes destelloDiamante {
+  0%, 43.5% { opacity: 0; transform: translate(50vw, 22vh) scale(0.3); }
+  45.5% { opacity: 0.95; transform: translate(50vw, 22vh) scale(1); }
+  47.5%, 55.8% { opacity: 0; transform: translate(50vw, 22vh) scale(0.3); }
+  57.5% { opacity: 0.88; transform: translate(50vw, 22vh) scale(1.06); }
+  60%, 100% { opacity: 0; transform: translate(50vw, 22vh) scale(0.3); }
+}
+
+/* entrada: destello → se apaga un suspiro → totalidad plena → destello de salida */
 @keyframes eclipseCorona {
-  0%, 43% { opacity: 0; }
-  50% { opacity: 1; }
-  57%, 100% { opacity: 0; }
+  0%, 42% { opacity: 0; transform: scale(0.9); }
+  45.5% { opacity: 0.9; transform: scale(1.05); }
+  47.5% { opacity: 0.5; transform: scale(1); }
+  49.5%, 55.5% { opacity: 1; transform: scale(1); }
+  57.8% { opacity: 0.85; transform: scale(1.06); }
+  64%, 100% { opacity: 0; transform: scale(0.9); }
 }
 
 @media (min-width: 1400px) {
@@ -297,16 +369,44 @@ a { color: inherit; text-decoration: none; }
   z-index: 3;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 50% 20%, rgba(4, 3, 12, 0.25) 0%, rgba(4, 3, 12, 0.82) 55%),
-    rgba(3, 2, 10, 0.5);
+    radial-gradient(ellipse at 50% 20%, rgba(5, 4, 14, 0.22) 0%, rgba(4, 3, 13, 0.85) 55%),
+    linear-gradient(rgba(8, 6, 22, 0.5), rgba(3, 2, 10, 0.62));
   opacity: 0;
   animation: nocheEclipse 28s ease-in-out infinite;
 }
 
+/* fases reales: parcial lenta → caída súbita → totalidad → regreso */
 @keyframes nocheEclipse {
-  0%, 42% { opacity: 0; }
-  50% { opacity: 0.55; }
-  58%, 100% { opacity: 0; }
+  0%, 30% { opacity: 0; }
+  40% { opacity: 0.34; }
+  46% { opacity: 0.62; }
+  48% { opacity: 0.9; }
+  49.5%, 55.5% { opacity: 0.95; }
+  59% { opacity: 0.6; }
+  70%, 100% { opacity: 0; }
+}
+
+/* ---------- Horizonte en llamas (brillo 360° durante la totalidad) ---------- */
+#horizonte-fuego {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42vh;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    radial-gradient(120vw 58vh at 50% 118%, rgba(255, 148, 74, 0.32), rgba(255, 92, 96, 0.13) 42%, transparent 70%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: fuegoHorizonte 28s ease-in-out infinite;
+}
+
+@keyframes fuegoHorizonte {
+  0%, 44% { opacity: 0; }
+  47.5% { opacity: 0.85; }
+  49.5%, 56% { opacity: 0.75; }
+  64%, 100% { opacity: 0; }
 }
 
 /* ---------- Niebla ---------- */
@@ -383,7 +483,14 @@ a { color: inherit; text-decoration: none; }
 .ventana {
   fill: var(--accent);
   opacity: 0.8;
-  animation: parpadeoVentana 5s infinite;
+  animation: parpadeoVentana 5s infinite, ventanaEclipse 28s linear infinite;
+}
+
+/* en la totalidad, la ciudad entera enciende sus ventanas */
+@keyframes ventanaEclipse {
+  0%, 42% { filter: brightness(1); }
+  48%, 56% { filter: brightness(2.6) drop-shadow(0 0 7px var(--accent)); }
+  65%, 100% { filter: brightness(1); }
 }
 
 .ventana:nth-of-type(2n) { animation-delay: -1.4s; }
@@ -435,6 +542,17 @@ a { color: inherit; text-decoration: none; }
   pointer-events: none;
   z-index: -1;
   overflow: hidden;
+}
+
+/* las estrellas estallan de brillo cuando llega la totalidad */
+#cielo {
+  animation: cieloEclipse 28s linear infinite;
+}
+
+@keyframes cieloEclipse {
+  0%, 40% { filter: brightness(1); }
+  47.5%, 56% { filter: brightness(2.7); }
+  66%, 100% { filter: brightness(1); }
 }
 
 .estrella {
@@ -814,8 +932,11 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--radius);
   backdrop-filter: blur(16px);
   padding: 2rem;
-  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.35);
-  transition: border-color 0.25s, box-shadow 0.25s;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 20px 55px rgba(0, 0, 0, 0.35),
+    0 2px 10px rgba(0, 0, 0, 0.22);
+  transition: border-color 0.3s ease, box-shadow 0.35s ease, transform 0.35s ease;
 }
 
 .glass::before,
@@ -853,7 +974,11 @@ a { color: inherit; text-decoration: none; }
 
 .glass:hover {
   border-color: var(--borde);
-  box-shadow: 0 24px 65px rgba(0, 0, 0, 0.45), 0 0 30px rgba(233, 196, 106, 0.06);
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 30px 70px rgba(0, 0, 0, 0.5),
+    0 0 34px var(--glow);
 }
 
 .widget {
