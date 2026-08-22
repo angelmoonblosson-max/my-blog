@@ -1,5 +1,5 @@
 /* Attie SW — offline primero, siempre fresco */
-const CACHE = "attie-v33";
+const CACHE = "attie-v34";
 const ESENCIALES = [
   "./",
   "./index.html",
@@ -13,6 +13,8 @@ const ESENCIALES = [
   "./css/style.css",
   "./js/main.js",
   "./assets/avatar.png",
+  "./assets/avatar-web.jpg",
+  "./assets/apple-touch-icon.png",
   "./assets/favicon.svg",
   "./manifest.json",
   "./assets/fonts/inter-400.woff2",

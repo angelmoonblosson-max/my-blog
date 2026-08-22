@@ -6,8 +6,13 @@
   <title>· · ·</title>
   <meta name="robots" content="noindex" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-  <link rel="stylesheet" href="css/style.css?v=33" />
+  <link rel="stylesheet" href="css/style.css?v=34" />
   <meta name="theme-color" content="#0b0918" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#efe6d0" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <link rel="preload" href="assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/playfair-600.woff2" as="font" type="font/woff2" crossorigin />
+
   <link rel="manifest" href="manifest.json" />
   <link rel="preconnect" href="https://cdn.pixabay.com" />
   <meta property="og:type" content="website" />
@@ -45,7 +50,7 @@
   <div id="vineta" aria-hidden="true"></div>
   <div id="grano" aria-hidden="true"></div>
 
-  <main class="lost-pagina container">
+  <main id="contenido" class="lost-pagina container">
     <p class="lost-linea">you shouldn't be here.</p>
     <p class="lost-linea lost-tardia">...</p>
     <p class="lost-linea lost-tardia">but since you are…</p>
@@ -100,7 +105,7 @@
     <ul id="lista-canciones" class="pm-lista"></ul>
   </div>
   <div id="toasts"></div>
-  <script src="js/main.js?v=33"></script>
+  <script src="js/main.js?v=34"></script>
   <script>
     /* badge por llegar aquí + líneas que aparecen despacio */
     setTimeout(function () { if (window.desbloquearBadge) desbloquearBadge("perdido"); }, 1400);

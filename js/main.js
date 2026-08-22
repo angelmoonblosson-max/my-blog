@@ -2387,6 +2387,7 @@ function sonarBadge(especial) {
 function notificarBadge(badge) {
   const n = document.createElement("div");
   n.className = "mc-badge" + (badge.especial ? " especial" : "");
+  n.setAttribute("role", "status");
   n.innerHTML =
     `<span class="mc-icono">${badge.icono}</span>` +
     '<div class="mc-texto">' +

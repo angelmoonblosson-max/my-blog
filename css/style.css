@@ -4612,6 +4612,24 @@ summary:focus-visible,
   border-radius: 4px;
 }
 
+/* ═══════════ SKIP LINK accesible ═══════════ */
+.saltar {
+  position: absolute;
+  left: -9999px;
+  top: 0.6rem;
+  z-index: 9999;
+  background: var(--accent);
+  color: #14101f;
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.saltar:focus {
+  left: 0.6rem;
+}
+
 /* Fuentes locales auto-hospedadas (PWA offline) */
 @font-face {
   font-family: 'Inter';
