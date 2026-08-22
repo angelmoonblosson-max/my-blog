@@ -2714,75 +2714,7 @@ function iniciarCreditos() {
   rueda.addEventListener("animationend", faseFinal);
 }
 
-/* ═══════════ GALERÍA + LIGHTBOX ═══════════ */
-const GALERIA = [
-  { img: "https://picsum.photos/seed/dreamcore-attie/640/420.jpg", t: "cielo morado de las 5 AM" },
-  { img: "https://picsum.photos/seed/liminal-space/640/420.jpg", t: "pasillo que no acaba" },
-  { img: "https://picsum.photos/seed/nightrun/640/420.jpg", t: "luces de la ciudad dormida" },
-  { img: "https://picsum.photos/seed/vaporwave9/640/420.jpg", t: "atardecer de neón" },
-  { img: "https://picsum.photos/seed/moonwindow/640/420.jpg", t: "la ventana encendida" },
-  { img: "https://picsum.photos/seed/oldweb3/640/420.jpg", t: "internet antiguo, pantalla baja" },
-];
-
-(function montarGaleria() {
-  const grid = document.getElementById("galeria-grid");
-  if (!grid) return;
-
-  GALERIA.forEach((item, i) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "galeria-item";
-    b.style.transitionDelay = `${i * 50}ms`;
-    b.innerHTML = `<img src="${item.img}" alt="${item.t}" loading="lazy" /><span>${item.t}</span>`;
-    b.addEventListener("click", () => abrirLightbox(item));
-    grid.appendChild(b);
-  });
-  requestAnimationFrame(() => requestAnimationFrame(() => grid.classList.add("listo")));
-
-  function abrirLightbox(item) {
-    let lb = document.getElementById("lightbox");
-    if (!lb) {
-      lb = document.createElement("div");
-      lb.id = "lightbox";
-      lb.innerHTML =
-        '<figure class="lb-caja">' +
-        '<img alt="" />' +
-        "<figcaption></figcaption>" +
-        '<button type="button" id="lb-cerrar">×</button>' +
-        "</figure>";
-      document.body.appendChild(lb);
-      lb.addEventListener("click", (e) => {
-        if (e.target === lb || e.target.id === "lb-cerrar") cerrar();
-      });
-      addEventListener("keydown", (e) => {
-        if (e.key === "Escape") cerrar();
-      });
-      function cerrar() {
-        lb.classList.remove("abierta");
-        setTimeout(() => (lb.hidden = true), 350);
-      }
-    }
-    desbloquearBadge("coleccionista");
-    lb.querySelector("img").src = item.img;
-    lb.querySelector("img").alt = item.t;
-    lb.querySelector("figcaption").textContent = `✦ ${item.t}`;
-    lb.hidden = false;
-    requestAnimationFrame(() => lb.classList.add("abierta"));
-  }
-})();
-
-/* ═══════════ ESTADO DE LA WEB ═══════════ */
-(function estadoWeb() {
-  const moodEl = document.getElementById("sw-mood");
-  if (!moodEl) return;
-  const h = new Date().getHours();
-  let mood;
-  if (h < 6) mood = "🌙 mood: sleepy";
-  else if (h < 12) mood = "☕ mood: despertando";
-  else if (h < 19) mood = "🌤 mood: en calma";
-  else mood = "🌌 mood: nocturno";
-  moodEl.textContent = mood;
-})();
+/* ═══════════ CURSOR: modo especial para elementos secretos (el bloque de galeria y estado web fue retirado) */
 
 /* ═══════════ CURSOR: modo especial para elementos secretos ═══════════ */
 if (!esTactil) {
