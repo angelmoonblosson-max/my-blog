@@ -1937,3 +1937,93 @@ html[data-modo="claro"] .ps-op.activo { color: #fffdf6; }
   .luciernaga,
   .orbe:nth-child(2n) { display: none; }
 }
+
+/* ---------- Panel de configuración ⚙ ---------- */
+#panel-settings {
+  max-height: 82vh;
+  overflow-y: auto;
+}
+
+.ps-titulo {
+  display: block;
+  margin: 1rem 0 0.4rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--borde-suave);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+}
+
+.chip-color {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--borde-suave);
+  background: var(--c);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.chip-color:hover { transform: scale(1.12); }
+
+.chip-color.activo {
+  border-color: #fff;
+  transform: scale(1.15);
+}
+
+#input-color-personal {
+  width: 38px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+#rango-volumen {
+  width: 100%;
+  margin-top: 0.35rem;
+  accent-color: var(--accent);
+}
+
+#fab-musica.oculto { display: none !important; }
+
+/* interruptores globales */
+html[data-sin-animaciones="1"] *,
+html[data-sin-animaciones="1"] *::before,
+html[data-sin-animaciones="1"] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+html[data-sin-efectos="1"] #grano,
+html[data-sin-efectos="1"] #niebla,
+html[data-sin-efectos="1"] #orbes,
+html[data-sin-efectos="1"] .luciernaga,
+html[data-sin-efectos="1"] .estrella-fugaz { display: none !important; }
+
+/* intensidad de animaciones */
+html[data-intensidad="tranquila"] .estrella,
+html[data-intensidad="tranquila"] .estrella-grande {
+  animation-duration: calc(var(--d, 3s) * 2.2);
+}
+html[data-intensidad="tranquila"] #aurora { animation-duration: 44s; }
+html[data-intensidad="viva"] .estrella,
+html[data-intensidad="viva"] .estrella-grande {
+  animation-duration: calc(var(--d, 3s) * 0.6);
+}
+html[data-intensidad="viva"] #aurora { animation-duration: 16s; }
+
+/* tamaño del texto */
+html[data-texto="grande"] { font-size: 18px; }
+html[data-texto="enorme"] { font-size: 20px; }
+
+/* estilo sobrio */
+html[data-estilo="sobrio"] .glass {
+  box-shadow: none;
+  border-radius: 10px;
+}
+
+/* modo compacto */
+html[data-compacto="1"] .glass { padding: 1.15rem; }

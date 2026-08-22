@@ -7,7 +7,11 @@ const CANCIONES = [
 ];
 
 const esTactil = window.matchMedia("(pointer: coarse)").matches;
-const sinAnimacion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* se consulta en vivo: respeta el sistema y el interruptor del panel ⚙ */
+function sinAnimacion() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return true;
+  return document.documentElement.dataset.sinAnimaciones === "1";
+}
 
 function toast(mensaje) {
   const contenedor = document.getElementById("toasts");
@@ -100,6 +104,75 @@ if (["eclipse", "fugaces", "aurora"].includes(eventoGuardado)) {
   document.documentElement.dataset.evento = eventoGuardado;
 }
 
+/* ── Preferencias del panel ⚙ (todo se guarda en localStorage) ── */
+const CLAVES_PREFS = [
+  "color-principal",
+  "intensidad",
+  "ver-reproductor",
+  "autoplay",
+  "volumen",
+  "aleatorio",
+  "repetir",
+  "sin-animaciones",
+  "sin-efectos",
+  "texto",
+  "estilo",
+  "compacto",
+];
+const PREFS = {};
+CLAVES_PREFS.forEach((k) => {
+  try {
+    PREFS[k] = localStorage.getItem(k) || "";
+  } catch {}
+});
+
+const COLOR_BASE = "#e9c46a";
+
+function aplicarColorPrincipal(hex) {
+  if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return;
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const raiz = document.documentElement.style;
+  raiz.setProperty("--accent", hex);
+  raiz.setProperty("--borde", "rgba(" + r + ", " + g + ", " + b + ", 0.25)");
+  raiz.setProperty("--glow", "rgba(" + r + ", " + g + ", " + b + ", 0.35)");
+}
+
+function aplicarPref(k) {
+  const raiz = document.documentElement;
+  const v = PREFS[k];
+  if (k === "sin-animaciones") {
+    if (v === "1") raiz.dataset.sinAnimaciones = "1";
+    else delete raiz.dataset.sinAnimaciones;
+  } else if (k === "sin-efectos") {
+    if (v === "1") raiz.dataset.sinEfectos = "1";
+    else delete raiz.dataset.sinEfectos;
+  } else if (k === "intensidad") {
+    if (v) raiz.dataset.intensidad = v;
+    else delete raiz.dataset.intensidad;
+  } else if (k === "texto") {
+    if (v) raiz.dataset.texto = v;
+    else delete raiz.dataset.texto;
+  } else if (k === "estilo") {
+    if (v) raiz.dataset.estilo = v;
+    else delete raiz.dataset.estilo;
+  } else if (k === "compacto") {
+    if (v === "1") raiz.dataset.compacto = "1";
+    else delete raiz.dataset.compacto;
+  } else if (k === "ver-reproductor") {
+    const fab = document.getElementById("fab-musica");
+    if (fab) fab.classList.toggle("oculto", v === "0");
+  } else if (k === "color-principal") {
+    if (/^#[0-9a-fA-F]{6}$/.test(v)) {
+      aplicarColorPrincipal(v);
+      delete raiz.dataset.tema; /* el color propio le gana al tema */
+    }
+  }
+  document.dispatchEvent(new CustomEvent("prefs-cambio", { detail: k }));
+}
+CLAVES_PREFS.forEach(aplicarPref);
+
 (function initPersonalizacion() {
   const nav = document.querySelector(".nav");
   if (!nav || document.getElementById("btn-settings")) return;
@@ -116,12 +189,29 @@ if (["eclipse", "fugaces", "aurora"].includes(eventoGuardado)) {
   panel.id = "panel-settings";
   panel.hidden = true;
   panel.innerHTML =
-    "<header><b>✦ Personalizar</b>" +
+    "<header><b>⚙️ Configuración</b>" +
     '<button id="cerrar-settings" type="button" title="Cerrar">×</button></header>' +
-    '<span class="ps-etiqueta">Ambiente</span>' +
+
+    /* ── 🎨 Apariencia ── */
+    '<span class="ps-titulo">🎨 Apariencia</span>' +
+    '<span class="ps-etiqueta">Tema</span>' +
     '<div class="ps-fila">' +
-    '<button type="button" class="ps-op modo-op" data-modo="">🌙 Noche</button>' +
-    '<button type="button" class="ps-op modo-op" data-modo="claro">☀️ Día</button>' +
+    '<button type="button" class="ps-op modo-op" data-modo="">🌙 Oscuro</button>' +
+    '<button type="button" class="ps-op modo-op" data-modo="claro">☀️ Claro</button>' +
+    "</div>" +
+    '<span class="ps-etiqueta">Color principal</span>' +
+    '<div class="ps-fila">' +
+    '<button type="button" class="chip-color" data-color="#e9c46a" style="--c:#e9c46a" title="Oro"></button>' +
+    '<button type="button" class="chip-color" data-color="#b78cff" style="--c:#b78cff" title="Lila"></button>' +
+    '<button type="button" class="chip-color" data-color="#f5a8cb" style="--c:#f5a8cb" title="Rosa"></button>' +
+    '<button type="button" class="chip-color" data-color="#8ecdf7" style="--c:#8ecdf7" title="Hielo"></button>' +
+    '<input id="input-color-personal" type="color" value="#e9c46a" title="Color personalizado">' +
+    "</div>" +
+    '<span class="ps-etiqueta">Intensidad de animaciones</span>' +
+    '<div class="ps-fila">' +
+    '<button type="button" class="ps-op cfg-op" data-config="intensidad" data-valor="tranquila">Tranquila</button>' +
+    '<button type="button" class="ps-op cfg-op" data-config="intensidad" data-valor="">Normal</button>' +
+    '<button type="button" class="ps-op cfg-op" data-config="intensidad" data-valor="viva">Viva</button>' +
     "</div>" +
     '<span class="ps-etiqueta">Evento del cielo</span>' +
     '<div class="ps-fila">' +
@@ -129,19 +219,76 @@ if (["eclipse", "fugaces", "aurora"].includes(eventoGuardado)) {
     '<button type="button" class="ps-op ev-op" data-evento="eclipse">🌑 Eclipse</button>' +
     "</div>" +
     '<div class="ps-fila" style="margin-top:.5rem">' +
-    '<button type="button" class="ps-op ev-op" data-evento="fugaces">⭐ Estrellas fugaces</button>' +
+    '<button type="button" class="ps-op ev-op" data-evento="fugaces">⭐ Fugaces</button>' +
     '<button type="button" class="ps-op ev-op" data-evento="aurora">🌌 Aurora</button>' +
     "</div>" +
-    '<span class="ps-etiqueta">Fondo propio (URL de imagen)</span>' +
+    '<span class="ps-etiqueta">Fondo propio (URL)</span>' +
     '<input id="input-fondo-url" type="url" placeholder="pega el URL de una imagen…" spellcheck="false">' +
     '<div class="ps-fila" style="margin-top:.5rem">' +
     '<button type="button" id="btn-aplicar-fondo" class="ps-op">Aplicar</button>' +
     '<button type="button" id="btn-quitar-fondo" class="ps-op">Quitar</button>' +
     "</div>" +
-    '<div class="ps-fila" style="margin-top:.9rem">' +
-    '<button type="button" id="btn-restablecer" class="ps-op peligro">Restablecer todo</button>' +
+
+    /* ── 🎵 Reproductor ── */
+    '<span class="ps-titulo">🎵 Reproductor</span>' +
+    '<span class="ps-etiqueta">Mostrar reproductor</span>' +
+    '<div class="ps-fila">' +
+    '<button type="button" class="ps-op cfg-op" data-config="ver-reproductor" data-valor="">Visible</button>' +
+    '<button type="button" class="ps-op cfg-op" data-config="ver-reproductor" data-valor="0">Oculto</button>' +
     "</div>" +
-    '<p class="ps-nota">Tu estilo se guarda solo en este navegador.</p>';
+    '<span class="ps-etiqueta">Autoplay</span>' +
+    '<div class="ps-fila">' +
+    '<button type="button" class="ps-op cfg-op" data-config="autoplay" data-valor="1">ON</button>' +
+    '<button type="button" class="ps-op cfg-op" data-config="autoplay" data-valor="">OFF</button>' +
+    "</div>" +
+    '<span class="ps-etiqueta">Volumen predeterminado: <b id="etq-volumen"></b></span>' +
+    '<input id="rango-volumen" type="range" min="0" max="100" step="5">' +
+    '<span class="ps-etiqueta">Reproducción aleatoria</span>' +
+    '<div class="ps-fila">' +
+    '<button type="button" class="ps-op cfg-op" data-config="aleatorio" data-valor="1">ON</button>' +
+    '<button type="button" class="ps-op cfg-op" data-config="aleatorio" data-valor="">OFF</button>' +
+    "</div>" +
+    '<span class="ps-etiqueta">Repetir canciones</span>' +
+    '<div class="ps-fila">' +
+    '<button type="button" class="ps-op cfg-op" data-config="repetir" data-valor="1">ON</button>' +
+    '<button type="button" class="ps-op cfg-op" data-config="repetir" data-valor="">OFF</button>' +
+    "</div>" +
+
+    /* ── ✨ Interfaz ── */
+    '<span class="ps-titulo">✨ Interfaz</span>' +
+    '<span class="ps-etiqueta">Animaciones</span>' +
+    '<div class="ps-fila">' +
+    '<button type="button" class="ps-op cfg-op" data-config="sin-animaciones" data-valor="">ON</button>' +
+    '<button type="button" class="ps-op cfg-op" data-config="sin-animaciones" data-valor="1">OFF</button>' +
+    "</div>" +
+    '<span class="ps-etiqueta">Efectos visuales</span>' +
+    '<div class="ps-fila">' +
+    '<button type="button" class="ps-op cfg-op" data-config="sin-efectos" data-valor="">ON</button>' +
+    '<button type="button" class="ps-op cfg-op" data-config="sin-efectos" data-valor="1">OFF</button>' +
+    "</div>" +
+    '<span class="ps-etiqueta">Tamaño del texto</span>' +
+    '<div class="ps-fila">' +
+    '<button type="button" class="ps-op cfg-op" data-config="texto" data-valor="">Normal</button>' +
+    '<button type="button" class="ps-op cfg-op" data-config="texto" data-valor="grande">Grande</button>' +
+    '<button type="button" class="ps-op cfg-op" data-config="texto" data-valor="enorme">Enorme</button>' +
+    "</div>" +
+    '<span class="ps-etiqueta">Estilo de la página</span>' +
+    '<div class="ps-fila">' +
+    '<button type="button" class="ps-op cfg-op" data-config="estilo" data-valor="">Clásico</button>' +
+    '<button type="button" class="ps-op cfg-op" data-config="estilo" data-valor="sobrio">Sobrio</button>' +
+    "</div>" +
+
+    /* ── 🔧 Extras ── */
+    '<span class="ps-titulo">🔧 Extras</span>' +
+    '<span class="ps-etiqueta">Modo compacto</span>' +
+    '<div class="ps-fila">' +
+    '<button type="button" class="ps-op cfg-op" data-config="compacto" data-valor="1">ON</button>' +
+    '<button type="button" class="ps-op cfg-op" data-config="compacto" data-valor="">OFF</button>' +
+    "</div>" +
+    '<div class="ps-fila" style="margin-top:.9rem">' +
+    '<button type="button" id="btn-restablecer" class="ps-op peligro">Restaurar predeterminados</button>' +
+    "</div>" +
+    '<p class="ps-nota">💾 Todo se guarda solo en este navegador.</p>';
   document.body.appendChild(panel);
 
   function marcarModo() {
@@ -151,11 +298,86 @@ if (["eclipse", "fugaces", "aurora"].includes(eventoGuardado)) {
     });
   }
 
+  function guardarPref(k, v) {
+    PREFS[k] = v;
+    try {
+      if (v) localStorage.setItem(k, v);
+      else localStorage.removeItem(k);
+    } catch {}
+    aplicarPref(k);
+    marcarConfig();
+  }
+
+  panel.querySelectorAll(".cfg-op").forEach((b) => {
+    b.addEventListener("click", () => {
+      guardarPref(b.dataset.config, b.dataset.valor || "");
+      toast("✦ Guardado");
+    });
+  });
+
+  function marcarConfig() {
+    panel.querySelectorAll(".cfg-op").forEach((b) => {
+      b.classList.toggle(
+        "activo",
+        (PREFS[b.dataset.config] || "") === (b.dataset.valor || "")
+      );
+    });
+  }
+
+  function marcarColor() {
+    const guardado = PREFS["color-principal"] || "";
+    panel.querySelectorAll(".chip-color").forEach((chip) => {
+      chip.classList.toggle("activo", chip.dataset.color === guardado);
+    });
+    inputColor.value = guardado || COLOR_BASE;
+  }
+
+  panel.querySelectorAll(".chip-color").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      delete document.documentElement.dataset.tema;
+      try {
+        localStorage.removeItem("tema");
+      } catch {}
+      guardarPref("color-principal", chip.dataset.color);
+      toast("✦ Color cambiado");
+    });
+  });
+
+  const inputColor = panel.querySelector("#input-color-personal");
+  inputColor.addEventListener("input", () => {
+    delete document.documentElement.dataset.tema;
+    try {
+      localStorage.removeItem("tema");
+    } catch {}
+    guardarPref("color-principal", inputColor.value);
+  });
+
+  const rangoVolumen = panel.querySelector("#rango-volumen");
+  const etqVolumen = panel.querySelector("#etq-volumen");
+
+  function pintarVolumen() {
+    const n = parseInt(PREFS.volumen || "80", 10) || 0;
+    rangoVolumen.value = String(n);
+    etqVolumen.textContent = n + "%";
+  }
+
+  rangoVolumen.addEventListener("input", () => {
+    PREFS.volumen = rangoVolumen.value;
+    try {
+      localStorage.setItem("volumen", rangoVolumen.value);
+    } catch {}
+    etqVolumen.textContent = rangoVolumen.value + "%";
+    document.dispatchEvent(new CustomEvent("prefs-cambio", { detail: "volumen" }));
+  });
+
   function abrir() {
     panel.hidden = !panel.hidden;
     if (!panel.hidden) {
       marcarModo();
       marcarEvento();
+      marcarConfig();
+      marcarColor();
+      pintarVolumen();
       input.value = fondoGuardado;
     }
   }
@@ -244,9 +466,11 @@ if (["eclipse", "fugaces", "aurora"].includes(eventoGuardado)) {
 
   panel.querySelector("#btn-restablecer").addEventListener("click", () => {
     try {
+      CLAVES_PREFS.forEach((k) => localStorage.removeItem(k));
       localStorage.removeItem("modo");
       localStorage.removeItem("fondo-url");
       localStorage.removeItem("tema");
+      localStorage.removeItem("evento");
     } catch {}
     location.reload();
   });
@@ -290,7 +514,7 @@ document.addEventListener("visibilitychange", () => {
 
 const cielo = document.getElementById("cielo");
 
-if (cielo && !sinAnimacion) {
+if (cielo && !sinAnimacion()) {
   const factorPantalla = Math.min(
     1.45,
     Math.max(1, (window.innerWidth * window.innerHeight) / (1440 * 800))
@@ -432,7 +656,7 @@ let ratonPy = 0;
 let rafParallax = null;
 
 function aplicarParallax() {
-  if (sinAnimacion) return;
+  if (sinAnimacion()) return;
   const y = scrollY;
 
   CAPAS_PARALLAX.forEach(({ el, fx, fy }) => {
@@ -452,7 +676,7 @@ function pedirParallax() {
 addEventListener("scroll", pedirParallax, { passive: true });
 aplicarParallax();
 
-if (!esTactil && !sinAnimacion) {
+if (!esTactil && !sinAnimacion()) {
   addEventListener("mousemove", (e) => {
     ratonPx = e.clientX / innerWidth - 0.5;
     ratonPy = e.clientY / innerHeight - 0.5;
@@ -463,7 +687,7 @@ if (!esTactil && !sinAnimacion) {
 const contenedorOrbes = document.getElementById("orbes");
 const CLASES_ORBE = ["lila", "oro", "rosa"];
 
-if (contenedorOrbes && !sinAnimacion) {
+if (contenedorOrbes && !sinAnimacion()) {
   for (let i = 0; i < 8; i++) {
     const orbe = document.createElement("span");
     orbe.className = `orbe ${CLASES_ORBE[i % 3]}`;
@@ -479,7 +703,7 @@ if (contenedorOrbes && !sinAnimacion) {
 const COLORES_LUZ = ["#e9c46a", "#b78cff", "#f5a8cb"];
 
 function lanzarLuciernaga() {
-  if (sinAnimacion) return;
+  if (sinAnimacion()) return;
   if (document.querySelectorAll(".luciernaga").length > 8) return;
 
   const luz = document.createElement("span");
@@ -495,10 +719,10 @@ function lanzarLuciernaga() {
   setTimeout(() => luz.remove(), 23000);
 }
 
-if (!sinAnimacion) setInterval(lanzarLuciernaga, 2600);
+if (!sinAnimacion()) setInterval(lanzarLuciernaga, 2600);
 
 function lanzarEstrellaFugaz() {
-  if (!cielo || sinAnimacion) return;
+  if (!cielo || sinAnimacion()) return;
   const fugaz = document.createElement("span");
   fugaz.className = "estrella-fugaz";
   fugaz.style.top = `${Math.random() * 35}%`;
@@ -508,7 +732,7 @@ function lanzarEstrellaFugaz() {
 }
 
 function lluviaDeEstrellas(cantidad) {
-  if (!cielo || sinAnimacion) return;
+  if (!cielo || sinAnimacion()) return;
   let n = 0;
   const intervalo = setInterval(() => {
     lanzarEstrellaFugaz();
@@ -631,7 +855,7 @@ if (btnCompartir) {
 
 const avatarTilt = document.getElementById("avatar-tilt");
 
-if (avatarTilt && !esTactil && !sinAnimacion) {
+if (avatarTilt && !esTactil && !sinAnimacion()) {
   avatarTilt.addEventListener("mousemove", (e) => {
     const rect = avatarTilt.getBoundingClientRect();
     const dx = (e.clientX - rect.left) / rect.width - 0.5;
@@ -657,7 +881,7 @@ avatarTilt?.addEventListener("click", () => {
 });
 
 function crearChispas(x, y, n) {
-  if (sinAnimacion) return;
+  if (sinAnimacion()) return;
 
   for (let i = 0; i < n; i++) {
     const chispa = document.createElement("span");
@@ -681,12 +905,12 @@ function crearChispas(x, y, n) {
 }
 
 addEventListener("pointerdown", (e) => {
-  if (sinAnimacion || e.button !== 0) return;
+  if (sinAnimacion() || e.button !== 0) return;
   crearChispas(e.clientX, e.clientY, 8);
 });
 
 function lluviaDeCorazones(cantidad) {
-  if (sinAnimacion) return;
+  if (sinAnimacion()) return;
   let n = 0;
   const intervalo = setInterval(() => {
     const corazon = document.createElement("span");
@@ -701,7 +925,7 @@ function lluviaDeCorazones(cantidad) {
 }
 
 function fuegosArtificiales() {
-  if (sinAnimacion) return;
+  if (sinAnimacion()) return;
   let n = 0;
   const intervalo = setInterval(() => {
     crearChispas(
@@ -788,7 +1012,47 @@ if (fabMusica && panel && audio && listaUI) {
   let indiceActual = -1;
   let iframeYT = null;
 
-  audio.volume = parseInt(volumen.value, 10) / 100;
+  function volumenPredeterminado() {
+    const n = parseInt(PREFS.volumen || "80", 10);
+    if (isNaN(n)) return 0.8;
+    return Math.min(1, Math.max(0, n / 100));
+  }
+
+  audio.volume = volumenPredeterminado();
+  audio.loop = PREFS.repetir === "1";
+  volumen.value = String(Math.round(volumenPredeterminado() * 100));
+
+  document.addEventListener("prefs-cambio", (e) => {
+    if (e.detail === "volumen") {
+      audio.volume = volumenPredeterminado();
+      volumen.value = PREFS.volumen || "80";
+    } else if (e.detail === "repetir") {
+      audio.loop = PREFS.repetir === "1";
+    }
+  });
+
+  /* autoplay: arranca con el primer toque o tecla del visitante */
+  if (PREFS.autoplay === "1") {
+    const arrancarMusica = () => {
+      document.removeEventListener("pointerdown", arrancarMusica);
+      document.removeEventListener("keydown", arrancarMusica);
+      if (indiceActual === -1) reproducir(0);
+    };
+    document.addEventListener("pointerdown", arrancarMusica);
+    document.addEventListener("keydown", arrancarMusica);
+  }
+
+  /* siguiente índice respetando la reproducción aleatoria */
+  function siguienteIndice(fallback) {
+    if (PREFS.aleatorio === "1" && CANCIONES.length > 1) {
+      let n = indiceActual;
+      while (n === indiceActual) {
+        n = Math.floor(Math.random() * CANCIONES.length);
+      }
+      return n;
+    }
+    return fallback;
+  }
 
 function esYouTube(url) {
   return /youtu\.?be/.test(url);
@@ -883,16 +1147,16 @@ btnPlay.addEventListener("click", () => {
 });
 
 btnAnterior.addEventListener("click", () =>
-  reproducir(indiceActual <= 0 ? CANCIONES.length - 1 : indiceActual - 1)
+  reproducir(siguienteIndice(indiceActual <= 0 ? CANCIONES.length - 1 : indiceActual - 1))
 );
 
-btnSiguiente.addEventListener("click", () => reproducir(indiceActual + 1));
+btnSiguiente.addEventListener("click", () => reproducir(siguienteIndice(indiceActual + 1)));
 
 audio.addEventListener("play", () => sonando(true));
 audio.addEventListener("pause", () => sonando(false));
 
-/* al terminar una canción, sigue la siguiente */
-audio.addEventListener("ended", () => reproducir(indiceActual + 1));
+/* al terminar una canción, sigue la siguiente (o una al azar) */
+audio.addEventListener("ended", () => reproducir(siguienteIndice(indiceActual + 1)));
 
 volumen.addEventListener("input", () => {
   audio.volume = parseInt(volumen.value, 10) / 100;
