@@ -2905,3 +2905,157 @@ if (!esTactil) {
   }
   programar();
 })();
+
+/* MODO DIA: nubes flotantes y pajaritos */
+(function paisajeDia() {
+  if (document.getElementById("nubes")) return;
+
+  const nubes = document.createElement("div");
+  nubes.id = "nubes";
+  for (let i = 0; i < 5; i++) {
+    const nube = document.createElement("span");
+    nube.className = "nube";
+    nube.style.top = `${4 + Math.random() * 22}%`;
+    nube.style.setProperty("--s", `${0.6 + Math.random() * 0.9}`);
+    nube.style.setProperty("--d", `${70 + Math.random() * 60}s`);
+    nube.style.animationDelay = `${-Math.random() * 90}s`;
+    nube.style.opacity = `${0.75 + Math.random() * 0.25}`;
+    nubes.appendChild(nube);
+  }
+  document.body.appendChild(nubes);
+
+  for (let i = 0; i < 3; i++) {
+    const ave = document.createElement("span");
+    ave.className = "ave";
+    ave.style.top = `${10 + Math.random() * 26}%`;
+    ave.style.setProperty("--d", `${38 + Math.random() * 26}s`);
+    ave.style.animationDelay = `${-Math.random() * 50}s`;
+    ave.style.setProperty("--escala", `${0.7 + Math.random() * 0.6}`);
+    document.body.appendChild(ave);
+  }
+})();
+
+/* arboles extra en la aldea */
+(function arbolesAldea() {
+  const svg = document.querySelector("#castillo svg");
+  if (!svg || svg.dataset.arboles) return;
+  svg.dataset.arboles = "1";
+  const g =
+    '<g fill="var(--ciudad-baja)">' +
+    '<circle cx="140" cy="176" r="11"/><rect x="137" y="182" width="6" height="20"/>' +
+    '<circle cx="540" cy="180" r="13"/><rect x="536" y="188" width="7" height="18"/>' +
+    '<circle cx="700" cy="174" r="12"/><rect x="696" y="182" width="7" height="22"/>' +
+    '<circle cx="866" cy="178" r="14"/><rect x="862" y="186" width="8" height="20"/>' +
+    '<circle cx="1232" cy="170" r="12"/><rect x="1229" y="178" width="6" height="24"/>' +
+    '<polygon points="628,206 650,206 639,172"/>' +
+    '<polygon points="631,184 647,184 639,158"/>' +
+    '<rect x="636" y="206" width="6" height="14"/>' +
+    '<polygon points="806,210 830,210 818,172"/>' +
+    '<polygon points="809,186 827,186 818,156"/>' +
+    '<polygon points="811,168 825,168 818,144"/>' +
+    '<rect x="815" y="210" width="6" height="16"/>' +
+    "</g>";
+  svg.insertAdjacentHTML("beforeend", g);
+})();
+
+/* AVATAR DJ: vibra y gira al ritmo de la musica */
+(function avatarMusical() {
+  const wrap = document.getElementById("avatar-tilt");
+  const pulso = document.querySelector(".avatar-pulso");
+  if (!wrap || !pulso || !audio) return;
+
+  let ctx = null;
+  let analizador = null;
+  let datos = null;
+  let conectado = false;
+  let rafId = null;
+  let simulado = false;
+  let ceros = 0;
+
+  function conectar() {
+    if (conectado) return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) {
+        simulado = true;
+        return;
+      }
+      audio.crossOrigin = "anonymous";
+      ctx = new AC();
+      const fuente = ctx.createMediaElementSource(audio);
+      analizador = ctx.createAnalyser();
+      analizador.fftSize = 256;
+      analizador.smoothingTimeConstant = 0.72;
+      fuente.connect(analizador);
+      analizador.connect(ctx.destination);
+      datos = new Uint8Array(analizador.frequencyBinCount);
+      conectado = true;
+    } catch {
+      conectado = false;
+      simulado = true;
+    }
+  }
+
+  function esNoche() {
+    const h = new Date().getHours();
+    return h >= 19 || h < 6;
+  }
+
+  function cuadro() {
+    rafId = requestAnimationFrame(cuadro);
+    if (audio.paused) return;
+
+    let nivel = 0;
+    if (conectado && analizador && !simulado) {
+      analizador.getByteFrequencyData(datos);
+      let suma = 0;
+      const n = Math.min(48, datos.length);
+      for (let i = 0; i < n; i++) suma += datos[i];
+      nivel = suma / n / 190;
+      if (nivel <= 0.002) {
+        ceros++;
+        if (ceros > 100) simulado = true;
+      } else {
+        ceros = 0;
+      }
+    } else {
+      simulado = true;
+    }
+
+    if (simulado) {
+      const t = performance.now() / 1000;
+      nivel =
+        0.26 +
+        0.74 * Math.abs(Math.sin(t * 4.4)) * Math.abs(Math.sin(t * 1.35));
+    }
+
+    nivel = Math.max(0, Math.min(1, nivel));
+    const noche = esNoche();
+    const fuerza = noche ? 1 : 0.3;
+    pulso.style.transform =
+      "scale(" +
+      (1 + nivel * 0.26 * fuerza).toFixed(3) +
+      ") rotate(" +
+      (nivel * 9 * fuerza).toFixed(1) +
+      "deg)";
+    pulso.style.filter =
+      "drop-shadow(0 0 " +
+      (5 + nivel * 32 * fuerza).toFixed(1) +
+      "px rgba(255, 214, 130, " +
+      (0.16 + nivel * 0.58 * fuerza).toFixed(2) +
+      "))";
+  }
+
+  audio.addEventListener("play", () => {
+    conectar();
+    if (ctx && ctx.state === "suspended") ctx.resume();
+    wrap.classList.add("en-fiesta");
+    if (rafId === null) cuadro();
+  });
+
+  audio.addEventListener("pause", () => {
+    wrap.classList.remove("en-fiesta");
+    pulso.style.transform = "";
+    pulso.style.filter = "";
+  });
+})();
