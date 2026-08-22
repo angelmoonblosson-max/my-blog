@@ -180,9 +180,10 @@ a { color: inherit; text-decoration: none; }
   position: fixed;
   left: 0;
   top: 0;
-  width: 300px;
-  height: 300px;
-  margin: -150px 0 0 -150px;
+  --tam: clamp(250px, 16vw, 450px);
+  width: var(--tam);
+  height: var(--tam);
+  margin: calc(var(--tam) / -2) 0 0 calc(var(--tam) / -2);
   border-radius: 50%;
   z-index: -2;
   pointer-events: none;
@@ -211,9 +212,10 @@ a { color: inherit; text-decoration: none; }
   position: fixed;
   left: 0;
   top: 0;
-  width: 290px;
-  height: 290px;
-  margin: -145px 0 0 -145px;
+  --tam: clamp(235px, 15vw, 425px);
+  width: var(--tam);
+  height: var(--tam);
+  margin: calc(var(--tam) / -2) 0 0 calc(var(--tam) / -2);
   border-radius: 50%;
   z-index: -3;
   pointer-events: none;
@@ -242,9 +244,10 @@ a { color: inherit; text-decoration: none; }
   position: fixed;
   left: 50%;
   top: 22%;
-  width: 580px;
-  height: 580px;
-  margin: -290px 0 0 -290px;
+  --tam: clamp(480px, 31vw, 880px);
+  width: var(--tam);
+  height: var(--tam);
+  margin: calc(var(--tam) / -2) 0 0 calc(var(--tam) / -2);
   border-radius: 50%;
   z-index: -2;
   pointer-events: none;
@@ -1860,4 +1863,21 @@ html[data-modo="claro"] .ps-op.activo { color: #fffdf6; }
   .temas { gap: 0.38rem; }
 
   .tema { width: 13px; height: 13px; }
+}
+
+/* ---------- Pantallas grandes ---------- */
+@media (min-width: 1500px) {
+  html { font-size: 17.5px; }
+
+  .container,
+  .hero-inner { max-width: 1020px; }
+
+  #castillo svg { height: min(44vh, 540px); }
+}
+
+@media (min-width: 1900px) {
+  html { font-size: 18.5px; }
+
+  .container,
+  .hero-inner { max-width: 1120px; }
 }

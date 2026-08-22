@@ -212,7 +212,12 @@ if (footerSitio && !footerSitio.querySelector(".dm-nota")) {
 const cielo = document.getElementById("cielo");
 
 if (cielo && !sinAnimacion) {
-  for (let i = 0; i < 95; i++) {
+  const factorPantalla = Math.min(
+    1.9,
+    Math.max(1, (window.innerWidth * window.innerHeight) / (1440 * 800))
+  );
+
+  for (let i = 0; i < Math.round(95 * factorPantalla); i++) {
     const estrella = document.createElement("span");
     estrella.className = "estrella";
     const tamano = Math.random() * 1.8 + 0.8;
@@ -225,7 +230,7 @@ if (cielo && !sinAnimacion) {
     cielo.appendChild(estrella);
   }
 
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < Math.round(12 * factorPantalla); i++) {
     const estrella = document.createElement("span");
     estrella.className = "estrella-grande";
     estrella.style.left = `${Math.random() * 100}%`;
