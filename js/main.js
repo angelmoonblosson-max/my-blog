@@ -943,17 +943,6 @@ if (actividadEl) {
     }
   }
 
-  /* ubicación abajo (se inyecta al final del pie de cualquier página) */
-  let ubicacionEl = document.getElementById("ubicacion-footer");
-  if (!ubicacionEl) {
-    const pieEl = document.querySelector(".site-footer");
-    if (pieEl) {
-      ubicacionEl = document.createElement("span");
-      ubicacionEl.id = "ubicacion-footer";
-      pieEl.appendChild(ubicacionEl);
-    }
-  }
-
   function fraseSegunHora(h) {
     if (h >= 0 && h < 6) return "🌙 deberías estar durmiendo";
     if (h < 12) return "☀️ buenos días";
@@ -978,14 +967,6 @@ if (actividadEl) {
       horaLocalEl.hidden = false;
       horaLocalEl.textContent = `${fraseSegunHora(ahora.getHours())} · 🕐 ${horaTxt} en ${lugar}`;
       horaLocalEl.title = tz || "";
-    }
-
-    if (ubicacionEl && !ubicacionEl.textContent) {
-      const lugar = tz ? tz.split("/").pop().replace(/_/g, " ") : "zona local";
-      const off = -ahora.getTimezoneOffset() / 60;
-      const offTxt = "UTC" + (off >= 0 ? "+" : "") + off;
-      ubicacionEl.textContent = `✧ tu cielo: ${lugar} · ${offTxt}`;
-      ubicacionEl.title = tz || "";
     }
   }
 
