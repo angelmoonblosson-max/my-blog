@@ -2,8 +2,8 @@
 //  EDITA TUS CANCIONES AQUÍ ↓ URL de YouTube o mp3
 // ════════════════════════════════════════════════
 const CANCIONES = [
-  { titulo: "Para concentrarse", url: "https://www.youtube.com/watch?v=aQZHAl_eV1c" },
-  { titulo: "Noches tranquilas", url: "https://www.youtube.com/live/an60NyBayzE" },
+  { titulo: "Hollow Memory ✦ dreamcore", url: "https://cdn.pixabay.com/download/audio/2026/08/11/audio_ad420da63d.mp3?filename=9jackjack8-hollow-memory-nostalgic-dreamcore-beat-584029.mp3" },
+  { titulo: "Loft ✦ ethereal", url: "https://cdn.pixabay.com/download/audio/2026/06/08/audio_394eae53a8.mp3?filename=9jackjack8-loft-dreamcore-ethereal-548568.mp3" },
 ];
 
 const esTactil = window.matchMedia("(pointer: coarse)").matches;
@@ -875,6 +875,9 @@ btnSiguiente.addEventListener("click", () => reproducir(indiceActual + 1));
 
 audio.addEventListener("play", () => sonando(true));
 audio.addEventListener("pause", () => sonando(false));
+
+/* al terminar una canción, sigue la siguiente */
+audio.addEventListener("ended", () => reproducir(indiceActual + 1));
 
 volumen.addEventListener("input", () => {
   audio.volume = parseInt(volumen.value, 10) / 100;
