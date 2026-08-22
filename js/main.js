@@ -932,6 +932,28 @@ if (actividadEl) {
     tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
   } catch {}
 
+  /* reloj arriba a la derecha (se inyecta en el nav de cualquier página) */
+  let relojNav = document.getElementById("reloj-nav");
+  if (!relojNav) {
+    const navEl = document.querySelector(".nav");
+    if (navEl) {
+      relojNav = document.createElement("span");
+      relojNav.id = "reloj-nav";
+      navEl.appendChild(relojNav);
+    }
+  }
+
+  /* ubicación abajo (se inyecta al final del pie de cualquier página) */
+  let ubicacionEl = document.getElementById("ubicacion-footer");
+  if (!ubicacionEl) {
+    const pieEl = document.querySelector(".site-footer");
+    if (pieEl) {
+      ubicacionEl = document.createElement("span");
+      ubicacionEl.id = "ubicacion-footer";
+      pieEl.appendChild(ubicacionEl);
+    }
+  }
+
   function fraseSegunHora(h) {
     if (h >= 0 && h < 6) return "🌙 deberías estar durmiendo";
     if (h < 12) return "☀️ buenos días";
@@ -941,18 +963,34 @@ if (actividadEl) {
 
   function tic() {
     const ahora = new Date();
-    if (!horaLocalEl) return;
-    const horaTxt = ahora.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-    const lugar = tz ? tz.split("/").pop().replace(/_/g, " ") : "tu zona";
-    horaLocalEl.hidden = false;
-    horaLocalEl.textContent = `${fraseSegunHora(ahora.getHours())} · 🕐 ${horaTxt} en ${lugar}`;
-    horaLocalEl.title = tz || "";
+    const horaTxt =
+      String(ahora.getHours()).padStart(2, "0") +
+      ":" +
+      String(ahora.getMinutes()).padStart(2, "0");
+
+    if (relojNav) {
+      relojNav.textContent = `✦ ${horaTxt}`;
+      relojNav.title = "tu hora local";
+    }
+
+    if (horaLocalEl) {
+      const lugar = tz ? tz.split("/").pop().replace(/_/g, " ") : "tu zona";
+      horaLocalEl.hidden = false;
+      horaLocalEl.textContent = `${fraseSegunHora(ahora.getHours())} · 🕐 ${horaTxt} en ${lugar}`;
+      horaLocalEl.title = tz || "";
+    }
+
+    if (ubicacionEl && !ubicacionEl.textContent) {
+      const lugar = tz ? tz.split("/").pop().replace(/_/g, " ") : "zona local";
+      const off = -ahora.getTimezoneOffset() / 60;
+      const offTxt = "UTC" + (off >= 0 ? "+" : "") + off;
+      ubicacionEl.textContent = `✧ tu cielo: ${lugar} · ${offTxt}`;
+      ubicacionEl.title = tz || "";
+    }
   }
 
-  if (horaLocalEl) {
-    tic();
-    setInterval(tic, 20000);
-  }
+  tic();
+  setInterval(tic, 5000);
 })();
 
 const btnCorazon = document.getElementById("btn-corazon");
