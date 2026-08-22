@@ -1,5 +1,5 @@
 /* Attie SW — offline primero, siempre fresco */
-const CACHE = "attie-v32";
+const CACHE = "attie-v33";
 const ESENCIALES = [
   "./",
   "./index.html",
@@ -14,7 +14,13 @@ const ESENCIALES = [
   "./js/main.js",
   "./assets/avatar.png",
   "./assets/favicon.svg",
-  "./manifest.json"
+  "./manifest.json",
+  "./assets/fonts/inter-400.woff2",
+  "./assets/fonts/inter-500.woff2",
+  "./assets/fonts/inter-600.woff2",
+  "./assets/fonts/inter-700.woff2",
+  "./assets/fonts/playfair-600.woff2",
+  "./assets/fonts/playfair-600-italic.woff2"
 ];
 
 self.addEventListener("install", (e) => {

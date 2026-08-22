@@ -127,7 +127,19 @@ try {
   fondoGuardado = localStorage.getItem("fondo-url") || "";
   eventoGuardado = localStorage.getItem("evento") || "";
 } catch {}
-if (modoGuardado === "claro") document.documentElement.dataset.modo = "claro";
+if (modoGuardado === "claro") {
+  document.documentElement.dataset.modo = "claro";
+} else if (modoGuardado === "" || modoGuardado == null) {
+  let nuncaElegido = false;
+  try { nuncaElegido = localStorage.getItem("modo") === null; } catch {}
+  if (
+    nuncaElegido &&
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: light)").matches
+  ) {
+    document.documentElement.dataset.modo = "claro";
+  }
+}
 if (fondoGuardado && /^(https?:|data:image)/i.test(fondoGuardado)) aplicarFondo(fondoGuardado);
 if (["eclipse", "fugaces", "aurora"].includes(eventoGuardado)) {
   document.documentElement.dataset.evento = eventoGuardado;
