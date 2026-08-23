@@ -4679,3 +4679,216 @@ summary:focus-visible,
   src: url(../assets/fonts/playfair-600.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
+
+/* ═══════════════════════════════════════════
+   SISTEMA DE MOTION DESIGN
+   tokens → estados → transiciones → ambiente
+   ═══════════════════════════════════════════ */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-instant: 120ms;
+  --t-rapida: 200ms;
+  --t-media: 380ms;
+  --t-lenta: 700ms;
+}
+
+/* ── 1. TRANSICIÓN ENTRE PÁGINAS ── */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+
+body.salida-pagina {
+  opacity: 0;
+  filter: blur(5px);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body.salida-pagina {
+    transform: translateY(-8px) scale(0.996);
+    transition:
+      opacity var(--t-rapida) var(--ease-inout),
+      filter var(--t-rapida) var(--ease-inout),
+      transform var(--t-rapida) var(--ease-inout);
+  }
+}
+
+/* ── 2. REVEAL SECUNDARIO (sin rebote, solo presencia) ── */
+.reveal-suave {
+  opacity: 0;
+  transform: translateY(16px);
+  transition-delay: var(--rd, 0ms);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-suave {
+    transition:
+      opacity var(--t-lenta) var(--ease-out),
+      transform var(--t-lenta) var(--ease-out);
+  }
+}
+
+.reveal-suave.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── 3. MICROINTERACCIONES: LINKS ── */
+.nav-enlaces a,
+main :is(p, li, small, b) a:not(.btn-accion):not(.tema) {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: left calc(100% - 1px);
+  transition:
+    background-size var(--t-media) var(--ease-out),
+    color var(--t-rapida) var(--ease-out),
+    text-shadow var(--t-rapida) var(--ease-out);
+}
+
+.nav-enlaces a:hover,
+main :is(p, li, small, b) a:hover:not(.btn-accion):not(.tema) {
+  background-size: 100% 1px;
+}
+
+/* ── 4. MÁQUINA DE ESTADOS DE BOTONES ── */
+button:disabled,
+.btn-accion:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: saturate(0.4);
+}
+
+.btn-accion,
+.tema,
+.btn-compartir {
+  transition:
+    transform var(--t-instant) var(--ease-spring),
+    box-shadow var(--t-media) var(--ease-out),
+    background var(--t-media) var(--ease-out),
+    border-color var(--t-media) var(--ease-out),
+    color var(--t-rapida) var(--ease-out);
+  will-change: transform;
+}
+
+.btn-accion:focus-visible,
+.tema:focus-visible,
+.btn-compartir:focus-visible {
+  box-shadow:
+    0 0 0 3px rgba(233, 196, 106, 0.35),
+    0 0 22px rgba(233, 196, 106, 0.25);
+}
+
+.btn-accion:active,
+.tema:active,
+.btn-compartir:active {
+  transition-duration: var(--t-instant);
+}
+
+/* ── 5. TARJETAS: ELEVACIÓN CON PROFUNDIDAD ── */
+.post-card,
+.destacada,
+.widget {
+  transition:
+    transform var(--t-media) var(--ease-out),
+    box-shadow var(--t-media) var(--ease-out),
+    border-color var(--t-media) var(--ease-out);
+}
+
+.post-card:hover,
+.destacada:hover,
+.widget:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 18px 44px rgba(8, 5, 18, 0.55),
+    0 4px 14px rgba(8, 5, 18, 0.4);
+  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
+}
+
+html[data-modo="claro"] .post-card:hover,
+html[data-modo="claro"] .destacada:hover,
+html[data-modo="claro"] .widget:hover {
+  box-shadow:
+    0 18px 40px rgba(90, 75, 45, 0.18),
+    0 4px 12px rgba(90, 75, 45, 0.12);
+}
+
+/* ── 6. CORAZÓN: latido + contador ── */
+.latido {
+  animation: latidoCorazon 0.55s var(--ease-spring);
+}
+
+@keyframes latidoCorazon {
+  0% { scale: 1; }
+  30% { scale: 1.38; }
+  55% { scale: 0.9; }
+  78% { scale: 1.08; }
+  100% { scale: 1; }
+}
+
+.bump {
+  display: inline-block;
+  animation: bumpNumero 0.4s var(--ease-spring);
+}
+
+@keyframes bumpNumero {
+  0% { scale: 1; }
+  45% { scale: 1.35; }
+  100% { scale: 1; }
+}
+
+/* ── 7. MÚSICA: FAB respira cuando suena ── */
+#fab-musica {
+  position: relative;
+}
+
+#fab-musica.sonando::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: inherit;
+  border: 2px solid var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  animation: pulsoSonando 2.1s var(--ease-out) infinite;
+}
+
+@keyframes pulsoSonando {
+  0% { scale: 0.92; opacity: 0.75; }
+  70% { scale: 1.28; opacity: 0; }
+  100% { scale: 1.28; opacity: 0; }
+}
+
+/* ── 8. AMBIENTE: deriva estelar ultralenta ── */
+@media (prefers-reduced-motion: no-preference) {
+  .estrella,
+  .estrella-grande {
+    animation:
+      titilar var(--d, 4s) ease-in-out infinite alternate,
+      derivaEstelar calc(var(--d, 4s) * 85) linear infinite alternate;
+  }
+
+  .estrella-spark {
+    translate: 0 0;
+    animation:
+      titilar var(--d, 4s) ease-in-out infinite alternate,
+      derivaEstelar calc(var(--d, 4s) * 60) linear infinite alternate;
+  }
+}
+
+@keyframes derivaEstelar {
+  from { translate: -10px 6px; }
+  to { translate: 26px -16px; }
+}
+
+/* ── 9. VENTANAS VIVAS: la aldea respira ── */
+.ventana-apagada {
+  fill: rgba(24, 19, 38, 0.9) !important;
+  filter: none !important;
+  box-shadow: none !important;
+}

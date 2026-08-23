@@ -3083,3 +3083,95 @@ if (!esTactil) {
     navigator.serviceWorker.register(new URL("sw.js", raiz)).catch(() => {});
   });
 })();
+
+
+/* ═══════════ MOTION DESIGN: sistema unificado ═══════════ */
+
+/* reveal secundario: las tarjetas y widgets aparecen sin rebote */
+(function autoReveal() {
+  if (!("IntersectionObserver" in window)) return;
+  const SEL = ".post-card, .destacada, .widget, .fav, .timeline li";
+  document.querySelectorAll(SEL).forEach((el) => {
+    if (el.classList.contains("reveal") || el.dataset.mr) return;
+    el.dataset.mr = "1";
+    el.classList.add("reveal-suave");
+    const i = Array.from(el.parentElement.children).indexOf(el);
+    el.style.setProperty("--rd", `${Math.min(i * 60, 360)}ms`);
+  });
+})();
+
+/* transición de salida entre páginas */
+(function transicionesPagina() {
+  document.addEventListener("click", (e) => {
+    if (e.defaultPrevented || e.button !== 0) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target.closest("a[href]");
+    if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
+    const href = a.getAttribute("href");
+    if (!href || href.startsWith("#")) return;
+    if (/^https?:/i.test(href) && a.host !== location.host) return;
+    e.preventDefault();
+    document.body.classList.add("salida-pagina");
+    setTimeout(() => {
+      location.href = a.href;
+    }, 190);
+  });
+  addEventListener("pageshow", (e) => {
+    if (e.persisted) document.body.classList.remove("salida-pagina");
+  });
+})();
+
+/* corazón: latido + burst propio + contador rebotón */
+(function corazonLove() {
+  if (!btnCorazon) return;
+  btnCorazon.addEventListener("click", () => {
+    btnCorazon.classList.remove("latido");
+    void btnCorazon.offsetWidth;
+    btnCorazon.classList.add("latido");
+    if (numCorazones) {
+      numCorazones.classList.remove("bump");
+      void numCorazones.offsetWidth;
+      numCorazones.classList.add("bump");
+    }
+    if (sinAnimacion()) return;
+    const r = btnCorazon.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    const GLIFOS = ["♥", "✦", "✧", "·"];
+    for (let i = 0; i < 8; i++) {
+      const s = document.createElement("span");
+      s.className = "chispa";
+      s.textContent = GLIFOS[Math.floor(Math.random() * GLIFOS.length)];
+      const ang = (Math.PI * 2 * i) / 8 + Math.random() * 0.5;
+      const dist = 26 + Math.random() * 30;
+      s.style.left = `${cx}px`;
+      s.style.top = `${cy}px`;
+      s.style.setProperty("--dx", `${Math.cos(ang) * dist}px`);
+      s.style.setProperty("--dy", `${Math.sin(ang) * dist - 14}px`);
+      s.style.setProperty("--rot", `${Math.random() * 180 - 90}deg`);
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 900);
+    }
+  });
+})();
+
+/* FAB de música respira cuando suena algo */
+if (audio && fabMusica) {
+  audio.addEventListener("play", () => fabMusica.classList.add("sonando"));
+  audio.addEventListener("pause", () => fabMusica.classList.remove("sonando"));
+}
+
+/* la aldea vive: ventanas que se apagan y prenden solas */
+(function ventanasVivas() {
+  setInterval(() => {
+    if (sinAnimacion()) return;
+    const ventanas = document.querySelectorAll("#castillo .ventana");
+    if (!ventanas.length) return;
+    const v = ventanas[Math.floor(Math.random() * ventanas.length)];
+    v.classList.add("ventana-apagada");
+    setTimeout(
+      () => v.classList.remove("ventana-apagada"),
+      2600 + Math.random() * 4200
+    );
+  }, 5200);
+})();

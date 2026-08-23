@@ -1,5 +1,5 @@
 /* Attie SW — offline primero, siempre fresco */
-const CACHE = "attie-v35";
+const CACHE = "attie-v36";
 const ESENCIALES = [
   "./",
   "./index.html",
