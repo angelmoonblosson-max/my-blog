@@ -3076,7 +3076,7 @@ if (!esTactil) {
 /* APP INSTALABLE: registro del service worker */
 (function registrarSW() {
   if (!("serviceWorker" in navigator) || location.protocol !== "https:") return;
-  const miScript = document.querySelector('script[src$="main.js"]');
+  const miScript = document.querySelector('script[src*="main"]');
   if (!miScript) return;
   window.addEventListener("load", () => {
     const raiz = new URL("../", miScript.src);
