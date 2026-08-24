@@ -5,40 +5,12 @@
   if (el) el.textContent = String(new Date().getFullYear());
 })();
 
-/* ── lienzo: poliedros 3D en wireframe flotando en la dimensión ── */
-(function escena() {
+/* ── lienzo: red de particulas interactiva + figuras wireframe ── */
+(function red() {
   const lienzo = document.getElementById("lienzo");
   const html = document.documentElement;
   if (!lienzo) return;
   const ctx = lienzo.getContext("2d");
-
-  function formaCubo() {
-    const v = [];
-    for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) v.push([x, y, z]);
-    const e = [];
-    for (let i = 0; i < 8; i++)
-      for (let j = i + 1; j < 8; j++) {
-        let d = 0;
-        for (let k = 0; k < 3; k++) d += (v[i][k] - v[j][k]) ** 2;
-        if (Math.abs(Math.sqrt(d) - 2) < 0.01) e.push([i, j]);
-      }
-    return { v, e };
-  }
-
-  function formaOctaedro() {
-    const v = [];
-    for (let i = 0; i < 3; i++) {
-      v.push([1, 0, 0].map((n, k) => (k === i ? n : 0)));
-      v.push([-1, 0, 0].map((n, k) => (k === i ? n : 0)));
-    }
-    const e = [];
-    for (let i = 0; i < 6; i++)
-      for (let j = i + 1; j < 6; j++) {
-        const a = v[i], b = v[j];
-        if (!(a[0] === -b[0] && a[1] === -b[1] && a[2] === -b[2])) e.push([i, j]);
-      }
-    return { v, e };
-  }
 
   function formaIcosaedro() {
     const fi = (1 + Math.sqrt(5)) / 2;
@@ -57,21 +29,25 @@
     return { v, e };
   }
 
-  function formaTetraedro() {
-    const s = 1 / Math.sqrt(3);
-    const v = [[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]].map((p) => p.map((n) => n * s));
-    return { v, e: [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]] };
+  function formaOctaedro() {
+    const v = [];
+    for (let i = 0; i < 3; i++) {
+      v.push([1, 0, 0].map((n, k) => (k === i ? n : 0)));
+      v.push([-1, 0, 0].map((n, k) => (k === i ? n : 0)));
+    }
+    const e = [];
+    for (let i = 0; i < 6; i++)
+      for (let j = i + 1; j < 6; j++) {
+        const a = v[i];
+        const b = v[j];
+        if (!(a[0] === -b[0] && a[1] === -b[1] && a[2] === -b[2])) e.push([i, j]);
+      }
+    return { v, e };
   }
 
-  const FORMAS = [formaIcosaedro(), formaCubo(), formaOctaedro(), formaTetraedro()];
   const FIGURAS = [
-    { f: FORMAS[0], px: 0.16, py: 0.3, tam: 90, vx: 0.0032, vy: 0.0051 },
-    { f: FORMAS[1], px: 0.82, py: 0.24, tam: 64, vx: -0.0044, vy: 0.0037 },
-    { f: FORMAS[2], px: 0.72, py: 0.72, tam: 110, vx: 0.0026, vy: -0.0046 },
-    { f: FORMAS[3], px: 0.28, py: 0.78, tam: 56, vx: -0.0038, vy: -0.0029 },
-    { f: FORMAS[0], px: 0.55, py: 0.12, tam: 40, vx: 0.0058, vy: 0.0042 },
-    { f: FORMAS[2], px: 0.06, py: 0.62, tam: 46, vx: 0.0049, vy: 0.0031 },
-    { f: FORMAS[1], px: 0.93, py: 0.55, tam: 38, vx: -0.0033, vy: 0.0056 }
+    { f: formaIcosaedro(), px: 0.13, py: 0.26, tam: 84, vx: 0.0026, vy: 0.0041 },
+    { f: formaOctaedro(), px: 0.87, py: 0.72, tam: 66, vx: -0.0034, vy: 0.003 }
   ].map((o) => ({ ...o, ax: Math.random() * 6, ay: Math.random() * 6 }));
 
   let w = 0;
@@ -85,49 +61,73 @@
     lienzo.width = w * dpr;
     lienzo.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, w, h);
+  }
+
+  let nodos = [];
+  function crearNodos() {
+    const n = Math.max(36, Math.min(100, Math.round((w * h) / 17000)));
+    nodos = Array.from({ length: n }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.24,
+      vy: (Math.random() - 0.5) * 0.24,
+      r: Math.random() * 1.4 + 0.8
+    }));
   }
 
   medir();
-  addEventListener("resize", medir);
-
-  let ratonX = 0.5;
-  let ratonY = 0.5;
-  let inclX = 0;
-  let inclY = 0;
-
+  crearNodos();
   addEventListener(
-    "pointermove",
-    (ev) => {
-      ratonX = ev.clientX / innerWidth;
-      ratonY = ev.clientY / innerHeight;
+    "resize",
+    () => {
+      medir();
+      crearNodos();
     },
     { passive: true }
   );
 
-  let colorAcento = "#67e8f9";
-  let fotograma = 0;
+  const raton = { x: -9999, y: -9999 };
+  addEventListener(
+    "pointermove",
+    (e) => {
+      raton.x = e.clientX;
+      raton.y = e.clientY;
+    },
+    { passive: true }
+  );
+
+  let cA = "103,232,249";
   function refrescarColor() {
-    colorAcento = getComputedStyle(html).getPropertyValue("--cian").trim() || colorAcento;
+    const hex = getComputedStyle(html).getPropertyValue("--cian").trim();
+    const m = /^#([0-9a-f]{6})$/i.exec(hex);
+    if (m)
+      cA = [
+        parseInt(m[1].slice(0, 2), 16),
+        parseInt(m[1].slice(2, 4), 16),
+        parseInt(m[1].slice(4, 6), 16)
+      ].join(",");
   }
   refrescarColor();
   addEventListener("acento-cambio", refrescarColor);
 
-  function proyectar(p, rot, cx, cy, tam) {
-    const cosX = Math.cos(rot.ax);
-    const sinX = Math.sin(rot.ax);
-    const cosY = Math.cos(rot.ay);
-    const sinY = Math.sin(rot.ay);
-    let [x, y, z] = p;
-    let x1 = x * cosY + z * sinY;
-    let z1 = -x * sinY + z * cosY;
-    let y1 = y * cosX - z1 * sinX;
-    z1 = y * sinX + z1 * cosX;
-    const f = 3.2 / (3.2 + z1);
-    return [cx + x1 * tam * f, cy + y1 * tam * f, f];
+  const DIST = 130;
+  const RCURSOR = 185;
+
+  function proyectar(p, ax, ay, cx, cy, tam) {
+    const cosX = Math.cos(ax);
+    const sinX = Math.sin(ax);
+    const cosY = Math.cos(ay);
+    const sinY = Math.sin(ay);
+    const x1 = p[0] * cosY + p[2] * sinY;
+    const z1 = -p[0] * sinY + p[2] * cosY;
+    const y1 = p[1] * cosX - z1 * sinX;
+    const z2 = p[1] * sinX + z1 * cosX;
+    const f = 3.2 / (3.2 + z2);
+    return [cx + x1 * tam * f, cy + y1 * tam * f];
   }
 
   let corriendo = true;
+  let fotograma = 0;
 
   function cuadro() {
     fotograma++;
@@ -151,40 +151,78 @@
       return;
     }
 
-    ctx.fillStyle = "rgba(6, 8, 13, 0.16)";
-    ctx.fillRect(0, 0, w, h);
+    ctx.clearRect(0, 0, w, h);
 
-    inclX += ((ratonY - 0.5) * 0.5 - inclX) * 0.04;
-    inclY += ((ratonX - 0.5) * 0.6 - inclY) * 0.04;
+    for (const n of nodos) {
+      n.x += n.vx;
+      n.y += n.vy;
+      if (n.x < -20) n.x = w + 20;
+      if (n.x > w + 20) n.x = -20;
+      if (n.y < -20) n.y = h + 20;
+      if (n.y > h + 20) n.y = -20;
+
+      const dx = raton.x - n.x;
+      const dy = raton.y - n.y;
+      const d = Math.hypot(dx, dy);
+      if (d < RCURSOR && d > 40) {
+        n.x += (dx / d) * 0.35;
+        n.y += (dy / d) * 0.35;
+      }
+    }
+
+    for (let i = 0; i < nodos.length; i++) {
+      const a = nodos[i];
+      for (let j = i + 1; j < nodos.length; j++) {
+        const b = nodos[j];
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        if (Math.abs(dx) > DIST || Math.abs(dy) > DIST) continue;
+        const d = Math.hypot(dx, dy);
+        if (d > DIST) continue;
+        ctx.strokeStyle = "rgba(" + cA + "," + ((1 - d / DIST) * 0.26).toFixed(3) + ")";
+        ctx.lineWidth = 0.55;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+    }
+
+    for (const n of nodos) {
+      const dx = raton.x - n.x;
+      const dy = raton.y - n.y;
+      const d = Math.hypot(dx, dy);
+      if (d < RCURSOR) {
+        ctx.strokeStyle = "rgba(" + cA + "," + ((1 - d / RCURSOR) * 0.5).toFixed(3) + ")";
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(n.x, n.y);
+        ctx.lineTo(raton.x, raton.y);
+        ctx.stroke();
+      }
+      const cerca = d < RCURSOR ? 1 : 0;
+      ctx.fillStyle = "rgba(" + cA + "," + (cerca ? 0.9 : 0.55) + ")";
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r + cerca * 0.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     for (const fig of FIGURAS) {
       fig.ax += fig.vx;
       fig.ay += fig.vy;
+      const rotA = fig.ax;
+      const rotB = fig.ay;
       const cx = fig.px * w;
       const cy = fig.py * h;
-      const rot = { ax: fig.ax + inclX, ay: fig.ay + inclY };
-      const pts = fig.f.v.map((p) => proyectar(p, rot, cx, cy, fig.tam));
-
+      const pts = fig.f.v.map((p) => proyectar(p, rotA, rotB, cx, cy, fig.tam));
+      ctx.strokeStyle = "rgba(" + cA + ",0.13)";
+      ctx.lineWidth = 0.7;
       for (const [a, b] of fig.f.e) {
-        const pa = pts[a];
-        const pb = pts[b];
-        const prof = (pa[2] + pb[2]) / 2;
-        ctx.strokeStyle = colorAcento;
-        ctx.globalAlpha = 0.14 + prof * 0.3;
-        ctx.lineWidth = prof > 1 ? 1.2 : 0.7;
         ctx.beginPath();
-        ctx.moveTo(pa[0], pa[1]);
-        ctx.lineTo(pb[0], pb[1]);
+        ctx.moveTo(pts[a][0], pts[a][1]);
+        ctx.lineTo(pts[b][0], pts[b][1]);
         ctx.stroke();
       }
-
-      ctx.globalAlpha = 0.75;
-      ctx.fillStyle = colorAcento;
-      for (const p of pts) {
-        if (p[2] < 0.86) continue;
-        ctx.fillRect(p[0] - 1, p[1] - 1, 2, 2);
-      }
-      ctx.globalAlpha = 1;
     }
 
     requestAnimationFrame(cuadro);
@@ -193,18 +231,6 @@
   requestAnimationFrame(cuadro);
 })();
 
-/* ── coordenadas en vivo junto al cursor ── */
-(function coordenadas() {
-  const el = document.getElementById("coordenadas");
-  if (!el || matchMedia("(hover: none)").matches) return;
-  addEventListener(
-    "pointermove",
-    (e) => {
-      el.textContent = `x:${e.clientX} · y:${e.clientY}`;
-    },
-    { passive: true }
-  );
-})();
 
 /* ── reveal al scroll con escalonado ── */
 (function revelar() {
