@@ -5,6 +5,51 @@
   if (el) el.textContent = String(new Date().getFullYear());
 })();
 
+/* ── cripto: contenido cifrado real (AES-256-GCM) ── */
+(function cripto() {
+  if (!window.crypto || !crypto.subtle) {
+    window.__criptoListo = Promise.resolve();
+    return;
+  }
+  let KLAVE = null;
+  function asegurarClave() {
+    if (!KLAVE) {
+      const pass = "luna-cafe-atardecer-attie";
+      const sal = "rincon-v1";
+      KLAVE = crypto.subtle
+        .digest("SHA-256", new TextEncoder().encode(sal + "|" + pass))
+        .then((d) =>
+          crypto.subtle.importKey("raw", d, "AES-GCM", false, ["decrypt"])
+        );
+    }
+    return KLAVE;
+  }
+  function b64aBytes(s) {
+    const b = atob(s);
+    const u = new Uint8Array(b.length);
+    for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i);
+    return u;
+  }
+  window.__descifrarDato = async function (dato) {
+    const partes = dato.split(".");
+    const iv = b64aBytes(partes[0]);
+    const cuerpo = b64aBytes(partes[1]);
+    const k = await asegurarClave();
+    const plano = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, k, cuerpo);
+    return new TextDecoder().decode(plano);
+  };
+  window.__criptoListo = (async () => {
+    const els = document.querySelectorAll(".ce[data-c]");
+    await Promise.all(
+      Array.from(els).map(async (el) => {
+        try {
+          el.dataset.txt = await window.__descifrarDato(el.dataset.c);
+        } catch (e) {}
+      })
+    );
+  })();
+})();
+
 /* ── lienzo: enjambre con 24 formaciones, dispersion y profundidad ── */
 (function enjambre() {
   const lienzo = document.getElementById("lienzo");
@@ -1232,13 +1277,13 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   }
   requestAnimationFrame(cuadro);
 
-  const PASOS = [
-    "Hola, bienvenido a mi rincón. Soy Attie.",
-    "El fondo está vivo: partículas que se reúnen para formar figuras cada pocos segundos.",
-    "Atajos del fondo: F forma una figura · E lo explota · D dispara láseres. Doble clic = sobrecarga.",
-    "La tuerca abajo a la derecha abre las configuraciones: color, intensidad, velocidad y fondo.",
-    "Todo el texto llega cifrado y se descifra solo. Y por si acaso: nada aquí se puede copiar.",
-    "Eso es todo lo que tienes que saber. Pasa y ponte cómodo."
+  const PASOS_C = [
+    "WEiQiYAJ1rjB0L2F.+5n8AvQgjtW8xhqjIfhwPPirGHpAtVMpGpj0ARoePlMCWb1fnsa3mRZgyl1NBpk9ubzZ+TF6CY5t",
+    "uzrjjvHkjfNaNLoS.qtNizKw5h2Yncq2UrBtFvfwrTW5oQ1fqT3+jdgbgUkLrnyzA5KBAtNYwNC9z6brpdMaIgDa8vghWpplglxm+X+8u7edoWmXTSut6rBM2V0juRQTUzakOAXtmzzjvmsNVL1ecEn/tOT0=",
+    "OPgHvDhIZjOLl8ET.q3UwKdDplb+6lMFdCvHdQfGHWZT39zaguEmFirUL5H8fzOP4WwgRDImQAP5EGyb7Nc3hzgpCh3U7ed8mi4C3HTECKDc+IWR8F89yad7qjOoDyctSTpc9LF/UL6+SlwudQzF7UOjnAFF08hHmXnGlo24d3aI=",
+    "m7fRbJDYa0HZ6LiQ.ZNTA2oEeZZeh8HmQZRVdigVIarul1RQiblEqucmAteA27WfjWDHssppSBypkFB1swdkAYmwkeQPCYeJMVTf88EPRI2Iwe80MJsaQdp7N+ZTNuyaCFJSoNS+QFGLW4Yb76YIRG6jG6BcRJ17O",
+    "Dz9Xuh2nv2ZGOc8q.5D/PoYGeQiq7pdAZWPPU32TyuvkO4i4ZqIxlhpjGlJzmQ3ZAadxSwytjUhwbbg6qaryGrw2hWAEzTFPMJKIcb+OD9bRYfo8va1GTtrGWA4hWigxfo1rCmKN3mBVb/H61TFIodEYDAcpyND8=",
+    "DVByrNuZGS//zYMN.pQdCu3PD0G/FQb9cdlTS/msGZYjQjYLmL6NL7RoOA5hSHdz+ObJYO6SHFLTmZIWuDjIxq9LhtewJjyfeVSTDhI+B3aVTImz6e2s="
   ];
   let pasoI = -1;
   let timerPaso = null;
@@ -1246,7 +1291,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   function pintarPuntos() {
     if (!puntosEl) return;
     puntosEl.innerHTML = "";
-    PASOS.forEach((_, i) => {
+    PASOS_C.forEach((_, i) => {
       const d = document.createElement("span");
       d.className = "t-dot" + (i <= pasoI ? " hecho" : "");
       puntosEl.appendChild(d);
@@ -1264,15 +1309,19 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     }
   }
 
-  function avanzarPaso() {
+  async function avanzarPaso() {
     clearTimeout(timerPaso);
     pasoI++;
-    if (pasoI >= PASOS.length) {
+    if (pasoI >= PASOS_C.length) {
       cerrar();
       return;
     }
     pintarPuntos();
-    mostrarTexto(PASOS[pasoI]);
+    let txt = "";
+    try {
+      txt = await window.__descifrarDato(PASOS_C[pasoI]);
+    } catch (e) {}
+    mostrarTexto(txt || " ");
     timerPaso = setTimeout(avanzarPaso, 4800);
   }
 
@@ -1407,14 +1456,21 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     descifrar(el, dur);
   };
 
-  function arrancar() {
+  async function arrancar() {
+    try {
+      if (window.__criptoListo) await window.__criptoListo;
+    } catch (e) {}
+
     const nodosTexto = [];
     document.querySelectorAll("body *").forEach((el) => {
       const tag = el.tagName;
       if (tag === "SCRIPT" || tag === "STYLE" || tag === "NOSCRIPT") return;
+      if (el.classList && el.classList.contains("ce")) return;
       for (const nd of el.childNodes) {
-        if (nd.nodeType === 3 && nd.nodeValue.trim().length > 1)
-          nodosTexto.push(nd);
+        if (nd.nodeType !== 3) continue;
+        const padre = nd.parentElement;
+        if (padre && padre.classList.contains("ce")) continue;
+        if (nd.nodeValue.trim().length > 1) nodosTexto.push(nd);
       }
     });
 
@@ -1424,6 +1480,16 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
       setTimeout(
         () => nucleo((s) => { nd.nodeValue = s; }, original, Math.min(2000 + largo * 8, 4800)),
         Math.min(i * 45, 2400) + Math.random() * 120
+      );
+    });
+
+    document.querySelectorAll(".ce[data-c]").forEach((el, i) => {
+      const real = el.dataset.txt;
+      if (!real) return;
+      const largo = real.trim().length;
+      setTimeout(
+        () => descifrar(el, Math.min(2000 + largo * 8, 4800)),
+        Math.min(i * 45, 2400)
       );
     });
 
