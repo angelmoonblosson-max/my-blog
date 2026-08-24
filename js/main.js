@@ -1499,15 +1499,13 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     }, 300);
   }
 
-  let listo = false;
-  const reloj = setInterval(() => {
-    if (listo) return;
-    if (document.querySelector("main.presentarse")) {
-      listo = true;
-      clearInterval(reloj);
-      setTimeout(arrancar, 250);
-    }
-  }, 120);
+  if (window.__criptoListo) {
+    window.__criptoListo.then(() => {
+      setTimeout(arrancar, 60);
+    });
+  } else {
+    setTimeout(arrancar, 200);
+  }
 })();
 
 /* ── boveda: bloqueo de copia, corte, menu contextual y arrastre ── */
