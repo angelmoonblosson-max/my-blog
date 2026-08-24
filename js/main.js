@@ -5,7 +5,7 @@
   if (el) el.textContent = String(new Date().getFullYear());
 })();
 
-/* ── lienzo: enjambre preciso con refuerzos, polvo de profundidad y lasers ── */
+/* ── lienzo: enjambre con 24 formaciones, dispersion y profundidad ── */
 (function enjambre() {
   const lienzo = document.getElementById("lienzo");
   const html = document.documentElement;
@@ -256,22 +256,210 @@
     return puntosTexto.slice(0, nodos.length);
   }
 
+  const cacheDibujos = {};
+
+  function muestrearDibujo(id, dibujar) {
+    const total = nodos.length;
+    if (!cacheDibujos[id] || cacheDibujos[id].length < total) {
+      const S = 220;
+      const oc = document.createElement("canvas");
+      oc.width = S;
+      oc.height = S;
+      const octx = oc.getContext("2d");
+      octx.fillStyle = "#fff";
+      octx.strokeStyle = "#fff";
+      octx.lineWidth = S * 0.02;
+      octx.lineCap = "round";
+      octx.lineJoin = "round";
+      dibujar(octx, S);
+      const img = octx.getImageData(0, 0, S, S).data;
+      const crudos = [];
+      for (let y = 0; y < S; y += 3)
+        for (let x = 0; x < S; x += 3)
+          if (img[(y * S + x) * 4 + 3] > 110)
+            crudos.push([(x / S) * 2 - 1, (y / S) * 2 - 1]);
+      for (let i = crudos.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = crudos[i];
+        crudos[i] = crudos[j];
+        crudos[j] = tmp;
+      }
+      cacheDibujos[id] = crudos;
+    }
+    return cacheDibujos[id].slice(0, total);
+  }
+
+  function dibMonalisa(c, S) {
+    c.strokeRect(S * 0.06, S * 0.04, S * 0.88, S * 0.92);
+    c.beginPath();
+    c.ellipse(S * 0.5, S * 0.34, S * 0.17, S * 0.2, 0, 0, Math.PI * 2);
+    c.stroke();
+    c.beginPath();
+    c.moveTo(S * 0.35, S * 0.34);
+    c.lineTo(S * 0.31, S * 0.64);
+    c.moveTo(S * 0.65, S * 0.34);
+    c.lineTo(S * 0.69, S * 0.64);
+    c.stroke();
+    c.beginPath();
+    c.ellipse(S * 0.5, S * 0.36, S * 0.1, S * 0.13, 0, 0, Math.PI * 2);
+    c.stroke();
+    c.beginPath();
+    c.arc(S * 0.455, S * 0.335, S * 0.012, 0, Math.PI * 2);
+    c.arc(S * 0.545, S * 0.335, S * 0.012, 0, Math.PI * 2);
+    c.fill();
+    c.beginPath();
+    c.arc(S * 0.5, S * 0.395, S * 0.05, Math.PI * 0.15, Math.PI * 0.85);
+    c.stroke();
+    c.beginPath();
+    c.moveTo(S * 0.29, S * 0.74);
+    c.quadraticCurveTo(S * 0.37, S * 0.52, S * 0.44, S * 0.5);
+    c.lineTo(S * 0.56, S * 0.5);
+    c.quadraticCurveTo(S * 0.63, S * 0.52, S * 0.71, S * 0.74);
+    c.stroke();
+    c.beginPath();
+    c.arc(S * 0.46, S * 0.69, S * 0.035, 0, Math.PI * 2);
+    c.arc(S * 0.54, S * 0.69, S * 0.035, 0, Math.PI * 2);
+    c.stroke();
+  }
+
+  function dibPlaneta(c, S) {
+    c.beginPath();
+    c.arc(S * 0.5, S * 0.5, S * 0.4, 0, Math.PI * 2);
+    c.stroke();
+    c.beginPath();
+    c.ellipse(S * 0.5, S * 0.5, S * 0.18, S * 0.4, 0, 0, Math.PI * 2);
+    c.stroke();
+    c.beginPath();
+    c.moveTo(S * 0.12, S * 0.38);
+    c.lineTo(S * 0.88, S * 0.38);
+    c.moveTo(S * 0.12, S * 0.62);
+    c.lineTo(S * 0.88, S * 0.62);
+    c.stroke();
+    c.beginPath();
+    c.moveTo(S * 0.25, S * 0.3);
+    c.lineTo(S * 0.38, S * 0.26);
+    c.lineTo(S * 0.44, S * 0.34);
+    c.lineTo(S * 0.34, S * 0.4);
+    c.closePath();
+    c.fill();
+    c.beginPath();
+    c.moveTo(S * 0.58, S * 0.55);
+    c.lineTo(S * 0.72, S * 0.52);
+    c.lineTo(S * 0.76, S * 0.63);
+    c.lineTo(S * 0.64, S * 0.68);
+    c.closePath();
+    c.fill();
+    c.beginPath();
+    c.moveTo(S * 0.3, S * 0.68);
+    c.lineTo(S * 0.4, S * 0.66);
+    c.lineTo(S * 0.43, S * 0.73);
+    c.lineTo(S * 0.33, S * 0.75);
+    c.closePath();
+    c.fill();
+  }
+
+  function dibRobot(c, S) {
+    c.beginPath();
+    c.moveTo(S * 0.5, S * 0.32);
+    c.lineTo(S * 0.5, S * 0.22);
+    c.stroke();
+    c.beginPath();
+    c.arc(S * 0.5, S * 0.19, S * 0.02, 0, Math.PI * 2);
+    c.fill();
+    c.strokeRect(S * 0.3, S * 0.32, S * 0.4, S * 0.38);
+    c.fillRect(S * 0.23, S * 0.42, S * 0.06, S * 0.14);
+    c.fillRect(S * 0.71, S * 0.42, S * 0.06, S * 0.14);
+    c.beginPath();
+    c.arc(S * 0.42, S * 0.46, S * 0.04, 0, Math.PI * 2);
+    c.arc(S * 0.58, S * 0.46, S * 0.04, 0, Math.PI * 2);
+    c.fill();
+    c.strokeRect(S * 0.4, S * 0.56, S * 0.2, S * 0.08);
+    c.beginPath();
+    c.moveTo(S * 0.47, S * 0.56);
+    c.lineTo(S * 0.47, S * 0.64);
+    c.moveTo(S * 0.53, S * 0.56);
+    c.lineTo(S * 0.53, S * 0.64);
+    c.stroke();
+  }
+
+  function dibPersona(c, S) {
+    c.beginPath();
+    c.arc(S * 0.5, S * 0.26, S * 0.11, 0, Math.PI * 2);
+    c.stroke();
+    c.beginPath();
+    c.moveTo(S * 0.26, S * 0.84);
+    c.quadraticCurveTo(S * 0.27, S * 0.5, S * 0.5, S * 0.45);
+    c.quadraticCurveTo(S * 0.73, S * 0.5, S * 0.74, S * 0.84);
+    c.stroke();
+  }
+
+  function dibCohete(c, S) {
+    c.beginPath();
+    c.moveTo(S * 0.44, S * 0.66);
+    c.lineTo(S * 0.44, S * 0.28);
+    c.quadraticCurveTo(S * 0.44, S * 0.12, S * 0.5, S * 0.06);
+    c.quadraticCurveTo(S * 0.56, S * 0.12, S * 0.56, S * 0.28);
+    c.lineTo(S * 0.56, S * 0.66);
+    c.stroke();
+    c.beginPath();
+    c.arc(S * 0.5, S * 0.3, S * 0.05, 0, Math.PI * 2);
+    c.stroke();
+    c.beginPath();
+    c.moveTo(S * 0.44, S * 0.52);
+    c.lineTo(S * 0.33, S * 0.72);
+    c.lineTo(S * 0.44, S * 0.66);
+    c.moveTo(S * 0.56, S * 0.52);
+    c.lineTo(S * 0.67, S * 0.72);
+    c.lineTo(S * 0.56, S * 0.66);
+    c.stroke();
+    c.beginPath();
+    c.moveTo(S * 0.46, S * 0.7);
+    c.lineTo(S * 0.48, S * 0.8);
+    c.lineTo(S * 0.5, S * 0.71);
+    c.lineTo(S * 0.52, S * 0.83);
+    c.lineTo(S * 0.54, S * 0.7);
+    c.stroke();
+  }
+
+  function dibGamepad(c, S) {
+    c.beginPath();
+    if (typeof c.roundRect === "function") c.roundRect(S * 0.14, S * 0.36, S * 0.72, S * 0.28, S * 0.09);
+    else c.rect(S * 0.14, S * 0.36, S * 0.72, S * 0.28);
+    c.stroke();
+    c.fillRect(S * 0.27, S * 0.44, S * 0.035, S * 0.12);
+    c.fillRect(S * 0.225, S * 0.485, S * 0.125, S * 0.035);
+    c.beginPath();
+    c.arc(S * 0.66, S * 0.46, S * 0.022, 0, Math.PI * 2);
+    c.arc(S * 0.74, S * 0.46, S * 0.022, 0, Math.PI * 2);
+    c.arc(S * 0.7, S * 0.54, S * 0.022, 0, Math.PI * 2);
+    c.fill();
+    c.beginPath();
+    c.arc(S * 0.42, S * 0.55, S * 0.03, 0, Math.PI * 2);
+    c.stroke();
+  }
+
   const CLAVES = [
     ["HEXAGONO", () => generarPoligono(nodos.length, 6)],
     ["ATTIE.SYS", () => generarTexto()],
+    ["LA MONALISA", () => muestrearDibujo("mona", dibMonalisa)],
     ["CIRCULO", () => generarCirculo(nodos.length)],
     ["ESTRELLA", () => generarEstrella(nodos.length, 5)],
+    ["PLANETA", () => muestrearDibujo("planeta", dibPlaneta)],
     ["INFINITO", () => generarInfinito(nodos.length)],
     ["RAYO", () => muestrearBorde(RAYO_VERTS, nodos.length)],
+    ["ROBOT", () => muestrearDibujo("robot", dibRobot)],
     ["TRIANGULO", () => generarPoligono(nodos.length, 3)],
     ["ESPIRAL", () => generarEspiral(nodos.length)],
     ["CORAZON", () => generarCorazon(nodos.length)],
     ["CHIP.CPU", () => generarChip(nodos.length)],
     ["ADN", () => generarADN(nodos.length)],
+    ["PERSONA", () => muestrearDibujo("persona", dibPersona)],
     ["DIANA", () => generarDiana(nodos.length)],
     ["ORBITA ATOMICA", () => generarOrbita(nodos.length)],
     ["CUBO 3D", () => generarCubo(nodos.length)],
+    ["COHETE", () => muestrearDibujo("cohete", dibCohete)],
     ["ESTRELLA x4", () => generarEstrella(nodos.length, 4)],
+    ["GAMEPAD", () => muestrearDibujo("gamepad", dibGamepad)],
     ["ONDA", () => generarOnda(nodos.length)],
     ["HEXAGRAMA", () => generarPoligono(nodos.length, 3).concat(generarPoligono(nodos.length, 3, Math.PI)).slice(0, nodos.length)],
     ["DIAMANTE", () => generarPoligono(nodos.length, 4)]
@@ -382,11 +570,13 @@
   addEventListener("acento-cambio", refrescarColor);
 
   const CICLO = [
-    { m: "libre", t: 400 },
     { m: "forma", t: 380 },
-    { m: "libre", t: 220 },
+    { m: "dispersion", t: 120 },
     { m: "forma", t: 380 },
-    { m: "explosion", t: 150 }
+    { m: "dispersion", t: 120 },
+    { m: "libre", t: 160 },
+    { m: "explosion", t: 140 },
+    { m: "libre", t: 150 }
   ];
   let fase = 0;
   let tFase = 0;
@@ -406,6 +596,21 @@
       nodos[i].aT = 1;
     }
     anunciar("FORMANDO: " + clave[0]);
+  }
+
+  function dispersar() {
+    const cx = w / 2;
+    const cy = h * 0.46;
+    for (const nd of nodos) {
+      const dx = nd.x - cx + (Math.random() - 0.5) * 70;
+      const dy = nd.y - cy + (Math.random() - 0.5) * 70;
+      const d = Math.max(Math.hypot(dx, dy), 40);
+      const f = 2.5 + Math.random() * 4.5;
+      nd.bx += (dx / d) * f;
+      nd.by += (dy / d) * f;
+      nd.objetivo = null;
+    }
+    anunciar("DISPERSION");
   }
 
   function explotar(mega) {
@@ -428,8 +633,8 @@
     if (/input|textarea|select/i.test(e.target.tagName)) return;
     const k = e.key.toLowerCase();
     if (k === "f") {
+      fase = 0;
       tFase = 0;
-      fase = 1;
       asignarForma();
     } else if (k === "e") {
       explotar(false);
@@ -458,6 +663,8 @@
 
   let corriendo = true;
   let fotograma = 0;
+
+  asignarForma();
 
   function cuadro() {
     fotograma++;
@@ -490,12 +697,13 @@
       tFase = 0;
       fase = (fase + 1) % CICLO.length;
       if (CICLO[fase].m === "forma") asignarForma();
+      if (CICLO[fase].m === "dispersion") dispersar();
       if (CICLO[fase].m === "explosion") explotar(false);
       if (CICLO[fase].m === "libre") anunciar("RED ACTIVA");
     }
     const modo = CICLO[fase].m;
 
-    if (modo === "libre" && tFase >= 190 && tFase - vel < 190 && nodos.length) {
+    if (modo === "libre" && tFase >= 90 && tFase - vel < 90 && nodos.length) {
       const nd = nodos[Math.floor(Math.random() * nodos.length)];
       ondasCanvas.push({ x: nd.x, y: nd.y, r: 4, a: 0.35 });
     }
@@ -696,7 +904,6 @@
 
   requestAnimationFrame(cuadro);
 })();
-
 
 /* ── reveal al scroll con escalonado ── */
 (function revelar() {
