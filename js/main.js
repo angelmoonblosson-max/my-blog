@@ -5,7 +5,7 @@
   if (el) el.textContent = String(new Date().getFullYear());
 })();
 
-/* ── lienzo: enjambre tecnologico con 18 formaciones, lasers, HUD y atajos ── */
+/* ── lienzo: enjambre preciso con refuerzos, polvo de profundidad y lasers ── */
 (function enjambre() {
   const lienzo = document.getElementById("lienzo");
   const html = document.documentElement;
@@ -27,18 +27,26 @@
 
   let nodos = [];
   function crearNodos() {
-    const n = Math.max(70, Math.min(150, Math.round((w * h) / 11500)));
-    nodos = Array.from({ length: n }, (_, i) => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.26,
-      vy: (Math.random() - 0.5) * 0.26,
-      bx: 0,
-      by: 0,
-      r: Math.random() * 1.3 + 0.8,
-      brillo: i / n,
-      objetivo: null
-    }));
+    const base = Math.max(70, Math.min(150, Math.round((w * h) / 11500)));
+    const refuerzos = Math.round(base * 0.65);
+    nodos = [];
+    for (let i = 0; i < base + refuerzos; i++) {
+      const extra = i >= base;
+      nodos.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.13,
+        vy: (Math.random() - 0.5) * 0.13,
+        bx: 0,
+        by: 0,
+        r: (Math.random() * 1.3 + 0.8) * (extra ? 0.82 : 1),
+        brillo: i / (base + refuerzos),
+        objetivo: null,
+        extra: extra,
+        a: extra ? 0 : 1,
+        aT: extra ? 0 : 1
+      });
+    }
   }
 
   function muestrearBorde(verts, n) {
@@ -126,16 +134,14 @@
 
   function generarChip(n) {
     const pts = [];
-    const h = 0.62;
-    const sq = generarPoligono(Math.round(n * 0.58), 4);
-    for (const p of sq) pts.push(p);
-    const pinesPorLado = 4;
-    const largoPines = pts.length ? (n - pts.length) / (pinesPorLado * 4) : 0;
+    const h2 = 0.62;
+    for (const p of generarPoligono(Math.round(n * 0.58), 4)) pts.push(p);
+    const porPin = pts.length ? (n - pts.length) / 16 : 0;
     for (let lado = 0; lado < 4; lado++) {
-      for (let k = 0; k < pinesPorLado; k++) {
-        const u = -0.36 + (k + 0.5) * (0.72 / pinesPorLado);
-        for (let s = 0; s < largoPines; s++) {
-          const f = h + (s / Math.max(largoPines - 1, 1)) * 0.34;
+      for (let k = 0; k < 4; k++) {
+        const u = -0.36 + (k + 0.5) * 0.18;
+        for (let s = 0; s < porPin; s++) {
+          const f = h2 + (s / Math.max(porPin - 1, 1)) * 0.34;
           if (lado === 0) pts.push([u, -f]);
           else if (lado === 1) pts.push([u, f]);
           else if (lado === 2) pts.push([-f, u]);
@@ -150,11 +156,9 @@
     return Array.from({ length: n }, (_, i) => {
       const t = (i / n) * Math.PI * 7;
       const y = (i / n) * 2 - 1;
-      const hebra = i % 2 === 0 ? 0 : Math.PI;
-      const tramo = Math.floor((i / n) * 14) % 2;
-      const x = Math.sin(t + hebra) * 0.5;
-      if (tramo === 0 && i % 4 === 0) return [(Math.sin(t) * 0.5 + Math.sin(t + Math.PI) * 0.5) * 0.5, y];
-      return [x, y];
+      if (i % 4 === 0 && Math.floor((i / n) * 14) % 2 === 0)
+        return [Math.sin(t) * 0.25, y];
+      return [Math.sin(t + (i % 2 ? Math.PI : 0)) * 0.5, y];
     });
   }
 
@@ -274,13 +278,36 @@
   ];
   let idxForma = 0;
 
+  let polvoLejos = [];
+  let polvoCerca = [];
+  function crearPolvo() {
+    polvoLejos = Array.from({ length: 70 }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.05,
+      vy: (Math.random() - 0.5) * 0.05,
+      f: Math.random() * Math.PI * 2
+    }));
+    polvoCerca = Array.from({ length: 45 }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.09,
+      vy: (Math.random() - 0.5) * 0.09,
+      f: Math.random() * Math.PI * 2
+    }));
+  }
+
+  const fugaces = [];
+
   medir();
   crearNodos();
+  crearPolvo();
   addEventListener(
     "resize",
     () => {
       medir();
       crearNodos();
+      crearPolvo();
     },
     { passive: true }
   );
@@ -335,7 +362,9 @@
 
   function anunciar(txt) {
     const hud = document.getElementById("hud-forma");
-    if (hud) hud.textContent = txt;
+    if (!hud) return;
+    if (typeof window.__descifrar === "function") window.__descifrar(hud, txt, 520);
+    else hud.textContent = txt;
   }
 
   let cA = "103,232,249";
@@ -371,9 +400,10 @@
     for (let i = 0; i < nodos.length; i++) {
       const p = pts[i % pts.length];
       nodos[i].objetivo = [
-        cx + p[0] * tam + (Math.random() - 0.5) * 12,
-        cy + p[1] * tam + (Math.random() - 0.5) * 12
+        cx + p[0] * tam + (Math.random() - 0.5) * 7,
+        cy + p[1] * tam + (Math.random() - 0.5) * 7
       ];
+      nodos[i].aT = 1;
     }
     anunciar("FORMANDO: " + clave[0]);
   }
@@ -422,8 +452,8 @@
     ondasCanvas.push({ x: e.clientX, y: e.clientY, r: 6, a: 0.55 });
   });
 
-  const DIST_LIBRE = 138;
-  const DIST_FORMA = 74;
+  const DIST_LIBRE = 128;
+  const DIST_FORMA = 66;
   const RCURSOR = 185;
 
   let corriendo = true;
@@ -470,6 +500,16 @@
       ondasCanvas.push({ x: nd.x, y: nd.y, r: 4, a: 0.35 });
     }
 
+    if (fotograma % 480 === 0) {
+      fugaces.push({
+        x: Math.random() * w * 0.7 + w * 0.15,
+        y: Math.random() * h * 0.3,
+        vx: 6 + Math.random() * 4,
+        vy: 2 + Math.random() * 2,
+        vida: 42
+      });
+    }
+
     if (modoEfectos !== "normal") {
       if (fotograma % 95 === 0) disparoAleatorio();
       if (fotograma % 95 === 40 && raton.x > -100) {
@@ -483,10 +523,65 @@
 
     ctx.clearRect(0, 0, w, h);
 
+    const nx = Math.min(Math.max(raton.x / w, 0), 1);
+    const ny = Math.min(Math.max(raton.y / h, 0), 1);
+    const ox1 = (nx - 0.5) * -10;
+    const oy1 = (ny - 0.5) * -7;
+    const ox2 = (nx - 0.5) * -22;
+    const oy2 = (ny - 0.5) * -15;
+
+    ctx.fillStyle = "rgba(148,163,233,0.2)";
+    for (const p of polvoLejos) {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = w;
+      if (p.x > w) p.x = 0;
+      if (p.y < 0) p.y = h;
+      if (p.y > h) p.y = 0;
+      const tw = 0.55 + Math.sin(fotograma * 0.02 + p.f) * 0.35;
+      ctx.globalAlpha = 0.22 * tw;
+      ctx.fillRect(p.x + ox1, p.y + oy1, 1, 1);
+    }
+    ctx.fillStyle = "rgba(103,232,249,0.32)";
+    for (const p of polvoCerca) {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = w;
+      if (p.x > w) p.x = 0;
+      if (p.y < 0) p.y = h;
+      if (p.y > h) p.y = 0;
+      const tw = 0.5 + Math.sin(fotograma * 0.03 + p.f) * 0.4;
+      ctx.globalAlpha = 0.34 * tw;
+      ctx.fillRect(p.x + ox2, p.y + oy2, 1.6, 1.6);
+    }
+    ctx.globalAlpha = 1;
+
+    for (let i = fugaces.length - 1; i >= 0; i--) {
+      const fz = fugaces[i];
+      fz.x += fz.vx;
+      fz.y += fz.vy;
+      fz.vida--;
+      if (fz.vida <= 0 || fz.x > w + 100) {
+        fugaces.splice(i, 1);
+        continue;
+      }
+      const colaX = fz.x - fz.vx * 11;
+      const colaY = fz.y - fz.vy * 11;
+      const grad = ctx.createLinearGradient(colaX, colaY, fz.x, fz.y);
+      grad.addColorStop(0, "rgba(255,255,255,0)");
+      grad.addColorStop(1, "rgba(255,255,255," + (fz.vida / 42) * 0.7 + ")");
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.1;
+      ctx.beginPath();
+      ctx.moveTo(colaX, colaY);
+      ctx.lineTo(fz.x, fz.y);
+      ctx.stroke();
+    }
+
     for (const nd of nodos) {
       if (modo === "forma" && nd.objetivo) {
-        nd.x += (nd.objetivo[0] - nd.x) * Math.min(0.055 * vel, 0.12);
-        nd.y += (nd.objetivo[1] - nd.y) * Math.min(0.055 * vel, 0.12);
+        nd.x += (nd.objetivo[0] - nd.x) * Math.min(0.08 * vel, 0.14);
+        nd.y += (nd.objetivo[1] - nd.y) * Math.min(0.08 * vel, 0.14);
       } else {
         nd.x += nd.vx * vel;
         nd.y += nd.vy * vel;
@@ -499,21 +594,25 @@
       if (nd.x > w + 20) nd.x = -20;
       if (nd.y < -20) nd.y = h + 20;
       if (nd.y > h + 20) nd.y = -20;
+      nd.aT = modo === "forma" ? 1 : nd.extra ? 0 : 1;
+      nd.a += (nd.aT - nd.a) * 0.06;
     }
 
     const dist = modo === "forma" ? DIST_FORMA : DIST_LIBRE;
 
     for (let i = 0; i < nodos.length; i++) {
       const a = nodos[i];
+      if (a.a < 0.06) continue;
       for (let j = i + 1; j < nodos.length; j++) {
         const b = nodos[j];
+        if (b.a < 0.06) continue;
         const dx = a.x - b.x;
         const dy = a.y - b.y;
         if (Math.abs(dx) > dist || Math.abs(dy) > dist) continue;
         const d = Math.hypot(dx, dy);
         if (d > dist) continue;
         ctx.strokeStyle =
-          "rgba(" + cA + "," + ((1 - d / dist) * 0.3).toFixed(3) + ")";
+          "rgba(" + cA + "," + ((1 - d / dist) * 0.3 * Math.min(a.a, b.a)).toFixed(3) + ")";
         ctx.lineWidth = 0.55;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
@@ -523,6 +622,7 @@
     }
 
     for (const nd of nodos) {
+      if (nd.a < 0.03) continue;
       const dx = raton.x - nd.x;
       const dy = raton.y - nd.y;
       const d = Math.hypot(dx, dy);
@@ -537,7 +637,8 @@
       }
       const cerca = d < RCURSOR ? 1 : 0;
       const titilo = 0.5 + Math.sin(fotograma * 0.03 + nd.brillo * 12) * 0.22;
-      ctx.fillStyle = "rgba(" + cA + "," + (cerca ? 0.95 : titilo.toFixed(2)) + ")";
+      ctx.fillStyle =
+        "rgba(" + cA + "," + (nd.a * (cerca ? 0.95 : titilo)).toFixed(3) + ")";
       ctx.beginPath();
       ctx.arc(nd.x, nd.y, nd.r + cerca * 0.9, 0, Math.PI * 2);
       ctx.fill();
@@ -777,14 +878,20 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   });
 })();
 
-/* ── cinematica persiana: ATTIE partido por la mitad de la pantalla ── */
+/* ── cinematica persiana: ATTIE partido por la mitad + despertar ── */
 (function cine() {
   const c = document.getElementById("cine");
+  const raiz = document.documentElement;
   const mainEl = document.querySelector("main");
+
+  function despertar() {
+    raiz.classList.add("despierto");
+    if (mainEl) mainEl.classList.add("presentarse");
+  }
 
   function terminarRapido() {
     try { sessionStorage.setItem("attie-cine", "1"); } catch {}
-    if (mainEl) mainEl.classList.add("presentarse");
+    despertar();
     if (c) c.remove();
   }
 
@@ -796,20 +903,25 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   let visto = false;
   try { visto = sessionStorage.getItem("attie-cine"); } catch {}
   if (visto) {
-    if (mainEl) mainEl.classList.add("presentarse");
+    despertar();
     c.classList.add("abrir");
     setTimeout(() => c.remove(), 1100);
     return;
   }
 
   try { sessionStorage.setItem("attie-cine", "1"); } catch {}
+  raiz.classList.add("cine-activo");
 
   setTimeout(() => c.classList.add("lista"), 950);
   setTimeout(() => c.classList.add("abrir"), 1650);
   setTimeout(() => {
-    if (mainEl) mainEl.classList.add("presentarse");
+    raiz.classList.remove("cine-activo");
+    despertar();
   }, 1800);
-  setTimeout(() => c.remove(), 2850);
+  setTimeout(() => {
+    c.remove();
+    raiz.classList.remove("cine-activo");
+  }, 2900);
 })();
 
 /* ── control de velocidad del ciclo ── */
@@ -838,4 +950,84 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     })
   );
   pintar();
+})();
+
+/* ── efecto de desencriptado global ── */
+(function descifrado() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const GLIFOS = "!<>-_\\/[]{}=+*^?#01";
+
+  function descifrar(el, dur) {
+    const original = el.dataset.txt || (el.dataset.txt = el.textContent);
+    el.setAttribute("aria-label", original);
+    const n = original.length;
+    const duracion = Math.min(Math.max(dur || 650, 380), 1100);
+    const t0 = performance.now();
+
+    function paso(t) {
+      const p = Math.min(1, (t - t0) / duracion);
+      const fijos = Math.floor(p * n);
+      let salida = original.slice(0, fijos);
+      for (let i = fijos; i < n; i++) {
+        const ch = original[i];
+        salida += ch === " " ? " " : GLIFOS[Math.floor(Math.random() * GLIFOS.length)];
+      }
+      el.textContent = salida;
+      if (p < 1) {
+        requestAnimationFrame(paso);
+      } else {
+        el.textContent = original;
+      }
+    }
+
+    requestAnimationFrame(paso);
+  }
+
+  window.__descifrar = function (el, texto, dur) {
+    if (!el) return;
+    if (texto !== undefined && el.dataset.txt !== undefined) el.dataset.txt = texto;
+    else if (texto !== undefined) {
+      el.textContent = texto;
+      el.dataset.txt = texto;
+      return;
+    }
+    descifrar(el, dur);
+  };
+
+  function arrancar() {
+    const sel = [
+      ".marca",
+      ".barra-nav a",
+      ".hero-exp",
+      ".hero-def",
+      ".hero-acciones .btn",
+      ".figura h2",
+      ".fig-num",
+      ".figura-cuerpo p",
+      ".chips li",
+      ".tarjeta-dato small",
+      ".tarjeta-dato strong",
+      ".tarjeta-dato span",
+      ".enlace-ficha small",
+      ".enlace-ficha strong",
+      ".enlace-ficha span",
+      ".nota-contacto",
+      ".pie span",
+      "#hud-forma"
+    ].join(",");
+    document.querySelectorAll(sel).forEach((el, i) => {
+      setTimeout(() => descifrar(el, 600 + Math.random() * 400), i * 38);
+    });
+  }
+
+  let listo = false;
+  const reloj = setInterval(() => {
+    if (listo) return;
+    if (document.querySelector("main.presentarse")) {
+      listo = true;
+      clearInterval(reloj);
+      setTimeout(arrancar, 250);
+    }
+  }, 120);
 })();

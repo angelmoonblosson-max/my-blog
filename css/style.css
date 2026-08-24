@@ -1335,3 +1335,51 @@ main.presentarse .barra { transition-delay: 0.02s; }
     translate: none;
   }
 }
+
+/* ═══════════ PROFUNDIDAD Y DESPERTAR ═══════════ */
+#profundidad {
+  position: fixed;
+  inset: 0;
+  z-index: 33;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 42%,
+    transparent 52%,
+    rgba(2, 3, 6, 0.5) 100%
+  );
+}
+
+main,
+.barra {
+  transition:
+    opacity 0.75s var(--ease-out),
+    translate 0.75s var(--ease-out),
+    filter 1.15s var(--ease-out),
+    scale 1.15s var(--ease-out);
+}
+
+html.cine-activo main,
+html.cine-activo .barra {
+  filter: blur(18px) saturate(0.8) brightness(1.25);
+  scale: 1.04;
+}
+
+html.cine-activo main {
+  opacity: 0.55;
+}
+
+html.despierto main,
+html.despierto .barra {
+  filter: blur(0) saturate(1) brightness(1);
+  scale: 1;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.cine-activo main,
+  html.cine-activo .barra {
+    filter: none;
+    scale: none;
+    opacity: 1;
+  }
+}
