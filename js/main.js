@@ -777,31 +777,54 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   });
 })();
 
-/* ── secuencia de arranque ── */
-(function arranque() {
-  const ov = document.getElementById("arranque");
-  const barra = ov ? ov.querySelector(".arranque-barra span") : null;
-  const por = document.getElementById("arranque-por");
-  if (!ov || !barra || !por) return;
-  let visto = true;
-  try { visto = sessionStorage.getItem("attie-arranque"); } catch {}
+/* ── cinematica de entrada ── */
+(function cine() {
+  const c = document.getElementById("cine");
+  const mainEl = document.querySelector("main");
+
+  function terminarRapido() {
+    try { sessionStorage.setItem("attie-cine", "1"); } catch {}
+    if (mainEl) mainEl.classList.add("presentarse");
+    if (c) c.remove();
+  }
+
+  if (!c) return;
+
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches)
+    return terminarRapido();
+
+  let visto = false;
+  try { visto = sessionStorage.getItem("attie-cine"); } catch {}
   if (visto) {
-    ov.remove();
+    if (mainEl) mainEl.classList.add("presentarse");
+    c.classList.add("abrir");
+    setTimeout(() => c.remove(), 1000);
     return;
   }
-  try { sessionStorage.setItem("attie-arranque", "1"); } catch {}
+
+  const barra = c.querySelector(".cine-barra span");
+  const por = document.getElementById("cine-por");
+  if (!barra || !por) return terminarRapido();
+
+  try { sessionStorage.setItem("attie-cine", "1"); } catch {}
+
   const t0 = performance.now();
-  const dur = 950;
+  const dur = 1000;
+
   (function paso(ahora) {
     const p = Math.min(1, (ahora - t0) / dur);
     por.textContent = Math.floor(p * 100) + "%";
     barra.style.scale = p + " 1";
     if (p < 1) {
       requestAnimationFrame(paso);
-    } else {
-      ov.classList.add("listo");
-      setTimeout(() => ov.remove(), 700);
+      return;
     }
+    c.classList.add("fase-logo");
+    setTimeout(() => c.classList.add("abrir"), 1700);
+    setTimeout(() => {
+      if (mainEl) mainEl.classList.add("presentarse");
+    }, 2050);
+    setTimeout(() => c.remove(), 3000);
   })(t0);
 })();
 

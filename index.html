@@ -30,7 +30,7 @@
     "author": { "@type": "Person", "name": "Attie" }
   }
   </script>
-  <link rel="stylesheet" href="css/style.min.css?v=m6" />
+  <link rel="stylesheet" href="css/style.min.css?v=m7" />
 </head>
 <body>
   <div class="grid-fondo" aria-hidden="true"></div>
@@ -47,10 +47,24 @@
     <span id="hud-forma">RED ACTIVA</span>
   </div>
 
-  <div id="arranque" aria-hidden="true">
-    <p class="arranque-texto mono">INICIALIZANDO DIMENSIÓN</p>
-    <div class="arranque-barra"><span></span></div>
-    <p class="arranque-por mono" id="arranque-por">0%</p>
+  <div id="cine" aria-hidden="true">
+    <div class="cine-puerta ci"></div>
+    <div class="cine-puerta cd"></div>
+    <div class="cine-contenido">
+      <div class="cine-boot">
+        <p class="cine-init mono">INICIALIZANDO SISTEMA</p>
+        <div class="cine-barra"><span></span></div>
+        <p class="cine-por mono" id="cine-por">0%</p>
+      </div>
+      <div class="cine-logo-zona">
+        <div class="cine-fila">
+          <span class="cine-linea li"></span>
+          <h2 class="cine-logo"><span style="--i:0">A</span><span style="--i:1">T</span><span style="--i:2">T</span><span style="--i:3">I</span><span style="--i:4">E</span></h2>
+          <span class="cine-linea ld"></span>
+        </div>
+        <p class="cine-sub mono">PORTAFOLIO PERSONAL</p>
+      </div>
+    </div>
   </div>
 
   <button id="btn-config" class="btn-config mono" type="button" aria-label="Configuraciones" aria-expanded="false">
@@ -221,6 +235,6 @@
     <span>© <span id="anio">2026</span> ATTIE — hecho a mano, línea por línea</span>
   </footer>
 
-  <script src="js/main.min.js?v=m6"></script>
+  <script src="js/main.min.js?v=m7"></script>
 </body>
 </html>
