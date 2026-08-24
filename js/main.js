@@ -5,7 +5,7 @@
   if (el) el.textContent = String(new Date().getFullYear());
 })();
 
-/* ── lienzo: enjambre inteligente que forma figuras, se expande y reacciona ── */
+/* ── lienzo: enjambre que forma figuras, dispara lineas laser y se expande ── */
 (function enjambre() {
   const lienzo = document.getElementById("lienzo");
   const html = document.documentElement;
@@ -27,7 +27,7 @@
 
   let nodos = [];
   function crearNodos() {
-    const n = Math.max(70, Math.min(130, Math.round((w * h) / 13000)));
+    const n = Math.max(70, Math.min(150, Math.round((w * h) / 11500)));
     nodos = Array.from({ length: n }, (_, i) => ({
       x: Math.random() * w,
       y: Math.random() * h,
@@ -41,6 +41,31 @@
     }));
   }
 
+  function muestrearBorde(verts, n) {
+    let per = 0;
+    const lens = [];
+    for (let i = 0; i < verts.length; i++) {
+      const a = verts[i];
+      const b = verts[(i + 1) % verts.length];
+      const l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      lens.push(l);
+      per += l;
+    }
+    return Array.from({ length: n }, (_, i) => {
+      let objetivo = (i / n) * per;
+      for (let k = 0; k < verts.length; k++) {
+        if (objetivo <= lens[k]) {
+          const f = lens[k] ? objetivo / lens[k] : 0;
+          const a = verts[k];
+          const b = verts[(k + 1) % verts.length];
+          return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+        }
+        objetivo -= lens[k];
+      }
+      return verts[0].slice();
+    });
+  }
+
   function generarCirculo(n) {
     return Array.from({ length: n }, (_, i) => {
       const a = (i / n) * Math.PI * 2;
@@ -48,19 +73,12 @@
     });
   }
 
-  function generarPoligono(n, lados) {
+  function generarPoligono(n, lados, giro) {
     const verts = Array.from({ length: lados }, (_, i) => {
-      const a = (i / lados) * Math.PI * 2 - Math.PI / 2;
+      const a = (i / lados) * Math.PI * 2 - Math.PI / 2 + (giro || 0);
       return [Math.cos(a), Math.sin(a)];
     });
-    return Array.from({ length: n }, (_, i) => {
-      const p = (i / n) * lados;
-      const k = Math.floor(p);
-      const f = p - k;
-      const a = verts[k % lados];
-      const b = verts[(k + 1) % lados];
-      return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
-    });
+    return muestrearBorde(verts, n);
   }
 
   function generarEstrella(n, puntas) {
@@ -77,10 +95,7 @@
   function generarInfinito(n) {
     return Array.from({ length: n }, (_, i) => {
       const t = (i / n) * Math.PI * 2;
-      return [
-        Math.sin(t),
-        Math.sin(t) * Math.cos(t) * 1.7
-      ];
+      return [Math.sin(t), Math.sin(t) * Math.cos(t) * 1.7];
     });
   }
 
@@ -92,14 +107,71 @@
     });
   }
 
+  function generarCorazon(n) {
+    return Array.from({ length: n }, (_, i) => {
+      const t = (i / n) * Math.PI * 2;
+      return [
+        (16 * Math.pow(Math.sin(t), 3)) / 16,
+        -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 15
+      ];
+    });
+  }
+
+  function generarOnda(n) {
+    return Array.from({ length: n }, (_, i) => {
+      const x = (i / n) * 2 - 1;
+      return [x, Math.sin((i / n) * Math.PI * 5) * 0.38];
+    });
+  }
+
+  const RAYO_VERTS = [
+    [0.18, -1], [-0.32, 0.08], [0.04, 0.05], [-0.2, 1],
+    [0.46, -0.14], [0.16, -0.1], [0.42, -1]
+  ];
+
+  let puntosTexto = null;
+
+  function generarTexto() {
+    if (!puntosTexto || puntosTexto.length < nodos.length) {
+      const oc = document.createElement("canvas");
+      oc.width = 620;
+      oc.height = 170;
+      const octx = oc.getContext("2d");
+      octx.fillStyle = "#fff";
+      octx.font = "900 132px 'Space Grotesk', 'Arial Black', sans-serif";
+      octx.textAlign = "center";
+      octx.textBaseline = "middle";
+      octx.fillText("ATTIE", 310, 88);
+      const img = octx.getImageData(0, 0, 620, 170).data;
+      const crudos = [];
+      for (let y = 0; y < 170; y += 5)
+        for (let x = 0; x < 620; x += 5)
+          if (img[(y * 620 + x) * 4 + 3] > 120)
+            crudos.push([(x / 310 - 1) * 1.75, (y / 85 - 1) * 0.48]);
+      for (let i = crudos.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = crudos[i];
+        crudos[i] = crudos[j];
+        crudos[j] = tmp;
+      }
+      puntosTexto = crudos;
+    }
+    return puntosTexto.slice(0, nodos.length);
+  }
+
   const FORMAS = [
     () => generarPoligono(nodos.length, 6),
+    () => generarTexto(),
     () => generarCirculo(nodos.length),
     () => generarEstrella(nodos.length, 5),
     () => generarInfinito(nodos.length),
+    () => muestrearBorde(RAYO_VERTS.map((p) => [p[0], p[1]]), nodos.length),
     () => generarPoligono(nodos.length, 3),
     () => generarEspiral(nodos.length),
-    () => generarEstrella(nodos.length, 4)
+    () => generarCorazon(nodos.length),
+    () => generarEstrella(nodos.length, 4),
+    () => generarOnda(nodos.length),
+    () => generarPoligono(nodos.length, 4)
   ];
   let idxForma = 0;
 
@@ -137,17 +209,35 @@
           nd.by += (dy / d) * f;
         }
       }
-      ondasCanvas.push({
-        x: e.clientX,
-        y: e.clientY,
-        r: 6,
-        a: 0.55
-      });
+      ondasCanvas.push({ x: e.clientX, y: e.clientY, r: 6, a: 0.55 });
     },
     { passive: true }
   );
 
   const ondasCanvas = [];
+  const disparos = [];
+
+  function lanzarDisparo(ax, ay, bx, by) {
+    disparos.push({
+      ax: ax,
+      ay: ay,
+      bx: bx,
+      by: by,
+      p: 0,
+      v: 0.06 + Math.random() * 0.05,
+      flash: false
+    });
+  }
+
+  function disparoAleatorio() {
+    if (nodos.length < 2) return;
+    const a = nodos[Math.floor(Math.random() * nodos.length)];
+    let b = a;
+    let intentos = 0;
+    while ((b === a || Math.hypot(b.x - a.x, b.y - a.y) < 180) && intentos++ < 10)
+      b = nodos[Math.floor(Math.random() * nodos.length)];
+    lanzarDisparo(a.x, a.y, b.x, b.y);
+  }
 
   let cA = "103,232,249";
   function refrescarColor() {
@@ -164,11 +254,11 @@
   addEventListener("acento-cambio", refrescarColor);
 
   const CICLO = [
-    { m: "libre", t: 430 },
-    { m: "forma", t: 340 },
-    { m: "libre", t: 240 },
-    { m: "forma", t: 340 },
-    { m: "explosion", t: 160 }
+    { m: "libre", t: 400 },
+    { m: "forma", t: 380 },
+    { m: "libre", t: 220 },
+    { m: "forma", t: 380 },
+    { m: "explosion", t: 150 }
   ];
   let fase = 0;
   let tFase = 0;
@@ -181,8 +271,8 @@
     for (let i = 0; i < nodos.length; i++) {
       const p = pts[i % pts.length];
       nodos[i].objetivo = [
-        cx + p[0] * tam + (Math.random() - 0.5) * 14,
-        cy + p[1] * tam + (Math.random() - 0.5) * 14
+        cx + p[0] * tam + (Math.random() - 0.5) * 12,
+        cy + p[1] * tam + (Math.random() - 0.5) * 12
       ];
     }
   }
@@ -202,8 +292,8 @@
     ondasCanvas.push({ x: cx, y: cy, r: 10, a: 0.5 });
   }
 
-  const DIST_LIBRE = 120;
-  const DIST_FORMA = 62;
+  const DIST_LIBRE = 138;
+  const DIST_FORMA = 74;
   const RCURSOR = 185;
 
   let corriendo = true;
@@ -240,9 +330,18 @@
     }
     const modo = CICLO[fase].m;
 
-    if (modo === "libre" && tFase === 200 && nodos.length) {
+    if (modo === "libre" && tFase === 190 && nodos.length) {
       const nd = nodos[Math.floor(Math.random() * nodos.length)];
       ondasCanvas.push({ x: nd.x, y: nd.y, r: 4, a: 0.35 });
+    }
+
+    if (modoEfectos !== "normal") {
+      if (fotograma % 95 === 0) disparoAleatorio();
+      if (fotograma % 95 === 40 && raton.x > -100)
+        lanzarDisparo(raton.x, raton.y, nodos[Math.floor(Math.random() * nodos.length)].x, nodos[Math.floor(Math.random() * nodos.length)].y);
+      if (fotograma % 95 === 70) disparoAleatorio();
+    } else if (fotograma % 190 === 0) {
+      disparoAleatorio();
     }
 
     ctx.clearRect(0, 0, w, h);
@@ -277,7 +376,7 @@
         const d = Math.hypot(dx, dy);
         if (d > dist) continue;
         ctx.strokeStyle =
-          "rgba(" + cA + "," + ((1 - d / dist) * 0.27).toFixed(3) + ")";
+          "rgba(" + cA + "," + ((1 - d / dist) * 0.3).toFixed(3) + ")";
         ctx.lineWidth = 0.55;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
@@ -304,6 +403,38 @@
       ctx.fillStyle = "rgba(" + cA + "," + (cerca ? 0.95 : titilo.toFixed(2)) + ")";
       ctx.beginPath();
       ctx.arc(nd.x, nd.y, nd.r + cerca * 0.9, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    for (let i = disparos.length - 1; i >= 0; i--) {
+      const d = disparos[i];
+      d.p += d.v;
+      if (d.p >= 1.3) {
+        disparos.splice(i, 1);
+        continue;
+      }
+      const cabeza = Math.min(d.p, 1);
+      const cola = Math.max(d.p - 0.2, 0);
+      const hx = d.ax + (d.bx - d.ax) * cabeza;
+      const hy = d.ay + (d.by - d.ay) * cabeza;
+      const tx = d.ax + (d.bx - d.ax) * cola;
+      const ty = d.ay + (d.by - d.ay) * cola;
+      if (d.p >= 1 && !d.flash) {
+        d.flash = true;
+        ondasCanvas.push({ x: d.bx, y: d.by, r: 3, a: 0.45 });
+      }
+      const grad = ctx.createLinearGradient(tx, ty, hx, hy);
+      grad.addColorStop(0, "rgba(" + cA + ",0)");
+      grad.addColorStop(1, "rgba(" + cA + ",0.85)");
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(tx, ty);
+      ctx.lineTo(hx, hy);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(" + cA + ",0.95)";
+      ctx.beginPath();
+      ctx.arc(hx, hy, 2, 0, Math.PI * 2);
       ctx.fill();
     }
 
