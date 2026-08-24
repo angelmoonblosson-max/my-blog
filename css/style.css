@@ -1452,3 +1452,65 @@ body {
     font-size: clamp(2.6rem, 18vw, 4rem);
   }
 }
+
+/* ═══════════ EXPERIMENTOS VIVOS ═══════════ */
+
+.exp-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.exp-btn {
+  font-family: var(--fuente-dato);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  background: rgba(13, 17, 27, 0.6);
+  border: 1px solid var(--linea);
+  padding: 9px 16px;
+  cursor: pointer;
+  transition:
+    color var(--t-rapida) ease,
+    border-color var(--t-rapida) ease,
+    background var(--t-rapida) ease;
+}
+
+.exp-btn:hover {
+  color: var(--texto);
+  border-color: var(--linea-fuerte);
+}
+
+.exp-btn.activo {
+  color: var(--cian);
+  border-color: var(--cian);
+  background: rgba(103, 232, 249, 0.07);
+}
+
+.demo-zona {
+  border: 1px solid var(--linea);
+  background: rgba(6, 8, 13, 0.55);
+  padding: 10px;
+}
+
+#demo-lienzo {
+  display: block;
+  width: 100%;
+  height: clamp(240px, 44vw, 420px);
+}
+
+.demo-caption {
+  margin-top: 14px;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: 46rem;
+}
+
+/* constantes numericas grandes */
+.constante-num {
+  font-size: 2.3rem !important;
+  line-height: 1.15;
+  color: var(--cian);
+}

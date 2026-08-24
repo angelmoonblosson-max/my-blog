@@ -1185,7 +1185,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 (function descifrado() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  const GLIFOS = "!<>-_\\/[]{}=+*^?#$%&@~|=01ABCDEFXZ";
+  const GLIFOS = "∑π√∞±×÷∆θλφΩσ01<>=+*/^~|";
 
   function nucleo(poner, original, dur) {
     const n = original.length;
@@ -1290,4 +1290,160 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
       if (!/input|textarea|select/i.test(t)) e.preventDefault();
     }
   });
+})();
+
+/* ── experimentos vivos: lissajous, espiral aurea y fourier ── */
+(function experimentos() {
+  const cv = document.getElementById("demo-lienzo");
+  if (!cv) return;
+  const ctx = cv.getContext("2d");
+  const html = document.documentElement;
+  let w = 0;
+  let h = 0;
+  let visible = true;
+  let ultimoT = 0;
+  let t = 0;
+  let actual = "lissajous";
+
+  function medir() {
+    const r = cv.getBoundingClientRect();
+    if (!r.width) return;
+    w = Math.round(r.width);
+    h = Math.round(r.height);
+    cv.width = w;
+    cv.height = h;
+  }
+
+  let cA = "103,232,249";
+  function refrescar() {
+    const hex = getComputedStyle(html).getPropertyValue("--cian").trim();
+    const m = /^#([0-9a-f]{6})$/i.exec(hex);
+    if (m)
+      cA = [
+        parseInt(m[1].slice(0, 2), 16),
+        parseInt(m[1].slice(2, 4), 16),
+        parseInt(m[1].slice(4, 6), 16)
+      ].join(",");
+  }
+  refrescar();
+  addEventListener("acento-cambio", refrescar);
+
+  const CAPTIONS = {
+    lissajous:
+      "x = sen(a·t + δ) · y = sen(b·t) — dos oscilaciones que dibujan figuras hipnóticas. Cambia la fase δ y la curva muta.",
+    aurea:
+      "r = φ^(θ/π) — la espiral que crece multiplicando por φ=1.618 cada cuarto de vuelta: girasoles, conchas y galaxias la usan.",
+    fourier:
+      "f(t) = Σ sen(k·t)/k — sumando ondas limpias se construye una onda cuadrada perfecta. Toda señal del universo es una suma de senos."
+  };
+
+  function dibujarLissajous() {
+    const a = 3;
+    const b = 2;
+    ctx.beginPath();
+    for (let i = 0; i <= 420; i++) {
+      const th = (i / 420) * Math.PI * 2;
+      const x = w / 2 + Math.sin(a * th + t * 0.7) * w * 0.38;
+      const y = h / 2 + Math.sin(b * th) * h * 0.36;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = "rgba(" + cA + ",0.75)";
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+  }
+
+  function dibujarAurea() {
+    const cx = w / 2;
+    const cy = h / 2;
+    ctx.strokeStyle = "rgba(" + cA + ",0.6)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let i = 0; i <= 700; i++) {
+      const th = (i / 700) * Math.PI * 9;
+      const r = Math.pow(1.2418, (th / Math.PI) * 3) * (Math.min(w, h) * 0.0055);
+      const x = cx + Math.cos(th + t * 0.15) * r;
+      const y = cy + Math.sin(th + t * 0.15) * r;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    let f1 = 1;
+    let f2 = 1;
+    ctx.fillStyle = "rgba(" + cA + ",0.9)";
+    for (let k = 0; k < 11; k++) {
+      const ang = k * 2.39996 + t * 0.15;
+      const rr = 10 + k * Math.min(w, h) * 0.031;
+      ctx.beginPath();
+      ctx.arc(cx + Math.cos(ang) * rr, cy + Math.sin(ang) * rr, 2.1, 0, Math.PI * 2);
+      ctx.fill();
+      const nf = f1 + f2;
+      f1 = f2;
+      f2 = nf;
+    }
+  }
+
+  function dibujarFourier() {
+    const K = 9;
+    for (let capa = 0; capa < 3; capa++) {
+      const fase = t * (0.8 - capa * 0.22);
+      ctx.strokeStyle =
+        "rgba(" + cA + "," + (0.72 - capa * 0.22).toFixed(2) + ")";
+      ctx.lineWidth = 1.25;
+      ctx.beginPath();
+      for (let x = 0; x <= w; x += 2) {
+        let y = 0;
+        for (let k = 1; k <= K; k += 2)
+          y += Math.sin(k * ((x / w) * Math.PI * 4) + fase) / k;
+        const py = h / 2 + (y / K) * h * 1.35 + (capa - 1) * h * 0.26;
+        if (x === 0) ctx.moveTo(x, py);
+        else ctx.lineTo(x, py);
+      }
+      ctx.stroke();
+    }
+  }
+
+  const DEMOS = {
+    lissajous: dibujarLissajous,
+    aurea: dibujarAurea,
+    fourier: dibujarFourier
+  };
+
+  function cuadro(ts) {
+    requestAnimationFrame(cuadro);
+    if (!visible || document.hidden || (html.dataset.efectos || "epico") === "off")
+      return;
+    if (ultimoT && ts - ultimoT < 32) return;
+    ultimoT = ts;
+    t += 0.016;
+    ctx.clearRect(0, 0, w, h);
+    DEMOS[actual]();
+  }
+
+  document.querySelectorAll(".exp-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      actual = btn.dataset.exp;
+      document.querySelectorAll(".exp-btn").forEach((b) =>
+        b.classList.toggle("activo", b === btn)
+      );
+      const cap = document.getElementById("demo-caption");
+      if (cap && CAPTIONS[actual]) {
+        cap.textContent = "";
+        cap.dataset.txt = CAPTIONS[actual];
+        if (typeof window.__descifrar === "function")
+          window.__descifrar(cap, undefined, 1500);
+      }
+    });
+  });
+
+  new IntersectionObserver(
+    (entradas) => {
+      visible = entradas[0].isIntersecting;
+    },
+    { threshold: 0.05 }
+  ).observe(cv);
+
+  medir();
+  addEventListener("resize", medir, { passive: true });
+  requestAnimationFrame(cuadro);
 })();
