@@ -551,7 +551,7 @@
   function anunciar(txt) {
     const hud = document.getElementById("hud-forma");
     if (!hud) return;
-    if (typeof window.__descifrar === "function") window.__descifrar(hud, txt, 800);
+    if (typeof window.__descifrar === "function") window.__descifrar(hud, txt, 1600);
     else hud.textContent = txt;
   }
 
@@ -1189,7 +1189,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
       cola.push({
         hasta: original[i],
         inicio: inicio,
-        fin: inicio + 10 + Math.random() * 20
+        fin: inicio + 26 + Math.random() * 40
       });
     }
     let fotograma = 0;
@@ -1248,7 +1248,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     ].join(",");
     document.querySelectorAll(sel).forEach((el, i) => {
       const largo = el.textContent.length;
-      setTimeout(() => descifrar(el, Math.min(1200 + largo * 4, 2800)), i * 90);
+      setTimeout(() => descifrar(el, Math.min(2200 + largo * 7, 5200)), i * 110);
     });
   }
 
