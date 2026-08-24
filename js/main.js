@@ -640,7 +640,10 @@
     if (k === "f") {
       fase = 0;
       tFase = 0;
-      asignarForma();
+  asignarForma();
+
+  const hudNodos = document.getElementById("hud-nodos");
+  if (hudNodos) hudNodos.textContent = String(nodos.filter((n2) => !n2.extra).length);
     } else if (k === "e") {
       explotar(false);
     } else if (k === "d") {
@@ -1184,9 +1187,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 
   const GLIFOS = "!<>-_\\/[]{}=+*^?#$%&@~|=01ABCDEFXZ";
 
-  function descifrar(el, dur) {
-    const original = el.dataset.txt || (el.dataset.txt = el.textContent);
-    el.setAttribute("aria-label", original);
+  function nucleo(poner, original, dur) {
     const n = original.length;
     if (!n) return;
     const objetivoFrames = Math.round(((dur || 1400) / 1000) * 60);
@@ -1214,12 +1215,18 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
           salida += c.hasta === " " ? " " : GLIFOS[(Math.random() * GLIFOS.length) | 0];
         }
       }
-      el.textContent = salida;
+      poner(salida);
       if (pendientes > 0 && fotograma < 500) requestAnimationFrame(avanzar);
-      else el.textContent = original;
+      else poner(original);
     }
 
     requestAnimationFrame(avanzar);
+  }
+
+  function descifrar(el, dur) {
+    const original = el.dataset.txt || (el.dataset.txt = el.textContent);
+    el.setAttribute("aria-label", original);
+    nucleo((s) => { el.textContent = s; }, original, dur);
   }
 
   window.__descifrar = function (el, texto, dur) {
@@ -1234,30 +1241,29 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   };
 
   function arrancar() {
-    const sel = [
-      ".marca",
-      ".barra-nav a",
-      ".hero-exp",
-      ".hero-def",
-      ".hero-acciones .btn",
-      ".figura h2",
-      ".fig-num",
-      ".figura-cuerpo p",
-      ".chips li",
-      ".tarjeta-dato small",
-      ".tarjeta-dato strong",
-      ".tarjeta-dato span",
-      ".enlace-ficha small",
-      ".enlace-ficha strong",
-      ".enlace-ficha span",
-      ".nota-contacto",
-      ".pie span",
-      "#hud-forma"
-    ].join(",");
-    document.querySelectorAll(sel).forEach((el, i) => {
-      const largo = el.textContent.length;
-      setTimeout(() => descifrar(el, Math.min(2200 + largo * 7, 5200)), i * 110);
+    const nodosTexto = [];
+    document.querySelectorAll("body *").forEach((el) => {
+      const tag = el.tagName;
+      if (tag === "SCRIPT" || tag === "STYLE" || tag === "NOSCRIPT") return;
+      for (const nd of el.childNodes) {
+        if (nd.nodeType === 3 && nd.nodeValue.trim().length > 1)
+          nodosTexto.push(nd);
+      }
     });
+
+    nodosTexto.forEach((nd, i) => {
+      const original = nd.nodeValue;
+      const largo = original.trim().length;
+      setTimeout(
+        () => nucleo((s) => { nd.nodeValue = s; }, original, Math.min(2000 + largo * 8, 4800)),
+        Math.min(i * 45, 2400) + Math.random() * 120
+      );
+    });
+
+    const tituloOriginal = document.title;
+    setTimeout(() => {
+      nucleo((s) => { document.title = s; }, tituloOriginal, 2600);
+    }, 300);
   }
 
   let listo = false;
@@ -1269,4 +1275,19 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
       setTimeout(arrancar, 250);
     }
   }, 120);
+})();
+
+/* ── boveda: bloqueo de copia, corte, menu contextual y arrastre ── */
+(function bodega() {
+  const bloquear = (e) => e.preventDefault();
+  ["copy", "cut", "contextmenu", "dragstart"].forEach((ev) =>
+    document.addEventListener(ev, bloquear)
+  );
+  document.addEventListener("keydown", (e) => {
+    const tecla = e.key.toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && /^[cxaspu]$/.test(tecla)) {
+      const t = e.target.tagName;
+      if (!/input|textarea|select/i.test(t)) e.preventDefault();
+    }
+  });
 })();
