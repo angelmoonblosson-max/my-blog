@@ -17,7 +17,7 @@
   let dpr = 1;
 
   function medir() {
-    dpr = Math.min(devicePixelRatio || 1, 2);
+    dpr = 1;
     w = innerWidth;
     h = innerHeight;
     lienzo.width = w * dpr;
@@ -27,8 +27,8 @@
 
   let nodos = [];
   function crearNodos() {
-    const base = Math.max(70, Math.min(150, Math.round((w * h) / 11500)));
-    const refuerzos = Math.round(base * 0.65);
+    const base = Math.max(60, Math.min(105, Math.round((w * h) / 17000)));
+    const refuerzos = Math.round(base * 0.45);
     nodos = [];
     for (let i = 0; i < base + refuerzos; i++) {
       const extra = i >= base;
@@ -556,6 +556,8 @@
   }
 
   let cA = "103,232,249";
+  const NIVELES = ["0.05", "0.09", "0.14", "0.19", "0.26"];
+  let coloresLote = [];
   function refrescarColor() {
     const hex = getComputedStyle(html).getPropertyValue("--cian").trim();
     const m = /^#([0-9a-f]{6})$/i.exec(hex);
@@ -565,6 +567,7 @@
         parseInt(m[1].slice(2, 4), 16),
         parseInt(m[1].slice(4, 6), 16)
       ].join(",");
+    coloresLote = NIVELES.map((a) => "rgba(" + cA + "," + a + ")");
   }
   refrescarColor();
   addEventListener("acento-cambio", refrescarColor);
@@ -661,14 +664,18 @@
 
   const DIST_LIBRE = 128;
   const DIST_FORMA = 48;
-  const RCURSOR = 185;
+  const RCURSOR = 150;
 
   let corriendo = true;
   let fotograma = 0;
+  let ultimoT = 0;
 
   asignarForma();
 
-  function cuadro() {
+  function cuadro(t) {
+    requestAnimationFrame(cuadro);
+    if (ultimoT && t - ultimoT < 32) return;
+    ultimoT = t;
     fotograma++;
     const modoEfectos = html.dataset.efectos || "epico";
     const fondoApagado = document.getElementById("cfg-fondo")
@@ -680,15 +687,9 @@
         ctx.clearRect(0, 0, w, h);
         corriendo = false;
       }
-      requestAnimationFrame(cuadro);
       return;
     }
     corriendo = true;
-
-    if (modoEfectos === "normal" && fotograma % 2 === 0) {
-      requestAnimationFrame(cuadro);
-      return;
-    }
 
     const vel =
       html.dataset.velocidad === "lenta" ? 0.5 :
@@ -819,6 +820,7 @@
 
     const dist = modo === "forma" ? DIST_FORMA : DIST_LIBRE;
 
+    const lotes = [[], [], [], [], []];
     for (let i = 0; i < nodos.length; i++) {
       const a = nodos[i];
       if (a.a < 0.06) continue;
@@ -830,14 +832,22 @@
         if (Math.abs(dx) > dist || Math.abs(dy) > dist) continue;
         const d = Math.hypot(dx, dy);
         if (d > dist) continue;
-        ctx.strokeStyle =
-          "rgba(" + cA + "," + ((1 - d / dist) * 0.3 * Math.min(a.a, b.a)).toFixed(3) + ")";
-        ctx.lineWidth = 0.55;
-        ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
-        ctx.stroke();
+        lotes[Math.min(4, ((1 - d / dist) * 0.3 * Math.min(a.a, b.a) * 19) | 0)].push(
+          a.x, a.y, b.x, b.y
+        );
       }
+    }
+    ctx.lineWidth = 0.55;
+    for (let k2 = 0; k2 < 5; k2++) {
+      const seg = lotes[k2];
+      if (!seg.length) continue;
+      ctx.strokeStyle = coloresLote[k2];
+      ctx.beginPath();
+      for (let s2 = 0; s2 < seg.length; s2 += 4) {
+        ctx.moveTo(seg[s2], seg[s2 + 1]);
+        ctx.lineTo(seg[s2 + 2], seg[s2 + 3]);
+      }
+      ctx.stroke();
     }
 
     for (const nd of nodos) {
@@ -845,7 +855,7 @@
       const dx = raton.x - nd.x;
       const dy = raton.y - nd.y;
       const d = Math.hypot(dx, dy);
-      if (d < RCURSOR) {
+      if (d < RCURSOR && (fotograma & 1) === 0) {
         ctx.strokeStyle =
           "rgba(" + cA + "," + ((1 - d / RCURSOR) * 0.5).toFixed(3) + ")";
         ctx.lineWidth = 0.8;
@@ -909,8 +919,6 @@
       ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
       ctx.stroke();
     }
-
-    requestAnimationFrame(cuadro);
   }
 
   requestAnimationFrame(cuadro);
