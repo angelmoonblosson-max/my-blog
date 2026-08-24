@@ -586,13 +586,15 @@
     const pts = clave[1]();
     const cx = w / 2;
     const cy = h * 0.46;
-    const tam = Math.min(w, h) * 0.31;
+    const tam = Math.min(w, h) * 0.33;
     for (let i = 0; i < nodos.length; i++) {
       const p = pts[i % pts.length];
       nodos[i].objetivo = [
-        cx + p[0] * tam + (Math.random() - 0.5) * 7,
-        cy + p[1] * tam + (Math.random() - 0.5) * 7
+        cx + p[0] * tam + (Math.random() - 0.5) * 1.6,
+        cy + p[1] * tam + (Math.random() - 0.5) * 1.6
       ];
+      nodos[i].bx *= 0.2;
+      nodos[i].by *= 0.2;
       nodos[i].aT = 1;
     }
     anunciar("FORMANDO: " + clave[0]);
@@ -658,7 +660,7 @@
   });
 
   const DIST_LIBRE = 128;
-  const DIST_FORMA = 66;
+  const DIST_FORMA = 48;
   const RCURSOR = 185;
 
   let corriendo = true;
@@ -788,8 +790,17 @@
 
     for (const nd of nodos) {
       if (modo === "forma" && nd.objetivo) {
-        nd.x += (nd.objetivo[0] - nd.x) * Math.min(0.08 * vel, 0.14);
-        nd.y += (nd.objetivo[1] - nd.y) * Math.min(0.08 * vel, 0.14);
+        const dx = nd.objetivo[0] - nd.x;
+        const dy = nd.objetivo[1] - nd.y;
+        if (Math.abs(dx) < 1.2 && Math.abs(dy) < 1.2) {
+          nd.x = nd.objetivo[0];
+          nd.y = nd.objetivo[1];
+          nd.bx *= 0.5;
+          nd.by *= 0.5;
+        } else {
+          nd.x += dx * Math.min(0.14 * vel, 0.2);
+          nd.y += dy * Math.min(0.14 * vel, 0.2);
+        }
       } else {
         nd.x += nd.vx * vel;
         nd.y += nd.vy * vel;
