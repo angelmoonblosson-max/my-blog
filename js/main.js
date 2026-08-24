@@ -5,7 +5,7 @@
   if (el) el.textContent = String(new Date().getFullYear());
 })();
 
-/* ── lienzo: enjambre que forma figuras, dispara lineas laser y se expande ── */
+/* ── lienzo: enjambre tecnologico con 18 formaciones, lasers, HUD y atajos ── */
 (function enjambre() {
   const lienzo = document.getElementById("lienzo");
   const html = document.documentElement;
@@ -124,6 +124,99 @@
     });
   }
 
+  function generarChip(n) {
+    const pts = [];
+    const h = 0.62;
+    const sq = generarPoligono(Math.round(n * 0.58), 4);
+    for (const p of sq) pts.push(p);
+    const pinesPorLado = 4;
+    const largoPines = pts.length ? (n - pts.length) / (pinesPorLado * 4) : 0;
+    for (let lado = 0; lado < 4; lado++) {
+      for (let k = 0; k < pinesPorLado; k++) {
+        const u = -0.36 + (k + 0.5) * (0.72 / pinesPorLado);
+        for (let s = 0; s < largoPines; s++) {
+          const f = h + (s / Math.max(largoPines - 1, 1)) * 0.34;
+          if (lado === 0) pts.push([u, -f]);
+          else if (lado === 1) pts.push([u, f]);
+          else if (lado === 2) pts.push([-f, u]);
+          else pts.push([f, u]);
+        }
+      }
+    }
+    return pts.slice(0, n);
+  }
+
+  function generarADN(n) {
+    return Array.from({ length: n }, (_, i) => {
+      const t = (i / n) * Math.PI * 7;
+      const y = (i / n) * 2 - 1;
+      const hebra = i % 2 === 0 ? 0 : Math.PI;
+      const tramo = Math.floor((i / n) * 14) % 2;
+      const x = Math.sin(t + hebra) * 0.5;
+      if (tramo === 0 && i % 4 === 0) return [(Math.sin(t) * 0.5 + Math.sin(t + Math.PI) * 0.5) * 0.5, y];
+      return [x, y];
+    });
+  }
+
+  function generarDiana(n) {
+    const pts = [];
+    const anillos = [
+      { r: 0.95, frac: 0.36 },
+      { r: 0.64, frac: 0.28 },
+      { r: 0.34, frac: 0.24 }
+    ];
+    for (const a of anillos) {
+      const cnt = Math.round(n * a.frac);
+      for (let i = 0; i < cnt; i++) {
+        const ang = (i / cnt) * Math.PI * 2 + a.r * 2;
+        pts.push([Math.cos(ang) * a.r, Math.sin(ang) * a.r]);
+      }
+    }
+    while (pts.length < n) {
+      const ang = Math.random() * Math.PI * 2;
+      const rr = Math.random() * 0.08;
+      pts.push([Math.cos(ang) * rr, Math.sin(ang) * rr]);
+    }
+    return pts.slice(0, n);
+  }
+
+  function generarOrbita(n) {
+    const pts = [];
+    for (let e = 0; e < 3; e++) {
+      const giro = (e * Math.PI) / 3;
+      const cnt = Math.round(n / 3);
+      for (let i = 0; i < cnt; i++) {
+        const t = (i / cnt) * Math.PI * 2;
+        const x = Math.cos(t);
+        const y = Math.sin(t) * 0.36;
+        pts.push([
+          x * Math.cos(giro) - y * Math.sin(giro),
+          x * Math.sin(giro) + y * Math.cos(giro)
+        ]);
+      }
+    }
+    return pts.slice(0, n);
+  }
+
+  function generarCubo(n) {
+    const pts = [];
+    const s = 0.68;
+    const frente = [[-s, -s], [s, -s], [s, s], [-s, s]].map((p) => [p[0] - 0.13, p[1] + 0.13]);
+    const atras = [[-s, -s], [s, -s], [s, s], [-s, s]].map((p) => [p[0] + 0.13, p[1] - 0.13]);
+    for (const p of muestrearBorde(frente, Math.round(n * 0.36))) pts.push(p);
+    for (const p of muestrearBorde(atras, Math.round(n * 0.36))) pts.push(p);
+    for (let i = 0; i < 4; i++) {
+      const a = frente[i];
+      const b = atras[i];
+      const cnt = Math.max(3, Math.round(n * 0.07));
+      for (let k = 0; k < cnt; k++) {
+        const f = k / (cnt - 1);
+        pts.push([a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]);
+      }
+    }
+    return pts.slice(0, n);
+  }
+
   const RAYO_VERTS = [
     [0.18, -1], [-0.32, 0.08], [0.04, 0.05], [-0.2, 1],
     [0.46, -0.14], [0.16, -0.1], [0.42, -1]
@@ -159,19 +252,25 @@
     return puntosTexto.slice(0, nodos.length);
   }
 
-  const FORMAS = [
-    () => generarPoligono(nodos.length, 6),
-    () => generarTexto(),
-    () => generarCirculo(nodos.length),
-    () => generarEstrella(nodos.length, 5),
-    () => generarInfinito(nodos.length),
-    () => muestrearBorde(RAYO_VERTS.map((p) => [p[0], p[1]]), nodos.length),
-    () => generarPoligono(nodos.length, 3),
-    () => generarEspiral(nodos.length),
-    () => generarCorazon(nodos.length),
-    () => generarEstrella(nodos.length, 4),
-    () => generarOnda(nodos.length),
-    () => generarPoligono(nodos.length, 4)
+  const CLAVES = [
+    ["HEXAGONO", () => generarPoligono(nodos.length, 6)],
+    ["ATTIE.SYS", () => generarTexto()],
+    ["CIRCULO", () => generarCirculo(nodos.length)],
+    ["ESTRELLA", () => generarEstrella(nodos.length, 5)],
+    ["INFINITO", () => generarInfinito(nodos.length)],
+    ["RAYO", () => muestrearBorde(RAYO_VERTS, nodos.length)],
+    ["TRIANGULO", () => generarPoligono(nodos.length, 3)],
+    ["ESPIRAL", () => generarEspiral(nodos.length)],
+    ["CORAZON", () => generarCorazon(nodos.length)],
+    ["CHIP.CPU", () => generarChip(nodos.length)],
+    ["ADN", () => generarADN(nodos.length)],
+    ["DIANA", () => generarDiana(nodos.length)],
+    ["ORBITA ATOMICA", () => generarOrbita(nodos.length)],
+    ["CUBO 3D", () => generarCubo(nodos.length)],
+    ["ESTRELLA x4", () => generarEstrella(nodos.length, 4)],
+    ["ONDA", () => generarOnda(nodos.length)],
+    ["HEXAGRAMA", () => generarPoligono(nodos.length, 3).concat(generarPoligono(nodos.length, 3, Math.PI)).slice(0, nodos.length)],
+    ["DIAMANTE", () => generarPoligono(nodos.length, 4)]
   ];
   let idxForma = 0;
 
@@ -192,24 +291,6 @@
     (e) => {
       raton.x = e.clientX;
       raton.y = e.clientY;
-    },
-    { passive: true }
-  );
-
-  addEventListener(
-    "pointerdown",
-    (e) => {
-      for (const nd of nodos) {
-        const dx = nd.x - e.clientX;
-        const dy = nd.y - e.clientY;
-        const d = Math.max(Math.hypot(dx, dy), 24);
-        if (d < 340) {
-          const f = ((340 - d) / 340) * 9;
-          nd.bx += (dx / d) * f;
-          nd.by += (dy / d) * f;
-        }
-      }
-      ondasCanvas.push({ x: e.clientX, y: e.clientY, r: 6, a: 0.55 });
     },
     { passive: true }
   );
@@ -239,6 +320,24 @@
     lanzarDisparo(a.x, a.y, b.x, b.y);
   }
 
+  function empujar(cx, cy, radio, fuerzaBase) {
+    for (const nd of nodos) {
+      const dx = nd.x - cx;
+      const dy = nd.y - cy;
+      const d = Math.max(Math.hypot(dx, dy), 24);
+      if (d < radio) {
+        const f = ((radio - d) / radio) * fuerzaBase;
+        nd.bx += (dx / d) * f;
+        nd.by += (dy / d) * f;
+      }
+    }
+  }
+
+  function anunciar(txt) {
+    const hud = document.getElementById("hud-forma");
+    if (hud) hud.textContent = txt;
+  }
+
   let cA = "103,232,249";
   function refrescarColor() {
     const hex = getComputedStyle(html).getPropertyValue("--cian").trim();
@@ -263,8 +362,9 @@
   let fase = 0;
   let tFase = 0;
 
-  function asignarForma() {
-    const pts = FORMAS[idxForma++ % FORMAS.length]();
+  function asignarForma(indice) {
+    const clave = CLAVES[indice !== undefined ? indice : idxForma++ % CLAVES.length];
+    const pts = clave[1]();
     const cx = w / 2;
     const cy = h * 0.46;
     const tam = Math.min(w, h) * 0.31;
@@ -275,22 +375,52 @@
         cy + p[1] * tam + (Math.random() - 0.5) * 12
       ];
     }
+    anunciar("FORMANDO: " + clave[0]);
   }
 
-  function explotar() {
+  function explotar(mega) {
     const cx = w / 2;
     const cy = h * 0.46;
     for (const nd of nodos) {
       const dx = nd.x - cx;
       const dy = nd.y - cy;
       const d = Math.max(Math.hypot(dx, dy), 30);
-      const f = 4 + Math.random() * 7;
+      const f = (mega ? 7 : 4) + Math.random() * (mega ? 11 : 7);
       nd.bx += (dx / d) * f;
       nd.by += (dy / d) * f;
       nd.objetivo = null;
     }
-    ondasCanvas.push({ x: cx, y: cy, r: 10, a: 0.5 });
+    ondasCanvas.push({ x: cx, y: cy, r: 10, a: mega ? 0.7 : 0.5 });
+    anunciar(mega ? "SOBRECARGA" : "EXPANSION");
   }
+
+  addEventListener("keydown", (e) => {
+    if (/input|textarea|select/i.test(e.target.tagName)) return;
+    const k = e.key.toLowerCase();
+    if (k === "f") {
+      tFase = 0;
+      fase = 1;
+      asignarForma();
+    } else if (k === "e") {
+      explotar(false);
+    } else if (k === "d") {
+      for (let i = 0; i < 4; i++) setTimeout(disparoAleatorio, i * 90);
+    }
+  });
+
+  addEventListener("dblclick", (e) => {
+    empujar(e.clientX, e.clientY, 520, 14);
+    ondasCanvas.push({ x: e.clientX, y: e.clientY, r: 12, a: 0.75 });
+    for (let i = 0; i < 5; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      lanzarDisparo(e.clientX, e.clientY, e.clientX + Math.cos(ang) * 300, e.clientY + Math.sin(ang) * 300);
+    }
+  });
+
+  addEventListener("pointerdown", (e) => {
+    empujar(e.clientX, e.clientY, 340, 9);
+    ondasCanvas.push({ x: e.clientX, y: e.clientY, r: 6, a: 0.55 });
+  });
 
   const DIST_LIBRE = 138;
   const DIST_FORMA = 74;
@@ -321,24 +451,31 @@
       return;
     }
 
-    tFase++;
+    const vel =
+      html.dataset.velocidad === "lenta" ? 0.5 :
+      html.dataset.velocidad === "rapida" ? 2 : 1;
+
+    tFase += vel;
     if (tFase > CICLO[fase].t) {
       tFase = 0;
       fase = (fase + 1) % CICLO.length;
       if (CICLO[fase].m === "forma") asignarForma();
-      if (CICLO[fase].m === "explosion") explotar();
+      if (CICLO[fase].m === "explosion") explotar(false);
+      if (CICLO[fase].m === "libre") anunciar("RED ACTIVA");
     }
     const modo = CICLO[fase].m;
 
-    if (modo === "libre" && tFase === 190 && nodos.length) {
+    if (modo === "libre" && tFase >= 190 && tFase - vel < 190 && nodos.length) {
       const nd = nodos[Math.floor(Math.random() * nodos.length)];
       ondasCanvas.push({ x: nd.x, y: nd.y, r: 4, a: 0.35 });
     }
 
     if (modoEfectos !== "normal") {
       if (fotograma % 95 === 0) disparoAleatorio();
-      if (fotograma % 95 === 40 && raton.x > -100)
-        lanzarDisparo(raton.x, raton.y, nodos[Math.floor(Math.random() * nodos.length)].x, nodos[Math.floor(Math.random() * nodos.length)].y);
+      if (fotograma % 95 === 40 && raton.x > -100) {
+        const destino = nodos[Math.floor(Math.random() * nodos.length)];
+        lanzarDisparo(raton.x, raton.y, destino.x, destino.y);
+      }
       if (fotograma % 95 === 70) disparoAleatorio();
     } else if (fotograma % 190 === 0) {
       disparoAleatorio();
@@ -348,11 +485,11 @@
 
     for (const nd of nodos) {
       if (modo === "forma" && nd.objetivo) {
-        nd.x += (nd.objetivo[0] - nd.x) * 0.055;
-        nd.y += (nd.objetivo[1] - nd.y) * 0.055;
+        nd.x += (nd.objetivo[0] - nd.x) * Math.min(0.055 * vel, 0.12);
+        nd.y += (nd.objetivo[1] - nd.y) * Math.min(0.055 * vel, 0.12);
       } else {
-        nd.x += nd.vx;
-        nd.y += nd.vy;
+        nd.x += nd.vx * vel;
+        nd.y += nd.vy * vel;
       }
       nd.x += nd.bx;
       nd.y += nd.by;
@@ -666,4 +803,32 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
       setTimeout(() => ov.remove(), 700);
     }
   })(t0);
+})();
+
+/* ── control de velocidad del ciclo ── */
+(function velocidad() {
+  const html = document.documentElement;
+  let guardada = null;
+  try { guardada = localStorage.getItem("attie-velocidad"); } catch {}
+  if (guardada && ["lenta", "normal", "rapida"].includes(guardada))
+    html.dataset.velocidad = guardada;
+
+  const botones = Array.from(document.querySelectorAll("[data-velocidad-btn]"));
+  if (!botones.length) return;
+
+  function pintar() {
+    const actual = html.dataset.velocidad || "normal";
+    botones.forEach((b) =>
+      b.classList.toggle("activo", b.dataset.velocidadBtn === actual)
+    );
+  }
+
+  botones.forEach((b) =>
+    b.addEventListener("click", () => {
+      html.dataset.velocidad = b.dataset.velocidadBtn;
+      try { localStorage.setItem("attie-velocidad", b.dataset.velocidadBtn); } catch {}
+      pintar();
+    })
+  );
+  pintar();
 })();

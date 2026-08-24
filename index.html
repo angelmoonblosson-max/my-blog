@@ -30,12 +30,22 @@
     "author": { "@type": "Person", "name": "Attie" }
   }
   </script>
-  <link rel="stylesheet" href="css/style.min.css?v=m5" />
+  <link rel="stylesheet" href="css/style.min.css?v=m6" />
 </head>
 <body>
   <div class="grid-fondo" aria-hidden="true"></div>
   <canvas id="lienzo" aria-hidden="true"></canvas>
   <div id="brillo" aria-hidden="true"></div>
+
+  <div class="hud-esq e1" aria-hidden="true"></div>
+  <div class="hud-esq e2" aria-hidden="true"></div>
+  <div class="hud-esq e3" aria-hidden="true"></div>
+  <div class="hud-esq e4" aria-hidden="true"></div>
+  <div class="hud-scan" aria-hidden="true"></div>
+  <div id="hud" aria-hidden="true">
+    <span class="hud-punto"></span>
+    <span id="hud-forma">RED ACTIVA</span>
+  </div>
 
   <div id="arranque" aria-hidden="true">
     <p class="arranque-texto mono">INICIALIZANDO DIMENSIÓN</p>
@@ -76,6 +86,16 @@
           <button class="seg" data-efectos="off" type="button">OFF</button>
         </div>
         <p class="panel-nota mono">épico = todo · normal = ligero · off = estático</p>
+      </section>
+
+      <section class="panel-seccion">
+        <h3 class="mono">Velocidad del ciclo</h3>
+        <div class="segmentado" role="group" aria-label="Velocidad del ciclo">
+          <button class="seg" data-velocidad-btn="lenta" type="button">LENTA</button>
+          <button class="seg activo" data-velocidad-btn="normal" type="button">NORMAL</button>
+          <button class="seg" data-velocidad-btn="rapida" type="button">RÁPIDA</button>
+        </div>
+        <p class="panel-nota mono">atajos: F formar · E explotar · D disparos · doble clic = sobrecarga</p>
       </section>
 
       <section class="panel-seccion">
@@ -201,6 +221,6 @@
     <span>© <span id="anio">2026</span> ATTIE — hecho a mano, línea por línea</span>
   </footer>
 
-  <script src="js/main.min.js?v=m5"></script>
+  <script src="js/main.min.js?v=m6"></script>
 </body>
 </html>
