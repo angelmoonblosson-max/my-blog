@@ -5,50 +5,12 @@
   if (el) el.textContent = String(new Date().getFullYear());
 })();
 
-/* ── lienzo: red de particulas interactiva + figuras wireframe ── */
-(function red() {
+/* ── lienzo: enjambre inteligente que forma figuras, se expande y reacciona ── */
+(function enjambre() {
   const lienzo = document.getElementById("lienzo");
   const html = document.documentElement;
   if (!lienzo) return;
   const ctx = lienzo.getContext("2d");
-
-  function formaIcosaedro() {
-    const fi = (1 + Math.sqrt(5)) / 2;
-    const base = [
-      [-1, fi, 0], [1, fi, 0], [-1, -fi, 0], [1, -fi, 0],
-      [0, -1, fi], [0, 1, fi], [0, -1, -fi], [0, 1, -fi],
-      [fi, 0, -1], [fi, 0, 1], [-fi, 0, -1], [-fi, 0, 1]
-    ];
-    const v = base.map((p) => p.map((n) => n / Math.hypot(...p)));
-    const e = [];
-    for (let i = 0; i < 12; i++)
-      for (let j = i + 1; j < 12; j++) {
-        const d = Math.hypot(v[i][0] - v[j][0], v[i][1] - v[j][1], v[i][2] - v[j][2]);
-        if (d < 1.2) e.push([i, j]);
-      }
-    return { v, e };
-  }
-
-  function formaOctaedro() {
-    const v = [];
-    for (let i = 0; i < 3; i++) {
-      v.push([1, 0, 0].map((n, k) => (k === i ? n : 0)));
-      v.push([-1, 0, 0].map((n, k) => (k === i ? n : 0)));
-    }
-    const e = [];
-    for (let i = 0; i < 6; i++)
-      for (let j = i + 1; j < 6; j++) {
-        const a = v[i];
-        const b = v[j];
-        if (!(a[0] === -b[0] && a[1] === -b[1] && a[2] === -b[2])) e.push([i, j]);
-      }
-    return { v, e };
-  }
-
-  const FIGURAS = [
-    { f: formaIcosaedro(), px: 0.13, py: 0.26, tam: 84, vx: 0.0026, vy: 0.0041 },
-    { f: formaOctaedro(), px: 0.87, py: 0.72, tam: 66, vx: -0.0034, vy: 0.003 }
-  ].map((o) => ({ ...o, ax: Math.random() * 6, ay: Math.random() * 6 }));
 
   let w = 0;
   let h = 0;
@@ -65,15 +27,81 @@
 
   let nodos = [];
   function crearNodos() {
-    const n = Math.max(36, Math.min(100, Math.round((w * h) / 17000)));
-    nodos = Array.from({ length: n }, () => ({
+    const n = Math.max(70, Math.min(130, Math.round((w * h) / 13000)));
+    nodos = Array.from({ length: n }, (_, i) => ({
       x: Math.random() * w,
       y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.24,
-      vy: (Math.random() - 0.5) * 0.24,
-      r: Math.random() * 1.4 + 0.8
+      vx: (Math.random() - 0.5) * 0.26,
+      vy: (Math.random() - 0.5) * 0.26,
+      bx: 0,
+      by: 0,
+      r: Math.random() * 1.3 + 0.8,
+      brillo: i / n,
+      objetivo: null
     }));
   }
+
+  function generarCirculo(n) {
+    return Array.from({ length: n }, (_, i) => {
+      const a = (i / n) * Math.PI * 2;
+      return [Math.cos(a), Math.sin(a)];
+    });
+  }
+
+  function generarPoligono(n, lados) {
+    const verts = Array.from({ length: lados }, (_, i) => {
+      const a = (i / lados) * Math.PI * 2 - Math.PI / 2;
+      return [Math.cos(a), Math.sin(a)];
+    });
+    return Array.from({ length: n }, (_, i) => {
+      const p = (i / n) * lados;
+      const k = Math.floor(p);
+      const f = p - k;
+      const a = verts[k % lados];
+      const b = verts[(k + 1) % lados];
+      return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+    });
+  }
+
+  function generarEstrella(n, puntas) {
+    return Array.from({ length: n }, (_, i) => {
+      const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+      const ciclo = ((i / n) * puntas) % 1;
+      const r = ciclo < 0.5
+        ? 0.42 + (ciclo / 0.5) * 0.58
+        : 1 - ((ciclo - 0.5) / 0.5) * 0.58;
+      return [Math.cos(a) * r, Math.sin(a) * r];
+    });
+  }
+
+  function generarInfinito(n) {
+    return Array.from({ length: n }, (_, i) => {
+      const t = (i / n) * Math.PI * 2;
+      return [
+        Math.sin(t),
+        Math.sin(t) * Math.cos(t) * 1.7
+      ];
+    });
+  }
+
+  function generarEspiral(n) {
+    return Array.from({ length: n }, (_, i) => {
+      const t = (i / n) * Math.PI * 6;
+      const r = 0.18 + (i / n) * 0.82;
+      return [Math.cos(t) * r, Math.sin(t) * r];
+    });
+  }
+
+  const FORMAS = [
+    () => generarPoligono(nodos.length, 6),
+    () => generarCirculo(nodos.length),
+    () => generarEstrella(nodos.length, 5),
+    () => generarInfinito(nodos.length),
+    () => generarPoligono(nodos.length, 3),
+    () => generarEspiral(nodos.length),
+    () => generarEstrella(nodos.length, 4)
+  ];
+  let idxForma = 0;
 
   medir();
   crearNodos();
@@ -96,6 +124,31 @@
     { passive: true }
   );
 
+  addEventListener(
+    "pointerdown",
+    (e) => {
+      for (const nd of nodos) {
+        const dx = nd.x - e.clientX;
+        const dy = nd.y - e.clientY;
+        const d = Math.max(Math.hypot(dx, dy), 24);
+        if (d < 340) {
+          const f = ((340 - d) / 340) * 9;
+          nd.bx += (dx / d) * f;
+          nd.by += (dy / d) * f;
+        }
+      }
+      ondasCanvas.push({
+        x: e.clientX,
+        y: e.clientY,
+        r: 6,
+        a: 0.55
+      });
+    },
+    { passive: true }
+  );
+
+  const ondasCanvas = [];
+
   let cA = "103,232,249";
   function refrescarColor() {
     const hex = getComputedStyle(html).getPropertyValue("--cian").trim();
@@ -110,33 +163,60 @@
   refrescarColor();
   addEventListener("acento-cambio", refrescarColor);
 
-  const DIST = 130;
-  const RCURSOR = 185;
+  const CICLO = [
+    { m: "libre", t: 430 },
+    { m: "forma", t: 340 },
+    { m: "libre", t: 240 },
+    { m: "forma", t: 340 },
+    { m: "explosion", t: 160 }
+  ];
+  let fase = 0;
+  let tFase = 0;
 
-  function proyectar(p, ax, ay, cx, cy, tam) {
-    const cosX = Math.cos(ax);
-    const sinX = Math.sin(ax);
-    const cosY = Math.cos(ay);
-    const sinY = Math.sin(ay);
-    const x1 = p[0] * cosY + p[2] * sinY;
-    const z1 = -p[0] * sinY + p[2] * cosY;
-    const y1 = p[1] * cosX - z1 * sinX;
-    const z2 = p[1] * sinX + z1 * cosX;
-    const f = 3.2 / (3.2 + z2);
-    return [cx + x1 * tam * f, cy + y1 * tam * f];
+  function asignarForma() {
+    const pts = FORMAS[idxForma++ % FORMAS.length]();
+    const cx = w / 2;
+    const cy = h * 0.46;
+    const tam = Math.min(w, h) * 0.31;
+    for (let i = 0; i < nodos.length; i++) {
+      const p = pts[i % pts.length];
+      nodos[i].objetivo = [
+        cx + p[0] * tam + (Math.random() - 0.5) * 14,
+        cy + p[1] * tam + (Math.random() - 0.5) * 14
+      ];
+    }
   }
+
+  function explotar() {
+    const cx = w / 2;
+    const cy = h * 0.46;
+    for (const nd of nodos) {
+      const dx = nd.x - cx;
+      const dy = nd.y - cy;
+      const d = Math.max(Math.hypot(dx, dy), 30);
+      const f = 4 + Math.random() * 7;
+      nd.bx += (dx / d) * f;
+      nd.by += (dy / d) * f;
+      nd.objetivo = null;
+    }
+    ondasCanvas.push({ x: cx, y: cy, r: 10, a: 0.5 });
+  }
+
+  const DIST_LIBRE = 120;
+  const DIST_FORMA = 62;
+  const RCURSOR = 185;
 
   let corriendo = true;
   let fotograma = 0;
 
   function cuadro() {
     fotograma++;
-    const modo = html.dataset.efectos || "epico";
+    const modoEfectos = html.dataset.efectos || "epico";
     const fondoApagado = document.getElementById("cfg-fondo")
       ? !document.getElementById("cfg-fondo").checked
       : false;
 
-    if (modo === "off" || fondoApagado || document.hidden) {
+    if (modoEfectos === "off" || fondoApagado || document.hidden) {
       if (corriendo) {
         ctx.clearRect(0, 0, w, h);
         corriendo = false;
@@ -146,29 +226,46 @@
     }
     corriendo = true;
 
-    if (modo === "normal" && fotograma % 2 === 0) {
+    if (modoEfectos === "normal" && fotograma % 2 === 0) {
       requestAnimationFrame(cuadro);
       return;
     }
 
+    tFase++;
+    if (tFase > CICLO[fase].t) {
+      tFase = 0;
+      fase = (fase + 1) % CICLO.length;
+      if (CICLO[fase].m === "forma") asignarForma();
+      if (CICLO[fase].m === "explosion") explotar();
+    }
+    const modo = CICLO[fase].m;
+
+    if (modo === "libre" && tFase === 200 && nodos.length) {
+      const nd = nodos[Math.floor(Math.random() * nodos.length)];
+      ondasCanvas.push({ x: nd.x, y: nd.y, r: 4, a: 0.35 });
+    }
+
     ctx.clearRect(0, 0, w, h);
 
-    for (const n of nodos) {
-      n.x += n.vx;
-      n.y += n.vy;
-      if (n.x < -20) n.x = w + 20;
-      if (n.x > w + 20) n.x = -20;
-      if (n.y < -20) n.y = h + 20;
-      if (n.y > h + 20) n.y = -20;
-
-      const dx = raton.x - n.x;
-      const dy = raton.y - n.y;
-      const d = Math.hypot(dx, dy);
-      if (d < RCURSOR && d > 40) {
-        n.x += (dx / d) * 0.35;
-        n.y += (dy / d) * 0.35;
+    for (const nd of nodos) {
+      if (modo === "forma" && nd.objetivo) {
+        nd.x += (nd.objetivo[0] - nd.x) * 0.055;
+        nd.y += (nd.objetivo[1] - nd.y) * 0.055;
+      } else {
+        nd.x += nd.vx;
+        nd.y += nd.vy;
       }
+      nd.x += nd.bx;
+      nd.y += nd.by;
+      nd.bx *= 0.93;
+      nd.by *= 0.93;
+      if (nd.x < -20) nd.x = w + 20;
+      if (nd.x > w + 20) nd.x = -20;
+      if (nd.y < -20) nd.y = h + 20;
+      if (nd.y > h + 20) nd.y = -20;
     }
+
+    const dist = modo === "forma" ? DIST_FORMA : DIST_LIBRE;
 
     for (let i = 0; i < nodos.length; i++) {
       const a = nodos[i];
@@ -176,10 +273,11 @@
         const b = nodos[j];
         const dx = a.x - b.x;
         const dy = a.y - b.y;
-        if (Math.abs(dx) > DIST || Math.abs(dy) > DIST) continue;
+        if (Math.abs(dx) > dist || Math.abs(dy) > dist) continue;
         const d = Math.hypot(dx, dy);
-        if (d > DIST) continue;
-        ctx.strokeStyle = "rgba(" + cA + "," + ((1 - d / DIST) * 0.26).toFixed(3) + ")";
+        if (d > dist) continue;
+        ctx.strokeStyle =
+          "rgba(" + cA + "," + ((1 - d / dist) * 0.27).toFixed(3) + ")";
         ctx.lineWidth = 0.55;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
@@ -188,41 +286,40 @@
       }
     }
 
-    for (const n of nodos) {
-      const dx = raton.x - n.x;
-      const dy = raton.y - n.y;
+    for (const nd of nodos) {
+      const dx = raton.x - nd.x;
+      const dy = raton.y - nd.y;
       const d = Math.hypot(dx, dy);
       if (d < RCURSOR) {
-        ctx.strokeStyle = "rgba(" + cA + "," + ((1 - d / RCURSOR) * 0.5).toFixed(3) + ")";
+        ctx.strokeStyle =
+          "rgba(" + cA + "," + ((1 - d / RCURSOR) * 0.5).toFixed(3) + ")";
         ctx.lineWidth = 0.8;
         ctx.beginPath();
-        ctx.moveTo(n.x, n.y);
+        ctx.moveTo(nd.x, nd.y);
         ctx.lineTo(raton.x, raton.y);
         ctx.stroke();
       }
       const cerca = d < RCURSOR ? 1 : 0;
-      ctx.fillStyle = "rgba(" + cA + "," + (cerca ? 0.9 : 0.55) + ")";
+      const titilo = 0.5 + Math.sin(fotograma * 0.03 + nd.brillo * 12) * 0.22;
+      ctx.fillStyle = "rgba(" + cA + "," + (cerca ? 0.95 : titilo.toFixed(2)) + ")";
       ctx.beginPath();
-      ctx.arc(n.x, n.y, n.r + cerca * 0.8, 0, Math.PI * 2);
+      ctx.arc(nd.x, nd.y, nd.r + cerca * 0.9, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    for (const fig of FIGURAS) {
-      fig.ax += fig.vx;
-      fig.ay += fig.vy;
-      const rotA = fig.ax;
-      const rotB = fig.ay;
-      const cx = fig.px * w;
-      const cy = fig.py * h;
-      const pts = fig.f.v.map((p) => proyectar(p, rotA, rotB, cx, cy, fig.tam));
-      ctx.strokeStyle = "rgba(" + cA + ",0.13)";
-      ctx.lineWidth = 0.7;
-      for (const [a, b] of fig.f.e) {
-        ctx.beginPath();
-        ctx.moveTo(pts[a][0], pts[a][1]);
-        ctx.lineTo(pts[b][0], pts[b][1]);
-        ctx.stroke();
+    for (let i = ondasCanvas.length - 1; i >= 0; i--) {
+      const o = ondasCanvas[i];
+      o.r += 7;
+      o.a *= 0.955;
+      if (o.a < 0.02) {
+        ondasCanvas.splice(i, 1);
+        continue;
       }
+      ctx.strokeStyle = "rgba(" + cA + "," + o.a.toFixed(3) + ")";
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+      ctx.stroke();
     }
 
     requestAnimationFrame(cuadro);
