@@ -3,408 +3,162 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RAAAAAHHH Fan #1 ✦</title>
-  <meta name="description" content="Página personal de RAAAAAHHH Fan #1 — redes, música y un rincón tranquilo en internet." />
+  <title>ATTIE — Dimensión personal</title>
+  <meta name="description" content="ATTIE: un punto en el plano donde el caos se ordena. Juegos, música rara y noches tranquilas — una experiencia matemática." />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-  <link rel="stylesheet" href="css/style.min.css?v=36" />
-  <meta name="theme-color" content="#0b0918" />
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#efe6d0" />
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-  <link rel="preload" href="assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="assets/fonts/playfair-600.woff2" as="font" type="font/woff2" crossorigin />
-
+  <link rel="apple-touch-icon" href="assets/icon-180.png" />
+  <meta name="theme-color" content="#06080d" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#06080d" />
   <link rel="manifest" href="manifest.json" />
+  <link rel="preload" href="assets/fonts/grotesk-700.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/plexmono-400.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preconnect" href="https://cdn.pixabay.com" />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="El Rincón de Attie" />
-  <meta property="og:title" content="RAAAAAHHH Fan #1 ✦" />
-  <meta property="og:description" content="Página personal de RAAAAAHHH Fan #1 — redes, música y un rincón tranquilo en internet." />
+  <meta property="og:site_name" content="ATTIE — Dimensión personal" />
+  <meta property="og:title" content="ATTIE — Dimensión personal" />
+  <meta property="og:description" content="Un punto en el plano donde el caos se ordena. Juegos, música y noches tranquilas." />
   <meta property="og:url" content="https://angelmoonblosson-max.github.io/my-blog/" />
-  <meta property="og:image" content="https://angelmoonblosson-max.github.io/my-blog/assets/avatar.png" />
+  <meta property="og:image" content="https://angelmoonblosson-max.github.io/my-blog/assets/icon-180.png" />
   <meta name="twitter:card" content="summary" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "El Rincón de Attie",
-    "alternateName": "RAAAAAHHH Fan #1",
+    "name": "ATTIE — Dimensión personal",
     "url": "https://angelmoonblosson-max.github.io/my-blog/",
-    "description": "Un rincón soñado entre la luna y las estrellas — blog, música dreamcore y secretos nocturnos.",
+    "description": "Un punto en el plano donde el caos se ordena.",
     "inLanguage": "es",
-    "author": {
-      "@type": "Person",
-      "name": "Attie"
-    }
+    "author": { "@type": "Person", "name": "Attie" }
   }
   </script>
-
+  <link rel="stylesheet" href="css/style.min.css?v=m1" />
 </head>
+<body>
+  <div class="grid-fondo" aria-hidden="true"></div>
+  <canvas id="lienzo" aria-hidden="true"></canvas>
+  <div class="formulas" aria-hidden="true">
+    <span class="formula f1">e<sup>iπ</sup> + 1 = 0</span>
+    <span class="formula f2">φ = (1 + √5) / 2 ≈ 1.618…</span>
+    <span class="formula f3">a² + b² = c²</span>
+    <span class="formula f4">∑ n² = n(n+1)(2n+1)/6</span>
+    <span class="formula f5">lim<sub>x→0</sub> sin x / x = 1</span>
+    <span class="formula f6">d/dx eˣ = eˣ</span>
+  </div>
+  <div id="coordenadas" aria-hidden="true">(0, 0)</div>
 
-<body data-intro="si">
-  <div id="barra-scroll" aria-hidden="true"></div>
-  <div id="aurora" aria-hidden="true"></div>
-  <div id="cielo" aria-hidden="true"></div>
-  <div id="orbes" aria-hidden="true"></div>
-  <div id="luna" aria-hidden="true"></div>
-  <div id="niebla" aria-hidden="true"></div>
-  <div id="vineta" aria-hidden="true"></div>
-  <div id="grano" aria-hidden="true"></div>
-
-  <a class="saltar" href="#contenido">Saltar al contenido</a>
-<header class="site-header">
-    <nav class="nav" aria-label="Principal">
-      <a class="logo" href="index.html">✦ attie</a>
-      <div class="nav-enlaces">
-        <a href="index.html" class="activo">inicio</a>
-        <a href="blog/">blog</a>
-      </div>
-      <div class="temas" role="group" aria-label="Color de acento">
-        <button class="tema activo" data-tema="" style="--c:#e9c46a" title="Oro" aria-label="Tema dorado" type="button"></button>
-        <button class="tema" data-tema="lila" style="--c:#b78cff" title="Lila" aria-label="Tema lila" type="button"></button>
-        <button class="tema" data-tema="rosa" style="--c:#f5a8cb" title="Rosa" aria-label="Tema rosa" type="button"></button>
-        <button class="tema" data-tema="hielo" style="--c:#8ecdf7" title="Hielo" aria-label="Tema hielo" type="button"></button>
-      </div>
-      <button class="btn-compartir" id="btn-compartir" type="button">Compartir</button>
+  <header class="barra">
+    <a class="marca mono" href="#top">∑ attie</a>
+    <nav class="barra-nav mono" aria-label="Secciones">
+      <a href="#fig01">fig.01</a>
+      <a href="#fig02">fig.02</a>
+      <a href="#fig03">fig.03</a>
     </nav>
   </header>
 
   <main id="contenido">
-    <section class="perfil container">
-      <p class="saludo reveal">— bienvenido a mi rincón —</p>
-
-      <div class="avatar-zona reveal">
-        <svg class="avatar-anillo" viewBox="0 0 100 100" aria-hidden="true">
-          <defs>
-            <path id="ruta-anillo" d="M50 50 m -46 0 a 46 46 0 1 1 92 0 a 46 46 0 1 1 -92 0" />
-          </defs>
-          <text><textPath href="#ruta-anillo">✦ RAAAAAHHH FAN #1 ✦ ATTIE ✦ MODO NOCHE ✦</textPath></text>
-        </svg>
-
-        <div class="avatar-wrap" id="avatar-tilt">
-          <span class="avatar-pulso"
-            ><img
-              src="assets/avatar-web.jpg"
-              alt="Mi avatar"
-              class="avatar"
-              width="142"
-              height="142"
-              fetchpriority="high"
-          /></span>
-        </div>
+    <section class="hero" id="top">
+      <p class="hero-exp mono">EXP. Nº 001 — ESPACIO PERSONAL</p>
+      <div class="hero-zona-titulo">
+        <span class="aro aro-1" aria-hidden="true"></span>
+        <span class="aro aro-2" aria-hidden="true"></span>
+        <h1 class="hero-titulo">ATTIE</h1>
+        <span class="cota cota-sup" aria-hidden="true"></span>
+        <span class="cota cota-inf" aria-hidden="true"></span>
       </div>
-
-      <h1 class="nombre reveal">RAAAAAHHH <span>Fan&nbsp;#1</span></h1>
-
-      <p class="estado reveal"><i class="punto"></i> en línea</p>
-
-      <p class="tagline reveal"><span id="typing"></span><span class="caret">▌</span></p>
-
-      <div class="badges reveal">
-        <span class="badge">🎮 gamer</span>
-        <span class="badge">🎧 música</span>
-        <span class="badge">🌙 nocturno</span>
-        <span class="badge">✨ caos controlado</span>
+      <p class="hero-def">
+        <b class="mono">attie</b> <i>sustantivo</i> · punto del plano donde el caos
+        se ordena: gamer, oyente de música rara y coleccionista de noches tranquilas.
+      </p>
+      <div class="hero-acciones">
+        <a class="btn principal" href="#fig01">ver figuras ↓</a>
+        <a class="btn" href="#fig03">contacto →</a>
       </div>
-
-      <div class="acciones-hero reveal">
-        <button class="btn-accion principal" id="btn-escuchar" type="button">▶ escuchar playlist</button>
-        <a class="btn-accion" href="blog/">✦ leer el blog</a>
-        <button class="btn-accion" id="btn-radio" type="button">📻 radio</button>
-        <button class="btn-accion" id="btn-ir-muro" type="button">✎ dejar una nota</button>
-      </div>
-
-      <small class="sociales-titulo reveal">✦ lugares donde también estoy</small>
-      <div class="sociales reveal">
-        <a class="social discord" href="#" id="btn-discord" title="Clic para copiar mi usuario">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.058a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.099.246.198.373.292a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03ZM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418Zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418Z"/></svg>
-          <span id="discord-user">@ineedherbb</span>
-        </a>
-
-        <a class="social github" href="https://github.com/angelmoonblosson-max" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.65 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.81 5.63-5.49 5.92.43.38.82 1.11.82 2.24l-.01 3.32c0 .32.21.7.83.58A12 12 0 0 0 12 .3Z"/></svg>
-          <span>GitHub</span>
-        </a>
-
-        <a class="social roblox" href="https://www.roblox.com/es/users/882216056/profile" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="19" height="19"><path fill-rule="evenodd" d="M4.84 2.16 21.84 6.77l-4.68 15.07L.16 17.23 4.84 2.16ZM10.1 8.66l5.24 1.43-1.43 5.24-5.24-1.43 1.43-5.24Z"/></svg>
-          <span>Roblox</span>
-        </a>
-      </div>
-
-      <div class="chip-now reveal" id="now-playing" hidden>♪ sonando: <b id="now-nombre"></b></div>
+      <p class="hero-datos mono">x ∈ ℝ · y ∈ ℝ · z = indeterminado</p>
     </section>
 
-    <div class="ornamento container" aria-hidden="true"><span>✦</span></div>
-
-    <section class="container">
-      <div class="widgets">
-        <article class="glass widget reveal">
-          <small class="widget-titulo">Ahora mismo</small>
-          <p class="actividad" id="actividad">explorando la página</p>
-          <p class="hora-local" id="hora-local" hidden></p>
-        </article>
-
-        <article class="glass widget widget-corazon reveal">
-          <small class="widget-titulo">Un poco de amor</small>
-          <button id="btn-corazon" type="button" aria-label="Dar amor">💜</button>
-          <p><b id="num-corazones">0</b> corazones</p>
-        </article>
-      </div>
-
-      <article class="glass sobre-mi reveal">
+    <section class="figura reveal" id="fig01">
+      <header class="figura-cab">
+        <span class="fig-num mono">FIG. 01</span>
         <h2>Sobre mí</h2>
-        <p class="lead">
-          Hola. Soy Attie, aunque en Discord me conocen como
-          <strong>RAAAAAHHH Fan #1</strong>. Esta página es mi manera de tener
-          un lugar propio en internet, de esos que casi ya no existen.
+        <span class="fig-linea" aria-hidden="true"></span>
+      </header>
+      <div class="figura-cuerpo">
+        <p>
+          Hay gente que ve números y gente que siente patrones. Yo vivo en la
+          intersección: cada partida esconde una probabilidad, cada canción lleva
+          un compás perfecto y cada noche dibuja la misma curva cuando nadie mira.
         </p>
         <p>
-          Cuando era chico me quedaba despierto hasta tarde con la pantalla
-          bajita, para que no se notara la luz en el pasillo. Aprendí a
-          moverme por internet en sitios hechos a mano: foros viejos, páginas
-          con música de fondo y contadores de visita. Nunca se me olvidaron.
+          No busco la respuesta correcta. Busco la pregunta que valga la pena
+          resolver a las dos de la mañana.
         </p>
-        <p>
-          Por eso esto se ve como se ve: oscuro, tranquilo, con una ciudad
-          dormida abajo y un cielo que nunca deja de moverse. Quería que entrar
-          aquí se sintiera como abrir una ventana en la madrugada.
-        </p>
-        <p>
-          Lo mío son los videojuegos, las canciones que se quedan en repeat y
-          los chats de voz que terminan a las tres de la mañana sin que nadie
-          quiera colgar. Si llegaste hasta aquí, quédate un rato: deja un
-          corazón para saber que pasaste.
-        </p>
-        <p>
-          También colecciono cosas pequeñas: capturas de partidas que ya
-          nadie recuerda, canciones guardadas con nombres raros, mensajes de
-          voz con risas que no van a volver. No los suelto porque me gusta
-          pensar que algún día alguien más los va a necesitar tanto como yo.
-        </p>
-        <p>
-          Y si llegaste a estas horas de la madrugada, probablemente somos
-          parecidos: de los que buscan rincones tranquilos en un internet
-          cada vez más ruidoso. Bienvenido al club — las reglas son simples:
-          cero prisa, buena música y una ventana encendida para que nadie se
-          pierda de camino a casa.
-        </p>
-        <p>
-          Cosas que me gustan, por si quieres saber cómo soy: la lluvia de
-          noche con la ventana entreabierta, los menús de los juegos viejos
-          que hacen ruidito al moverte, guardar canciones para después y
-          después nunca llegar, y esa hora exacta en la que el cielo se pone
-          morado antes del amanecer. También me gusta escribir cosas como
-          esta aunque nadie las pida.
-        </p>
-        <p>
-          Si quieres hablar, Discord es donde realmente vivo:
-          <strong>@ineedherbb</strong>. No muerdo, contesto casi siempre, y me
-          da igual hablar de nada a las dos de la mañana que resolver dudas
-          serias a mediodía. Los mejores amigos empiezan así, con un
-          &laquo;hola, qué haces despierto&raquo;.
-        </p>
-        <p>
-          Dicen que internet borra todo con el tiempo. Quizá por eso hice
-          esto: para que exista una foto de quién soy hoy, hecha a mano,
-          sin prisa. Si vuelves en unos meses y esto ya es otra cosa, no te
-          extrañe — yo también lo seré.
-        </p>
-        <p>
-          Gracias por visitarme. Esta página sigue creciendo poco a poco,
-          igual que yo. ✦
-        </p>
-      </article>
-
-      <div class="ornamento ornamento-seccion" aria-hidden="true"><span>✧</span></div>
-
-      <div class="blog-header reveal">
-        <h2>Del blog</h2>
-        <a class="ver-todas" href="blog/">ver todas →</a>
+        <ul class="axiomas mono">
+          <li>A1 — el orden es un arte disfrazado de aburrimiento</li>
+          <li>A2 — todo bucle infinito necesita una pausa</li>
+          <li>A3 — el error es solo un dato que aprendió gratis</li>
+        </ul>
       </div>
+    </section>
 
-      <a class="destacada glass reveal" href="blog/bienvenida.html">
-        <span class="destacada-badge">✦ última entrada</span>
-        <small class="post-fecha">21 · agosto · 2026 · personal</small>
-        <h3>Bienvenidos a mi rincón</h3>
-        <p>Por qué existe esta página, qué vas a encontrar aquí y por qué me hacía ilusión tener un lugar propio en internet.</p>
-        <span class="destacada-btn">LEER →</span>
-      </a>
+    <section class="figura reveal" id="fig02">
+      <header class="figura-cab">
+        <span class="fig-num mono">FIG. 02</span>
+        <h2>Ahora mismo</h2>
+        <span class="fig-linea" aria-hidden="true"></span>
+      </header>
+      <div class="panel-datos">
+        <article class="tarjeta-dato reveal">
+          <small class="mono">juego actual</small>
+          <strong>Roblox · Doors</strong>
+          <span>corriendo de entidades</span>
+        </article>
+        <article class="tarjeta-dato reveal">
+          <small class="mono">canción en bucle</small>
+          <strong>dreamcore vol. ∞</strong>
+          <span>nueve jack jack al rojo vivo</span>
+        </article>
+        <article class="tarjeta-dato reveal">
+          <small class="mono">nivel de caos</small>
+          <strong>87.3%</strong>
+          <span>+2.4% esta semana</span>
+        </article>
+        <article class="tarjeta-dato reveal">
+          <small class="mono">zona horaria</small>
+          <strong>UTC−4</strong>
+          <span>siempre de noche adentro</span>
+        </article>
+      </div>
+    </section>
 
-      <div class="post-grid">
-        <a class="glass post-card reveal" href="blog/canciones-que-recuerdan.html">
-          <small class="post-fecha">14 · agosto · 2026</small>
-          <h3>Canciones que recuerdan</h3>
-          <p>Sobre la música que guarda momentos y por qué algunas canciones se sienten como volver.</p>
-          <span class="post-leer">leer entrada ✦</span>
+    <section class="figura reveal" id="fig03">
+      <header class="figura-cab">
+        <span class="fig-num mono">FIG. 03</span>
+        <h2>Contacto</h2>
+        <span class="fig-linea" aria-hidden="true"></span>
+      </header>
+      <div class="panel-enlaces">
+        <a class="enlace-ficha" href="https://github.com/angelmoonblosson-max" target="_blank" rel="noopener noreferrer">
+          <small class="mono">repositorio</small>
+          <strong>GitHub ↗</strong>
+          <span>código y experimentos</span>
         </a>
-
-        <a class="glass post-card reveal" href="blog/mi-lado-gamer.html">
-          <small class="post-fecha">7 · agosto · 2026</small>
-          <h3>Mi lado gamer</h3>
-          <p>Lo que los videojuegos me han enseñado fuera de la pantalla.</p>
-          <span class="post-leer">leer entrada ✦</span>
+        <a class="enlace-ficha" href="https://www.roblox.com/es/users/882216056/profile" target="_blank" rel="noopener noreferrer">
+          <small class="mono">spawn point</small>
+          <strong>Roblox ↗</strong>
+          <span>donde reaparezco</span>
         </a>
       </div>
+      <p class="nota-contacto mono">
+        ¿DM? Búscame como <b>attie</b> en tu servidor favorito.
+      </p>
     </section>
-
-    <div class="constelacion reveal" aria-hidden="true">
-      <svg viewBox="0 0 600 60" preserveAspectRatio="xMidYMid meet">
-        <line x1="40" y1="38" x2="170" y2="16" /><line x1="170" y1="16" x2="300" y2="34" />
-        <line x1="300" y1="34" x2="430" y2="12" /><line x1="430" y1="12" x2="560" y2="30" />
-        <circle class="ce" cx="40" cy="38" r="2.4" />
-        <circle class="ce ce-tibia" cx="170" cy="16" r="3" />
-        <circle class="ce" cx="300" cy="34" r="2.4" />
-        <circle class="ce ce-fria" cx="430" cy="12" r="3" />
-        <circle class="ce" cx="560" cy="30" r="2.4" />
-        <text x="300" y="14">✦</text>
-      </svg>
-    </div>
-
-    <section class="container historia reveal">
-      <header class="seccion-cabecera">
-        <span class="seccion-kicker">✦ línea del tiempo</span>
-        <h2>Cómo llegué hasta aquí</h2>
-      </header>
-      <ol class="timeline">
-        <li>
-          <b>la era del PC prestado</b>
-          <p>Primeras noches con la pantalla bajita, juegos flash y esa sensación de que internet era un bosque infinito.</p>
-        </li>
-        <li>
-          <b>foros y páginas hechas a mano</b>
-          <p>Aprendí que detrás de cada web rara había alguien como yo escribiendo a las tantas. Quise ser esa persona.</p>
-        </li>
-        <li>
-          <b>la era Discord</b>
-          <p>Chats de voz que terminaban a las tres de la mañana. Ahí entendí que los mejores amigos pueden empezar con un «hola, qué haces despierto».</p>
-        </li>
-        <li>
-          <b>coleccionista de cosas pequeñas</b>
-          <p>Capturas, canciones con nombres raros, audios con risas. Empecé a guardar todo lo que no quería que se borre.</p>
-        </li>
-        <li>
-          <b>este rincón</b>
-          <p>Un día decidí que mi pedacito de internet no iba a vivir en la cabeza de una plataforma: lo hice a mano, y aquí está.</p>
-        </li>
-      </ol>
-    </section>
-
-    <div class="ornamento ornamento-seccion" aria-hidden="true"><span>✧</span></div>
-
-    <section class="container reveal">
-      <header class="seccion-cabecera">
-        <span class="seccion-kicker">✦ mi cielo ahorita</span>
-        <h2>Obsesiones del momento</h2>
-      </header>
-      <div class="favoritos">
-        <article class="fav glass">
-          <span class="fav-icono">🎮</span>
-          <small>juego del mes</small>
-          <b>Five Nights at Freddy's</b>
-          <p>sobrevivir la noche 5 con las luces apagadas tiene otro aura</p>
-        </article>
-        <article class="fav glass">
-          <span class="fav-icono">🪂</span>
-          <small>con la banda</small>
-          <b>Fortnite</b>
-          <p>victorias reales en duos y derrotas épicas igual de divertidas</p>
-        </article>
-        <article class="fav glass">
-          <span class="fav-icono">🎧</span>
-          <small>song on repeat</small>
-          <b>Hollow Memory</b>
-          <p>suena en el reproductor de abajo — sube el volumen</p>
-        </article>
-      </div>
-    </section>
-
-    <div class="ornamento ornamento-seccion" aria-hidden="true"><span>✧</span></div>
-
-    <section class="container reveal">
-      <header class="seccion-cabecera">
-        <span class="seccion-kicker">✦ coleccionando cosas</span>
-        <h2>Mi pequeño archivo</h2>
-      </header>
-      <p class="seccion-nota">cosas que voy guardando con el tiempo — crece cuando menos lo esperas</p>
-
-      <nav class="archivo-tabs reveal" id="archivo-tabs" role="tablist" aria-label="Categorías del archivo"></nav>
-      <div class="archivo-grid" id="archivo-grid"></div>
-    </section>
-
-    <div class="ornamento ornamento-seccion" aria-hidden="true"><span>✧</span></div>
-
-    <section class="container reveal">
-      <header class="seccion-cabecera">
-        <span class="seccion-kicker">✦ el muro</span>
-        <h2>Deja tu marca</h2>
-      </header>
-      <p class="seccion-nota">los que pasan de madrugada dejan una nota — se guarda solo en tu navegador</p>
-      <form id="form-muro" class="muro-form">
-        <input id="input-nombre" type="text" maxlength="24" placeholder="tu nombre (o algo inventado)" autocomplete="off" />
-        <input id="input-muro" type="text" maxlength="80" placeholder="escribe algo bonito, raro o nostálgico…" autocomplete="off" />
-        <button type="submit">pegar nota ✦</button>
-      </form>
-      <div id="muro-notas" class="muro"></div>
-    </section>
-
-    <div class="cita-nostalgia reveal">
-      <p>«Hay lugares de internet que se sienten<br>como volver a casa»</p>
-      <span>— ✦ —</span>
-    </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-fases" aria-hidden="true">☾ · ◐ · ◓ · ● · ◑ · ◒ · ☽</div>
-    <p>&copy; <span data-year></span> RAAAAAHHH Fan #1 · <span class="contador-retro">visitas: <b id="num-visitas">·····</b></span></p>
-    <p class="secreto-hint"><button type="button" id="btn-secreto">esta página guarda un pequeño secreto… 👀</button></p>
+  <footer class="pie mono">
+    <span>© <span id="anio">2026</span> ATTIE — construido con teoremas y café</span>
+    <span aria-hidden="true">e<sup>iπ</sup> + 1 = 0</span>
   </footer>
 
-  <audio id="audio" preload="none"></audio>
-
-  <button id="fab-musica" aria-label="Reproductor de música" title="Música (tecla M)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-  </button>
-
-  <div id="panel-musica" class="panel-musica" hidden>
-    <header class="pm-cabecera">
-      <span class="pm-titulo">♪ Mi playlist</span>
-      <button id="cerrar-panel" aria-label="Cerrar">&times;</button>
-    </header>
-
-    <div class="pm-reproduciendo">
-      <div class="vinilo" id="vinilo" aria-hidden="true"><span class="vinilo-surco"></span><span class="vinilo-etiqueta">✦</span></div>
-      <div class="pm-info">
-        <b id="cancion-nombre" role="status" aria-live="polite">Nada sonando…</b>
-        <small id="cancion-artista">&nbsp;</small>
-        <small id="cancion-estado">Elige una canción de la lista</small>
-      </div>
-    </div>
-
-    <div class="pm-progreso">
-      <span id="t-actual">0:00</span>
-      <div id="barra-progreso" role="slider" aria-label="Progreso de la canción" tabindex="0"><i id="relleno-progreso"></i></div>
-      <span id="t-total">0:00</span>
-    </div>
-
-    <div class="pm-controles">
-      <button id="anterior" aria-label="Anterior">⏮</button>
-      <button id="play-pausa" class="principal" aria-label="Reproducir o pausar">▶</button>
-      <button id="siguiente" aria-label="Siguiente">⏭</button>
-      <button id="toggle-aleatorio" title="Reproducción aleatoria (se guarda)" aria-label="Aleatorio">🎲</button>
-      <button id="toggle-repetir" title="Repetir canción (se guarda)" aria-label="Repetir">🔁</button>
-      <input type="range" id="volumen" min="0" max="100" value="60" aria-label="Volumen" />
-    </div>
-
-    <ul id="lista-canciones" class="pm-lista"></ul>
-    <p class="pm-ayuda">Agrega canciones editando el array <code>CANCIONES</code> en <code>js/main.min.js</code>.</p>
-  </div>
-
-  <div id="marco" aria-hidden="true"><span></span></div>
-
-  <button id="btn-arriba" type="button" aria-label="Volver arriba" title="Volver arriba">↑</button>
-
-  <div id="toasts"></div>
-
-  <script src="js/main.min.js?v=34"></script>
+  <script src="js/main.min.js?v=m1"></script>
 </body>
 </html>

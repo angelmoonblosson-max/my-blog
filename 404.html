@@ -3,87 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>uh oh… ✦</title>
+  <title>404 — fuera del dominio</title>
+  <meta name="robots" content="noindex" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-  <link rel="stylesheet" href="css/style.min.css?v=36" />
-  <meta name="theme-color" content="#0b0918" />
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#efe6d0" />
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-  <link rel="preload" href="assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="assets/fonts/playfair-600.woff2" as="font" type="font/woff2" crossorigin />
-
-  <link rel="manifest" href="manifest.json" />
-  <link rel="preconnect" href="https://cdn.pixabay.com" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="El Rincón de Attie" />
-  <meta property="og:title" content="uh oh… ✦" />
-  <meta property="og:description" content="uh oh… ✦" />
-  <meta property="og:url" content="https://angelmoonblosson-max.github.io/my-blog/" />
-  <meta property="og:image" content="https://angelmoonblosson-max.github.io/my-blog/assets/avatar.png" />
-  <meta name="twitter:card" content="summary" />
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "El Rincón de Attie",
-    "alternateName": "RAAAAAHHH Fan #1",
-    "url": "https://angelmoonblosson-max.github.io/my-blog/",
-    "description": "Un rincón soñado entre la luna y las estrellas — blog, música dreamcore y secretos nocturnos.",
-    "inLanguage": "es",
-    "author": {
-      "@type": "Person",
-      "name": "Attie"
-    }
-  }
-  </script>
-
+  <link rel="stylesheet" href="css/style.min.css?v=m1" />
 </head>
-
 <body>
-  <div id="barra-scroll" aria-hidden="true"></div>
-  <div id="aurora" aria-hidden="true"></div>
-  <div id="cielo" aria-hidden="true"></div>
-  <div id="orbes" aria-hidden="true"></div>
-  <div id="luna" aria-hidden="true"></div>
-  <div id="niebla" aria-hidden="true"></div>
-  <div id="vineta" aria-hidden="true"></div>
-  <div id="grano" aria-hidden="true"></div>
-
-  <main id="contenido" class="lost-pagina container">
-    <h1 class="lost-bienvenida visible">uh oh…</h1>
-    <p class="lost-linea visible">creo que te perdiste 💀</p>
-
-    <nav class="puerta-botones">
-      <a class="btn-accion principal" id="btn-volver-404" href="index.html">← volver</a>
-    </nav>
-
-    <button type="button" id="calavera" title="" aria-label="">💀</button>
-    <p class="secreto-hint">(el cráneo parece… clickeable?)</p>
+  <div class="grid-fondo" aria-hidden="true"></div>
+  <main class="perdida">
+    <p class="mono perdido-cod">ERROR 404</p>
+    <h1>Este punto está fuera<br />del dominio de la función.</h1>
+    <p class="perdido-sub mono">
+      lim<sub>x→aquí</sub> f(x) = ∄ &nbsp;·&nbsp; no existe la imagen que buscas
+    </p>
+    <a class="btn principal" href="/">volver al origen (0, 0)</a>
   </main>
-
-  <footer class="site-footer">
-    <p>&copy; <span data-year></span> RAAAAAHHH Fan #1 · <span class="contador-retro">visitas: <b id="num-visitas">·····</b></span></p>
-    <p class="hecho-a-mano">error 404 · la página se fue a caminar entre estrellas</p>
-  </footer>
-
-  <audio id="audio" preload="none"></audio>
-  <div id="toasts"></div>
-  <script src="js/main.min.js?v=34"></script>
-  <script>
-    /* huevo de pascua: tres clics en el cráneo abren una puerta rara */
-    (function () {
-      var clics = 0;
-      var calavera = document.getElementById("calavera");
-      calavera.addEventListener("click", function () {
-        clics++;
-        if (clics === 1) toast && toast("💀 …");
-        if (clics === 2) toast && toast("💀 …¿qué?");
-        if (clics >= 3) {
-          toast && toast("💀 ok ok, te llevo donde NO deberías ir");
-          setTimeout(function () { location.href = "lost.html"; }, 1100);
-        }
-      });
-    })();
-  </script>
 </body>
 </html>

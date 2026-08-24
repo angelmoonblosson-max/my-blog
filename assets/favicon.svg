@@ -1,19 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <defs>
-    <radialGradient id="glow" cx="40%" cy="35%" r="75%">
-      <stop offset="0%" stop-color="#fff3cf"/>
-      <stop offset="55%" stop-color="#e9c46a"/>
-      <stop offset="100%" stop-color="#c9963f"/>
-    </radialGradient>
-    <filter id="halo" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="4" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-  <mask id="mordida">
-    <rect width="100" height="100" fill="#fff"/>
-    <circle cx="70" cy="36" r="33" fill="#000"/>
-  </mask>
-  <circle cx="48" cy="52" r="40" fill="url(#glow)" filter="url(#halo)" mask="url(#mordida)"/>
-  <path d="M78 62l2.2 4.6L85 68l-4.8 1.4L78 74l-2.2-4.6L71 68l4.8-1.4z" fill="#fff3cf"/>
+  <rect width="100" height="100" rx="18" fill="#06080d"/>
+  <g stroke="#949fe9" stroke-opacity="0.22" stroke-width="1">
+    <line x1="20" y1="0" x2="20" y2="100"/>
+    <line x1="50" y1="0" x2="50" y2="100"/>
+    <line x1="80" y1="0" x2="80" y2="100"/>
+    <line x1="0" y1="25" x2="100" y2="25"/>
+    <line x1="0" y1="55" x2="100" y2="55"/>
+    <line x1="0" y1="85" x2="100" y2="85"/>
+  </g>
+  <g fill="none" stroke-linecap="round">
+    <path d="M28 34 C40 30 44 36 43 48 L41 70" stroke="#fcd34d" stroke-width="7"/>
+    <path d="M60 32 L58 70 M52 52 L72 49" stroke="#67e8f9" stroke-width="7"/>
+  </g>
 </svg>

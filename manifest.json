@@ -1,14 +1,13 @@
 {
-  "name": "El Rincón de Attie",
-  "short_name": "Attie",
-  "description": "Un rincón soñado entre la luna y las estrellas — blog, música y secretos nocturnos.",
+  "name": "ATTIE — Dimensión personal",
+  "short_name": "ATTIE",
+  "description": "Un punto en el plano donde el caos se ordena — una experiencia matemática.",
   "lang": "es",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait-primary",
-  "background_color": "#0b0918",
-  "theme_color": "#0b0918",
+  "background_color": "#06080d",
+  "theme_color": "#06080d",
   "icons": [
     {
       "src": "assets/favicon.svg",
@@ -17,8 +16,8 @@
       "purpose": "any"
     },
     {
-      "src": "assets/avatar.png",
-      "sizes": "512x512",
+      "src": "assets/icon-180.png",
+      "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     }

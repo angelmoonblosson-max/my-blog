@@ -1,28 +1,18 @@
-/* Attie SW — offline primero, siempre fresco */
-const CACHE = "attie-v36";
+const CACHE = "attie-math-v1";
 const ESENCIALES = [
   "./",
   "./index.html",
-  "./blog/index.html",
-  "./blog/bienvenida.html",
-  "./blog/canciones-que-recuerdan.html",
-  "./blog/mi-lado-gamer.html",
-  "./secreto.html",
-  "./lost.html",
   "./404.html",
   "./css/style.min.css",
   "./js/main.min.js",
-  "./assets/avatar.png",
-  "./assets/avatar-web.jpg",
-  "./assets/apple-touch-icon.png",
   "./assets/favicon.svg",
+  "./assets/icon-180.png",
   "./manifest.json",
-  "./assets/fonts/inter-400.woff2",
-  "./assets/fonts/inter-500.woff2",
-  "./assets/fonts/inter-600.woff2",
-  "./assets/fonts/inter-700.woff2",
-  "./assets/fonts/playfair-600.woff2",
-  "./assets/fonts/playfair-600-italic.woff2"
+  "./assets/fonts/grotesk-500.woff2",
+  "./assets/fonts/grotesk-700.woff2",
+  "./assets/fonts/plexmono-400.woff2",
+  "./assets/fonts/plexmono-500.woff2",
+  "./assets/fonts/plexmono-600.woff2"
 ];
 
 self.addEventListener("install", (e) => {
