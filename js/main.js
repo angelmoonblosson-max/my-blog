@@ -777,7 +777,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   });
 })();
 
-/* ── cinematica de entrada ── */
+/* ── cinematica persiana: ATTIE partido por la mitad de la pantalla ── */
 (function cine() {
   const c = document.getElementById("cine");
   const mainEl = document.querySelector("main");
@@ -798,34 +798,18 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   if (visto) {
     if (mainEl) mainEl.classList.add("presentarse");
     c.classList.add("abrir");
-    setTimeout(() => c.remove(), 1000);
+    setTimeout(() => c.remove(), 1100);
     return;
   }
 
-  const barra = c.querySelector(".cine-barra span");
-  const por = document.getElementById("cine-por");
-  if (!barra || !por) return terminarRapido();
-
   try { sessionStorage.setItem("attie-cine", "1"); } catch {}
 
-  const t0 = performance.now();
-  const dur = 1000;
-
-  (function paso(ahora) {
-    const p = Math.min(1, (ahora - t0) / dur);
-    por.textContent = Math.floor(p * 100) + "%";
-    barra.style.scale = p + " 1";
-    if (p < 1) {
-      requestAnimationFrame(paso);
-      return;
-    }
-    c.classList.add("fase-logo");
-    setTimeout(() => c.classList.add("abrir"), 1700);
-    setTimeout(() => {
-      if (mainEl) mainEl.classList.add("presentarse");
-    }, 2050);
-    setTimeout(() => c.remove(), 3000);
-  })(t0);
+  setTimeout(() => c.classList.add("lista"), 950);
+  setTimeout(() => c.classList.add("abrir"), 1650);
+  setTimeout(() => {
+    if (mainEl) mainEl.classList.add("presentarse");
+  }, 1800);
+  setTimeout(() => c.remove(), 2850);
 })();
 
 /* ── control de velocidad del ciclo ── */
