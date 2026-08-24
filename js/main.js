@@ -1185,7 +1185,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 (function descifrado() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  const GLIFOS = "∑π√∞±×÷∆θλφΩσ01<>=+*/^~|";
+  const GLIFOS = "·:·✦*'~-+=<>°˚";
 
   function nucleo(poner, original, dur) {
     const n = original.length;
