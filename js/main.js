@@ -551,7 +551,7 @@
   function anunciar(txt) {
     const hud = document.getElementById("hud-forma");
     if (!hud) return;
-    if (typeof window.__descifrar === "function") window.__descifrar(hud, txt, 520);
+    if (typeof window.__descifrar === "function") window.__descifrar(hud, txt, 800);
     else hud.textContent = txt;
   }
 
@@ -1174,32 +1174,44 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 (function descifrado() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  const GLIFOS = "!<>-_\\/[]{}=+*^?#01";
+  const GLIFOS = "!<>-_\\/[]{}=+*^?#$%&@~|=01ABCDEFXZ";
 
   function descifrar(el, dur) {
     const original = el.dataset.txt || (el.dataset.txt = el.textContent);
     el.setAttribute("aria-label", original);
     const n = original.length;
-    const duracion = Math.min(Math.max(dur || 650, 380), 1100);
-    const t0 = performance.now();
+    if (!n) return;
+    const objetivoFrames = Math.round(((dur || 1400) / 1000) * 60);
+    const ritmo = Math.max(objetivoFrames / n, 0.5);
+    const cola = [];
+    for (let i = 0; i < n; i++) {
+      const inicio = i * ritmo + Math.random() * 9;
+      cola.push({
+        hasta: original[i],
+        inicio: inicio,
+        fin: inicio + 10 + Math.random() * 20
+      });
+    }
+    let fotograma = 0;
 
-    function paso(t) {
-      const p = Math.min(1, (t - t0) / duracion);
-      const fijos = Math.floor(p * n);
-      let salida = original.slice(0, fijos);
-      for (let i = fijos; i < n; i++) {
-        const ch = original[i];
-        salida += ch === " " ? " " : GLIFOS[Math.floor(Math.random() * GLIFOS.length)];
+    function avanzar() {
+      fotograma++;
+      let salida = "";
+      let pendientes = 0;
+      for (const c of cola) {
+        if (fotograma >= c.fin) {
+          salida += c.hasta;
+        } else {
+          pendientes++;
+          salida += c.hasta === " " ? " " : GLIFOS[(Math.random() * GLIFOS.length) | 0];
+        }
       }
       el.textContent = salida;
-      if (p < 1) {
-        requestAnimationFrame(paso);
-      } else {
-        el.textContent = original;
-      }
+      if (pendientes > 0 && fotograma < 500) requestAnimationFrame(avanzar);
+      else el.textContent = original;
     }
 
-    requestAnimationFrame(paso);
+    requestAnimationFrame(avanzar);
   }
 
   window.__descifrar = function (el, texto, dur) {
@@ -1235,7 +1247,8 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
       "#hud-forma"
     ].join(",");
     document.querySelectorAll(sel).forEach((el, i) => {
-      setTimeout(() => descifrar(el, 600 + Math.random() * 400), i * 38);
+      const largo = el.textContent.length;
+      setTimeout(() => descifrar(el, Math.min(1200 + largo * 4, 2800)), i * 90);
     });
   }
 
