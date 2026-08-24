@@ -1107,11 +1107,15 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   });
 })();
 
-/* ── cinematica persiana: ATTIE partido por la mitad + despertar ── */
-(function cine() {
+/* ── portal de entrada: perfil rodeado de nodos + tutorial guiado ── */
+(function portal() {
   const c = document.getElementById("cine");
   const raiz = document.documentElement;
   const mainEl = document.querySelector("main");
+  if (!c) return;
+
+  let visto = false;
+  try { visto = sessionStorage.getItem("attie-tour") === "1"; } catch {}
 
   function despertar() {
     raiz.classList.add("despierto");
@@ -1119,38 +1123,201 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   }
 
   function terminarRapido() {
-    try { sessionStorage.setItem("attie-cine", "1"); } catch {}
+    try { sessionStorage.setItem("attie-tour", "1"); } catch {}
     despertar();
-    if (c) c.remove();
+    c.remove();
   }
 
-  if (!c) return;
-
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches)
-    return terminarRapido();
-
-  let visto = false;
-  try { visto = sessionStorage.getItem("attie-cine"); } catch {}
-  if (visto) {
+  if (visto || matchMedia("(prefers-reduced-motion: reduce)").matches) {
     despertar();
-    c.classList.add("abrir");
-    setTimeout(() => c.remove(), 1100);
+    c.remove();
     return;
   }
 
-  try { sessionStorage.setItem("attie-cine", "1"); } catch {}
   raiz.classList.add("cine-activo");
 
-  setTimeout(() => c.classList.add("lista"), 950);
-  setTimeout(() => c.classList.add("abrir"), 1650);
-  setTimeout(() => {
-    raiz.classList.remove("cine-activo");
+  const escena = c.querySelector(".portal-escena");
+  const caja = c.querySelector(".tutorial-caja");
+  const textoEl = document.getElementById("t-texto");
+  const puntosEl = document.getElementById("t-puntos");
+  const saltarBtn = document.getElementById("t-saltar");
+  const foto = document.getElementById("portal-foto");
+
+  const cv = document.getElementById("portal-lienzo");
+  const ctx = cv ? cv.getContext("2d") : null;
+  let portalVivo = !!ctx;
+  let ultimoT = 0;
+  let tG = 0;
+  let orbitas = [];
+  let cw = 0;
+  let ch = 0;
+
+  let cA = "103,232,249";
+  function refrescarColor() {
+    const hex = getComputedStyle(raiz).getPropertyValue("--cian").trim();
+    const m = /^#([0-9a-f]{6})$/i.exec(hex);
+    if (m)
+      cA = [
+        parseInt(m[1].slice(0, 2), 16),
+        parseInt(m[1].slice(2, 4), 16),
+        parseInt(m[1].slice(4, 6), 16)
+      ].join(",");
+  }
+  refrescarColor();
+  addEventListener("acento-cambio", refrescarColor);
+
+  function medirPortal() {
+    if (!cv) return;
+    const r = cv.getBoundingClientRect();
+    cw = cv.width = Math.max(Math.round(r.width), 10);
+    ch = cv.height = Math.max(Math.round(r.height), 10);
+  }
+
+  function crearOrbitas() {
+    orbitas = [];
+    const n = 34;
+    for (let i = 0; i < n; i++) {
+      orbitas.push({
+        ang: Math.random() * Math.PI * 2,
+        rad: 0.24 + (i / n) * 0.2,
+        vel: (0.0022 + Math.random() * 0.0032) * (i % 2 ? 1 : -1),
+        tam: 1 + Math.random() * 1.6,
+        wob: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  medirPortal();
+  crearOrbitas();
+  addEventListener("resize", () => { medirPortal(); crearOrbitas(); }, { passive: true });
+
+  function cuadro(ts) {
+    requestAnimationFrame(cuadro);
+    if (!portalVivo || !ctx) return;
+    if (document.hidden) return;
+    if (ultimoT && ts - ultimoT < 32) return;
+    ultimoT = ts;
+    tG++;
+    ctx.clearRect(0, 0, cw, ch);
+    const cx = cw / 2;
+    const cy = ch / 2;
+    const base = Math.min(cw, ch);
+    const pts = [];
+    for (const o of orbitas) {
+      o.ang += o.vel;
+      const rr = base * o.rad + Math.sin(tG * 0.02 + o.wob) * 6;
+      pts.push([cx + Math.cos(o.ang) * rr, cy + Math.sin(o.ang) * rr]);
+    }
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const dx = pts[i][0] - pts[j][0];
+        const dy = pts[i][1] - pts[j][1];
+        if (Math.abs(dx) > 90 || Math.abs(dy) > 90) continue;
+        const d = Math.hypot(dx, dy);
+        if (d > 90) continue;
+        ctx.strokeStyle = "rgba(" + cA + "," + ((1 - d / 90) * 0.28).toFixed(3) + ")";
+        ctx.lineWidth = 0.6;
+        ctx.beginPath();
+        ctx.moveTo(pts[i][0], pts[i][1]);
+        ctx.lineTo(pts[j][0], pts[j][1]);
+        ctx.stroke();
+      }
+    }
+    for (const p of pts) {
+      ctx.fillStyle = "rgba(" + cA + ",0.85)";
+      ctx.beginPath();
+      ctx.arc(p[0], p[1], 1.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  requestAnimationFrame(cuadro);
+
+  const PASOS = [
+    "Hola, bienvenido a mi rincón. Soy Attie.",
+    "El fondo está vivo: partículas que se reúnen para formar figuras cada pocos segundos.",
+    "Atajos del fondo: F forma una figura · E lo explota · D dispara láseres. Doble clic = sobrecarga.",
+    "La tuerca abajo a la derecha abre las configuraciones: color, intensidad, velocidad y fondo.",
+    "Todo el texto llega cifrado y se descifra solo. Y por si acaso: nada aquí se puede copiar.",
+    "Eso es todo lo que tienes que saber. Pasa y ponte cómodo."
+  ];
+  let pasoI = -1;
+  let timerPaso = null;
+
+  function pintarPuntos() {
+    if (!puntosEl) return;
+    puntosEl.innerHTML = "";
+    PASOS.forEach((_, i) => {
+      const d = document.createElement("span");
+      d.className = "t-dot" + (i <= pasoI ? " hecho" : "");
+      puntosEl.appendChild(d);
+    });
+  }
+
+  function mostrarTexto(txt) {
+    if (!textoEl) return;
+    textoEl.dataset.txt = txt;
+    if (typeof window.__descifrar === "function") {
+      textoEl.textContent = "";
+      window.__descifrar(textoEl, undefined, 1050);
+    } else {
+      textoEl.textContent = txt;
+    }
+  }
+
+  function avanzarPaso() {
+    clearTimeout(timerPaso);
+    pasoI++;
+    if (pasoI >= PASOS.length) {
+      cerrar();
+      return;
+    }
+    pintarPuntos();
+    mostrarTexto(PASOS[pasoI]);
+    timerPaso = setTimeout(avanzarPaso, 4800);
+  }
+
+  function iniciarTour() {
+    if (!portalVivo) return;
+    portalVivo = false;
+    if (escena) escena.classList.add("fuera");
+    setTimeout(() => {
+      if (escena) escena.hidden = true;
+      if (caja) {
+        caja.hidden = false;
+        requestAnimationFrame(() => caja.classList.add("dentro"));
+      }
+      avanzarPaso();
+    }, 560);
+  }
+
+  function cerrar() {
+    clearTimeout(timerPaso);
+    portalVivo = false;
+    try { sessionStorage.setItem("attie-tour", "1"); } catch {}
+    c.classList.add("salida");
     despertar();
-  }, 1800);
-  setTimeout(() => {
-    c.remove();
-    raiz.classList.remove("cine-activo");
-  }, 2900);
+    setTimeout(() => c.remove(), 750);
+  }
+
+  if (foto) foto.addEventListener("click", iniciarTour);
+  addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      if (portalVivo) {
+        e.preventDefault();
+        iniciarTour();
+      }
+    } else if (e.key === "Escape" && caja && !caja.hidden) {
+      cerrar();
+    }
+  });
+  if (caja)
+    caja.addEventListener("click", (e) => {
+      if (e.target === saltarBtn || (saltarBtn && saltarBtn.contains(e.target))) {
+        cerrar();
+      } else if (caja.classList.contains("dentro")) {
+        avanzarPaso();
+      }
+    });
 })();
 
 /* ── control de velocidad del ciclo ── */

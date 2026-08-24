@@ -30,7 +30,7 @@
     "author": { "@type": "Person", "name": "Attie" }
   }
   </script>
-  <link rel="stylesheet" href="css/style.min.css?v=m17" />
+  <link rel="stylesheet" href="css/style.min.css?v=m18" />
 </head>
 <body>
   <div class="grid-fondo" aria-hidden="true"></div>
@@ -50,22 +50,21 @@
   <div id="hud-status" class="mono" aria-hidden="true">ESTADO: TRANQUILO · NODOS <span id="hud-nodos">--</span> · MODO SUAVE</div>
 
   <div id="cine" aria-hidden="true">
-    <div class="cine-mitad arriba">
-      <div class="cine-logo-zona">
-        <h2 class="cine-logo"><span style="--i:0">A</span><span style="--i:1">T</span><span style="--i:2">T</span><span style="--i:3">I</span><span style="--i:4">E</span></h2>
-        <p class="cine-sub mono">UN RINCON PERSONAL</p>
-      </div>
+    <div class="portal-escena">
+      <canvas id="portal-lienzo"></canvas>
+      <button id="portal-foto" type="button" aria-label="Comenzar el recorrido">
+        <span class="portal-anillo" aria-hidden="true"></span>
+        <img src="assets/foto.jpg" alt="" onerror="this.onerror=null;this.src='assets/avatar.svg';" />
+      </button>
+      <p class="portal-msg mono">CLICK PARA COMENZAR</p>
     </div>
-    <div class="cine-mitad abajo">
-      <div class="cine-logo-zona">
-        <h2 class="cine-logo"><span style="--i:0">A</span><span style="--i:1">T</span><span style="--i:2">T</span><span style="--i:3">I</span><span style="--i:4">E</span></h2>
-        <p class="cine-sub mono">UN RINCON PERSONAL</p>
-      </div>
+    <div class="tutorial-caja" hidden>
+      <span class="t-saltar mono" id="t-saltar">saltar &#8250;</span>
+      <p class="t-texto mono" id="t-texto"></p>
+      <div class="t-puntos" id="t-puntos" aria-hidden="true"></div>
     </div>
-    <span class="cine-seam"></span>
   </div>
-
-  <button id="btn-config" class="btn-config mono" type="button" aria-label="Configuraciones" aria-expanded="false">
+<button id="btn-config" class="btn-config mono" type="button" aria-label="Configuraciones" aria-expanded="false">
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
       <circle cx="12" cy="12" r="3.2"/>
       <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/>
@@ -246,6 +245,6 @@
     <span>© <span id="anio">2026</span> ATTIE · hecho con calma y cariño</span>
   </footer>
 
-  <script src="js/main.min.js?v=m17"></script>
+  <script src="js/main.min.js?v=m18"></script>
 </body>
 </html>
