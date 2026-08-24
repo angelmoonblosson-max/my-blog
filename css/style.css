@@ -712,3 +712,360 @@ button:focus-visible {
   .formula { display: none; }
   .formula.f1 { display: block; top: auto; bottom: 8%; left: 4%; }
 }
+
+
+/* ═══════════ TEMAS DE ACENTO EN VIVO ═══════════ */
+html[data-acento="ambar"] { --cian: #fcd34d; }
+html[data-acento="rosa"] { --cian: #fb7185; }
+html[data-acento="violeta"] { --cian: #a78bfa; }
+
+/* ═══════════ BOTÓN CONFIGURACIONES ═══════════ */
+.btn-config {
+  position: fixed;
+  top: 0.7rem;
+  right: clamp(1rem, 5vw, 3rem);
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--linea-fuerte);
+  border-radius: 3px;
+  background: rgba(6, 8, 13, 0.8);
+  color: var(--muted);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition:
+    color var(--t-rapida) var(--ease-out),
+    border-color var(--t-rapida) var(--ease-out),
+    box-shadow var(--t-media) var(--ease-out),
+    rotate 0.6s var(--ease-spring);
+}
+
+.btn-config:hover,
+.btn-config[aria-expanded="true"] {
+  color: var(--cian);
+  border-color: var(--cian);
+  box-shadow: 0 0 22px rgba(103, 232, 249, 0.25);
+}
+
+.btn-config[aria-expanded="true"] {
+  rotate: 120deg;
+}
+
+/* ═══════════ PANEL DE CONFIGURACIONES ═══════════ */
+.panel-fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 3, 6, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.panel-caja {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 70;
+  width: min(340px, 88vw);
+  padding: 1.4rem 1.4rem 2rem;
+  background: rgba(10, 13, 21, 0.92);
+  border-left: 1px solid var(--linea-fuerte);
+  box-shadow: -30px 0 80px rgba(0, 0, 0, 0.55);
+  overflow-y: auto;
+  animation: panelEntra 0.34s var(--ease-out);
+}
+
+@keyframes panelEntra {
+  from { transform: translateX(40px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.panel-cab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.6rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px dashed var(--linea-fuerte);
+}
+
+.panel-cab span {
+  font-size: 0.78rem;
+  letter-spacing: 0.28em;
+  color: var(--texto);
+}
+
+.panel-x {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--linea);
+  border-radius: 3px;
+  background: none;
+  color: var(--muted);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color var(--t-rapida), border-color var(--t-rapida);
+}
+
+.panel-x:hover {
+  color: var(--rosa);
+  border-color: var(--rosa);
+}
+
+.panel-seccion {
+  margin-bottom: 1.7rem;
+}
+
+.panel-seccion h3 {
+  margin: 0 0 0.8rem;
+  font-family: var(--fuente-dato);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.muestras {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.muestra {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: var(--mc);
+  cursor: pointer;
+  transition: transform var(--t-instant, 120ms) var(--ease-spring), box-shadow var(--t-media) var(--ease-out);
+}
+
+.muestra:hover {
+  transform: scale(1.14);
+}
+
+.muestra.activo {
+  border-color: #fff;
+  box-shadow: 0 0 16px var(--mc);
+}
+
+.segmentado {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--linea);
+  border-radius: 4px;
+}
+
+.seg {
+  padding: 0.5rem 0;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--fuente-dato);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: background var(--t-rapida), color var(--t-rapida);
+}
+
+.seg:hover {
+  color: var(--texto);
+}
+
+.seg.activo {
+  background: var(--cian);
+  color: #04121a;
+  font-weight: 600;
+}
+
+.panel-nota {
+  margin: 0.55rem 0 0;
+  font-size: 0.62rem;
+  color: rgba(143, 153, 181, 0.7);
+}
+
+.interruptor {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.interruptor input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.riel {
+  flex-shrink: 0;
+  width: 44px;
+  height: 24px;
+  border: 1px solid var(--linea-fuerte);
+  border-radius: 24px;
+  background: rgba(6, 8, 13, 0.8);
+  position: relative;
+  transition: background var(--t-rapida), border-color var(--t-rapida);
+}
+
+.perilla {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: translate var(--t-rapida) var(--ease-spring), background var(--t-rapida);
+}
+
+.interruptor input:checked + .riel {
+  background: rgba(103, 232, 249, 0.15);
+  border-color: var(--cian);
+}
+
+.interruptor input:checked + .riel .perilla {
+  translate: 20px 0;
+  background: var(--cian);
+}
+
+.interruptor input:focus-visible + .riel {
+  outline: 2px solid var(--cian);
+  outline-offset: 3px;
+}
+
+.etiqueta-int {
+  font-size: 0.74rem;
+  color: var(--texto);
+}
+
+/* ═══════════ SECUENCIA DE ARRANQUE ═══════════ */
+#arranque {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1.1rem;
+  background: var(--bg);
+  transition: opacity 0.5s var(--ease-out), visibility 0.5s;
+}
+
+#arranque.listo {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.arranque-texto {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.42em;
+  color: var(--cian);
+  animation: parpadeoTexto 1.1s steps(2) infinite;
+}
+
+@keyframes parpadeoTexto {
+  50% { opacity: 0.45; }
+}
+
+.arranque-barra {
+  width: min(300px, 70vw);
+  height: 3px;
+  background: var(--linea);
+  overflow: hidden;
+}
+
+.arranque-barra span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--cian), #fff);
+  scale: 0 1;
+  transform-origin: left;
+  transition: scale 0.12s linear;
+}
+
+.arranque-por {
+  margin: 0;
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+/* ═══════════ BRILLO DEL CURSOR ═══════════ */
+#brillo {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 30;
+  width: 380px;
+  height: 380px;
+  margin: -190px 0 0 -190px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(103, 232, 249, 0.09), transparent 62%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* ═══════════ ONDAS AL HACER CLIC ═══════════ */
+.onda-clik {
+  position: fixed;
+  z-index: 45;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border: 1.5px solid var(--cian);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: ondaCrece 0.65s var(--ease-out) forwards;
+}
+
+.onda-clik.o2 {
+  animation-delay: 0.09s;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+@keyframes ondaCrece {
+  from { scale: 1; opacity: 0.85; }
+  to { scale: 9; opacity: 0; }
+}
+
+/* ═══════════ TARJETAS TANGIBLES (tilt 3D) ═══════════ */
+.tarjeta-dato,
+.enlace-ficha {
+  transform: perspective(700px) rotateX(var(--ty, 0deg)) rotateY(var(--tx, 0deg)) translateY(var(--ele, 0px));
+  will-change: transform;
+}
+
+.tarjeta-dato:hover,
+.enlace-ficha:hover {
+  --ele: -5px;
+}
+
+/* ═══════════ MODOS DE EFECTOS ═══════════ */
+html[data-efectos="off"] #lienzo,
+html[data-efectos="off"] #brillo,
+html[data-efectos="normal"] #brillo {
+  display: none;
+}
+
+html[data-efectos="normal"] .onda-clik {
+  display: none;
+}
+
+html[data-efectos="normal"] .tarjeta-dato,
+html[data-efectos="normal"] .enlace-ficha {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #arranque { display: none; }
+  #brillo { display: none; }
+  .btn-config { rotate: 0deg !important; }
+}

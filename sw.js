@@ -1,4 +1,4 @@
-const CACHE = "attie-math-v1";
+const CACHE = "attie-math-v2";
 const ESENCIALES = [
   "./",
   "./index.html",

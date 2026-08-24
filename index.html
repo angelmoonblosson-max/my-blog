@@ -31,20 +31,65 @@
     "author": { "@type": "Person", "name": "Attie" }
   }
   </script>
-  <link rel="stylesheet" href="css/style.min.css?v=m1" />
+  <link rel="stylesheet" href="css/style.min.css?v=m2" />
 </head>
 <body>
   <div class="grid-fondo" aria-hidden="true"></div>
   <canvas id="lienzo" aria-hidden="true"></canvas>
-  <div class="formulas" aria-hidden="true">
-    <span class="formula f1">e<sup>iπ</sup> + 1 = 0</span>
-    <span class="formula f2">φ = (1 + √5) / 2 ≈ 1.618…</span>
-    <span class="formula f3">a² + b² = c²</span>
-    <span class="formula f4">∑ n² = n(n+1)(2n+1)/6</span>
-    <span class="formula f5">lim<sub>x→0</sub> sin x / x = 1</span>
-    <span class="formula f6">d/dx eˣ = eˣ</span>
-  </div>
+  <div id="brillo" aria-hidden="true"></div>
   <div id="coordenadas" aria-hidden="true">(0, 0)</div>
+
+  <div id="arranque" aria-hidden="true">
+    <p class="arranque-texto mono">INICIALIZANDO DIMENSIÓN</p>
+    <div class="arranque-barra"><span></span></div>
+    <p class="arranque-por mono" id="arranque-por">0%</p>
+  </div>
+
+  <button id="btn-config" class="btn-config mono" type="button" aria-label="Configuraciones" aria-expanded="false">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+      <circle cx="12" cy="12" r="3.2"/>
+      <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/>
+    </svg>
+  </button>
+
+  <div id="panel-config" class="panel-config" hidden>
+    <div class="panel-fondo" data-cerrar></div>
+    <aside class="panel-caja" role="dialog" aria-label="Configuraciones">
+      <header class="panel-cab">
+        <span class="mono">CONFIGURACIONES</span>
+        <button class="panel-x mono" type="button" data-cerrar aria-label="Cerrar">×</button>
+      </header>
+
+      <section class="panel-seccion">
+        <h3 class="mono">Color de acento</h3>
+        <div class="muestras" role="group" aria-label="Color de acento">
+          <button class="muestra activo" data-acento="cian" style="--mc:#67e8f9" aria-label="Cian" type="button"></button>
+          <button class="muestra" data-acento="ambar" style="--mc:#fcd34d" aria-label="Ámbar" type="button"></button>
+          <button class="muestra" data-acento="rosa" style="--mc:#fb7185" aria-label="Rosa" type="button"></button>
+          <button class="muestra" data-acento="violeta" style="--mc:#a78bfa" aria-label="Violeta" type="button"></button>
+        </div>
+      </section>
+
+      <section class="panel-seccion">
+        <h3 class="mono">Intensidad de efectos</h3>
+        <div class="segmentado" role="group" aria-label="Intensidad de efectos">
+          <button class="seg activo" data-efectos="epico" type="button">ÉPICO</button>
+          <button class="seg" data-efectos="normal" type="button">NORMAL</button>
+          <button class="seg" data-efectos="off" type="button">OFF</button>
+        </div>
+        <p class="panel-nota mono">épico = todo · normal = ligero · off = estático</p>
+      </section>
+
+      <section class="panel-seccion">
+        <h3 class="mono">Fondo animado</h3>
+        <label class="interruptor">
+          <input type="checkbox" id="cfg-fondo" checked />
+          <span class="riel"><span class="perilla"></span></span>
+          <span class="mono etiqueta-int">figuras geométricas</span>
+        </label>
+      </section>
+    </aside>
+  </div>
 
   <header class="barra">
     <a class="marca mono" href="#top">∑ attie</a>
@@ -159,6 +204,6 @@
     <span aria-hidden="true">e<sup>iπ</sup> + 1 = 0</span>
   </footer>
 
-  <script src="js/main.min.js?v=m1"></script>
+  <script src="js/main.min.js?v=m2"></script>
 </body>
 </html>
