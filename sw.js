@@ -1,12 +1,14 @@
 const CACHE = "attie-math-v22";
+const V = "?v=m22";
 const ESENCIALES = [
   "./",
-  "./index.html",
+  "./index.html" + V,
   "./404.html",
-  "./css/style.min.css",
-  "./js/main.min.js",
+  "./css/style.min.css" + V,
+  "./js/main.min.js" + V,
   "./assets/favicon.svg",
   "./assets/icon-180.png",
+  "./assets/foto.webp",
   "./manifest.json",
   "./assets/fonts/grotesk-500.woff2",
   "./assets/fonts/grotesk-700.woff2",
