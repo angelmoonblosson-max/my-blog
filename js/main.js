@@ -1488,7 +1488,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
       if (!real) return;
       const largo = real.trim().length;
       setTimeout(
-        () => descifrar(el, Math.min(2000 + largo * 8, 4800)),
+        () => { el.style.opacity = '1'; descifrar(el, Math.min(2000 + largo * 8, 4800)); },
         Math.min(i * 45, 2400)
       );
     });

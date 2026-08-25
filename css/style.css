@@ -1515,6 +1515,11 @@ body {
   color: var(--cian);
 }
 
+.ce {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
 /* ═══════════ PORTAL DE ENTRADA: perfil + nodos + tutorial ═══════════ */
 
 #cine {
